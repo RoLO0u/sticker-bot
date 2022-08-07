@@ -1,8 +1,8 @@
-from templates.bot import run
+import templates.bot
 
 def main():
 
-    run(non_stop=False)
+    templates.bot.run(non_stop=False)
 
 if __name__ == "__main__":
 

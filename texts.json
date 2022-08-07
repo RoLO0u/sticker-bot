@@ -1,1 +1,10 @@
-{"start": {"en": "<b>Hi!</b>\nI'm here to help you create sticker packs without problems.", "ua": "<b>Привіт!</b>\nЯ тут, щоб допомогти тобі створити стікер паки без проблем."}}
+{"start": {"en": "<b>Hi!</b>\nI'm here to help you create sticker packs without any troubles.", "ua": "<b>Привіт!</b>\nЯ тут, щоб допомогти тобі створити пакунки наліпок без пригод."},
+"start_buttons": {"en": ["Join pack", "Create pack", "Add sticker"], "ua": ["Приєднатись до пакунку", "Створити пакунок", "Додати наліпку"]},
+"change_lang_buttons": ["Change language to 🇬🇧 (English)", "Змінити мову на 🇺🇦 (Українську)"],
+"joined": {"en": "Joined", "ua": "Приєднано"},
+"created": {"en": "Created", "ua": "Створено"},
+"added": {"en": "Added", "ua": "Додано"},
+"lan_changed": {"en": "Language succesfully changed", "ua": "Мову успішно змінено"},
+"start_exception_1": {"en": "Please do your username to use this bot.", "ua": "Будь ласка, зробіть псевдонім, щоб користуватись ботом."},
+"start_button_exception_1": {"en": "I setted username", "ua": "Я встановив псевдонім"},
+"unknown_exception_1": {"en": "Oops... Unknown exception happened.\nForward this message to tech support @feddunn.\nException №", "ua": "Упс... Невідома помилка.\nПовідомте про цю помилку технічній підтримці @feddunn.\nПомилка №"}}
