@@ -8,6 +8,19 @@
 > Also add_sticker_to_set needed <br>
 > [documentation](https://core.telegram.org/bots/api#addstickertoset)
 
+> Finding emoji in message <br>
+> [stackoverflow](https://stackoverflow.com/questions/36216665/find-there-is-an-emoji-in-a-string-in-python3) <br>
+> [library emoji](https://pypi.org/project/emoji/)
+> ```python
+> # -*- coding: utf-8 -*-
+>
+> from emoji import EMOJI_DATA
+>
+> print("😘" in EMOJI_DATA) # -> True
+> print("1" in EMOJI_DATA) # -> False
+> print("😘👍" in EMOJI_DATA) # -> False
+> ```
+
 ## Database look
 
 database is usersinfo.json file

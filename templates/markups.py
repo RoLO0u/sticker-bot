@@ -13,3 +13,8 @@ def start_button_exception1(start_buttons_exception: str) -> ReplyKeyboardMarkup
     markup = ReplyKeyboardMarkup()
     markup.add(KeyboardButton(start_buttons_exception))
     return markup
+
+def cancel_button(caption: str) -> ReplyKeyboardMarkup:
+    markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(KeyboardButton(caption))
+    return markup
