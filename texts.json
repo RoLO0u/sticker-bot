@@ -5,9 +5,11 @@
 "joined": {"en": "✅ Joined", "ua": "✅ Приєднано"},
 "creating1": {"en": "How your pack will named (up to 64 characters)?", "ua": "Як ви назвете свій пакунок (до 64 символів)?"},
 "creating1_e1": {"en": "Sorry, but telegram wants less characters", "ua": "Вибач, але телеграм вимагає менше символів"},
-"creating2": {"en": "OK. Now send me first image with caption an emoji", "ua": "Добре. Зараз надішли перше зображення з описом емодзі"},
-"creating2_e1": {"en": "Please send me photo with an emoji as caption", "ua": "Будь ласка, надішліть фото для першої наліпки з смайлом у вигляді описі"},
-"creating2_e2": {"en": "Please send me photo with an SINGLE EMOJI as caption", "ua": "Будь ласка, надішліть фото для першої наліпки з ОДНИМ СМАЙЛОМ у описі"},
+"creating2": {"en": "OK. Now send me emoji(s) for your first sticker", "ua": "Добре. Зараз надішли емодзі до твоєї першої наліпки"},
+"cancel": {"en": "❌ Canceled", "ua": "❌ Відмінено"},
+"creating2_e1": {"en": "Please send me (an) emoji(s) only", "ua": "Будь ласка, надішліть тільки смайл(и)"},
+"creating3": {"en": "OK. Now send me an image for first sticker in the pack", "ua": "Добре. Зараз надішліть фото для вашої першої наліпки"},
+"creating3_e1": {"en": "Please send me an image for first sticker in the pack", "ua": "Будь ласка, надішліть фото для наліпки"},
 "cancel_button": {"en": "❌ Cancel", "ua": "❌ Відмінити"},
 "created": {"en": "✅ Created. Check your pack here ", "ua": "✅ Створено. Погляньте на свій пакунок тут "},
 "added": {"en": "✅ Added", "ua": "✅ Додано"},
@@ -16,4 +18,5 @@
 "start_button_exception_1": {"en": "I setted username", "ua": "Я встановив псевдонім"},
 "unknown_exception_1": {"en": "Oops... Unknown exception happened.\nForward this message to tech support @feddunn.\nException №",
     "ua": "Упс... Невідома помилка.\nПовідомте про цю помилку технічній підтримці @feddunn.\nПомилка №"},
-"unknown_exception_2": {"en": "Oops... I don't know this command😕", "ua": "Упм... Я не знаю цю команду😕"}}
+"unknown_exception_2": {"en": "Oops... I don't know this command😕", "ua": "Упс... Я не знаю цю команду😕"},
+"managing": {"en": "Choose your pack to manage", "ua": "Вибери пакунок для керування"}}
