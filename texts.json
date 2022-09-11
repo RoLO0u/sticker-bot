@@ -11,7 +11,9 @@
 "creating3": {"en": "OK. Now send me an image for first sticker in the pack", "ua": "Добре. Зараз надішліть фото для вашої першої наліпки"},
 "creating3_e1": {"en": "Please send me an image for first sticker in the pack", "ua": "Будь ласка, надішліть фото для наліпки"},
 "cancel_button": {"en": "❌ Cancel", "ua": "❌ Відмінити"},
-"created": {"en": "✅ Created. Check your pack here ", "ua": "✅ Створено. Погляньте на свій пакунок тут "},
+"created1": {"en": "✅ Created", "ua": "✅ Створено"},
+"created_inline": {"en": "Your pack here 👉", "ua": "Ваш пакунок тут 👉"},
+"created2": {"en": "Something else?🧐", "ua": "Щось ще?🧐"},
 "added": {"en": "✅ Added", "ua": "✅ Додано"},
 "lan_changed": {"en": "✅ Language succesfully changed", "ua": "✅ Мову успішно змінено"},
 "start_exception_1": {"en": "❌ Please do your username to use this bot", "ua": "❌ Будь ласка, зробіть псевдонім, щоб користуватись ботом"},
@@ -19,4 +21,7 @@
 "unknown_exception_1": {"en": "Oops... Unknown exception happened.\nForward this message to tech support @feddunn.\nException №",
     "ua": "Упс... Невідома помилка.\nПовідомте про цю помилку технічній підтримці @feddunn.\nПомилка №"},
 "unknown_exception_2": {"en": "Oops... I don't know this command😕", "ua": "Упс... Я не знаю цю команду😕"},
-"managing": {"en": "Choose your pack to manage", "ua": "Вибери пакунок для керування"}}
+"unknown_exception_3": {"en": "Oops... I don't need this photo now😕", "ua": "Упс... Мені не потрібне це фото😕"},
+"managing": {"en": "Choose your pack to manage", "ua": "Вибери пакунок для керування"},
+"back": {"en": "↩️ Return", "ua": "↩️ Повернутись"},
+"backed": {"en": "↩️ Returned ✅", "ua": "↩️ Повернено ✅"}}

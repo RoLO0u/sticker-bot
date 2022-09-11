@@ -29,8 +29,41 @@ simple example:
 
 ```json
 {
-    "users": {"8921471290": {"username": "some_username", "packs": ["some_pack1", "another_pack2", "etc"], "language": "en", "status": null}},
-    "username_to_id": {"some_username": "8921471290"}
+  "users": {
+    "602197013": {
+      "username": "feddunn",
+      "packs": [
+        "dbeDPzgRzY",
+        "gqHYhZPCwa"
+      ],
+      "language": "ua",
+      "status": "start",
+      "additional_info": null
+    }
+  },
+  "username_to_id": {
+    "feddunn": "602197013"
+  },
+  "packs": {
+    "title": "Sticker pack ↓♪",
+    "dbeDPzgRzY": {
+      "adm": "602197013",
+      "members": [
+        "602197013"
+      ],
+      "stickers": [],
+      "status": "maked"
+    },
+    "gqHYhZPCwa": {
+      "title": "Sticker pack ↓♪211",
+      "adm": "602197013",
+      "members": [
+        "602197013"
+      ],
+      "stickers": [],
+      "status": "maked"
+    }
+  }
 }
 ```
 

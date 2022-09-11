@@ -1,0 +1,57 @@
+{
+  "users": {
+    "602197013": {
+      "username": "feddunn",
+      "packs": [
+        "dbeDPzgRzY",
+        "SFvgJeLDJf",
+        "LaFaWJlHBj",
+        "dGNOIGcmIn"
+      ],
+      "language": "ua",
+      "status": "start",
+      "additional_info": null
+    }
+  },
+  "username_to_id": {
+    "feddunn": "602197013"
+  },
+  "packs": {
+    "dbeDPzgRzY": {
+      "title": "Cтікер пак для дебілів",
+      "adm": "602197013",
+      "members": [
+        "602197013"
+      ],
+      "stickers": [],
+      "status": "maked"
+    },
+    "SFvgJeLDJf": {
+      "title": "Звичайний пак",
+      "adm": "602197013",
+      "members": [
+        "602197013"
+      ],
+      "stickers": [],
+      "status": "maked"
+    },
+    "LaFaWJlHBj": {
+      "title": "Другий пакунок🤠",
+      "adm": "602197013",
+      "members": [
+        "602197013"
+      ],
+      "stickers": [],
+      "status": "maked"
+    },
+    "dGNOIGcmIn": {
+      "title": "Ок",
+      "adm": "602197013",
+      "members": [
+        "602197013"
+      ],
+      "stickers": [],
+      "status": "maked"
+    }
+  }
+}

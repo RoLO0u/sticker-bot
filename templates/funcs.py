@@ -1,12 +1,13 @@
 import json
 import random
 import string
+import os
 from emoji import EMOJI_DATA
 from PIL import Image
 from io import BytesIO
 
-def is_emoji(captions: str) -> bool:
-    return all([caption in EMOJI_DATA for caption in captions])
+def is_emoji(chars: str) -> bool:
+    return all([char in EMOJI_DATA for char in chars])
 
 def load_db() -> dict:
     """*.json files only"""
@@ -22,18 +23,24 @@ def reg_user(user_id: str, username: str) -> dict:
     """reg user and imports db"""
     db = load_db()
     if not user_id in db["users"] and not username is None:
+        os.mkdir(f"photos/{user_id}")
         db["users"][user_id] = {"username": username, "packs": [], "language": "en", "status": None, "additional_info": None}
         db["username_to_id"][username] = user_id
     return db
 
-def resize_image(image):
-    with open("last_image.png", 'wb') as new_file:
+def resize_image(image, user_id: str):
+    with open(f"photos/{user_id}/image.png", 'wb') as new_file:
         new_file.write(image)
-    image = Image.open("last_image.png")
-    image.thumbnail((512, 512))
+    image = Image.open(f"photos/{user_id}/image.png")
+    base = 512
+    min_size = min(image.size)
+    max_size = max(image.size)
+    percent = base / max_size
+    resize_to = (base, int(min_size * percent)) if max_size == image.size[0] else (int(min_size * percent), base)
+    image = image.resize(resize_to, Image.Resampling.LANCZOS)
     bio = BytesIO()
-    bio.name = 'image.jpeg'
-    image.save(bio, 'JPEG')
+    bio.name = 'last_image.png'
+    image.save(bio, 'PNG')
     bio.seek(0)
     return bio
 
@@ -47,5 +54,8 @@ def pack_availability(func, exception, caption: str) -> bool:
 
 def random_string(L: int = 10) -> str:
     return ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k=L))
+
+def user_packs(packs: dict, user_packs_name: list) -> list:
+    return [packs[pack]["title"] for pack in user_packs_name]
 
 PM = lambda message: message.chat.type == "private"
