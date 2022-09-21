@@ -41,9 +41,6 @@ simple example:
       "additional_info": null
     }
   },
-  "username_to_id": {
-    "feddunn": "602197013"
-  },
   "packs": {
     "title": "Sticker pack ↓♪",
     "dbeDPzgRzY": {
