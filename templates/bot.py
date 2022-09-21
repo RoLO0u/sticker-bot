@@ -262,5 +262,4 @@ def text_processing(message):
 
 def run(non_stop: bool) -> None:
 
-    # bot.polling(non_stop=non_stop)
-    bot.infinity_polling()
+    bot.polling(non_stop=non_stop)

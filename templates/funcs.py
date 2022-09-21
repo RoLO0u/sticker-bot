@@ -25,7 +25,6 @@ def reg_user(user_id: str, username: str) -> dict:
     if not user_id in db["users"] and not username is None:
         os.mkdir(f"photos/{user_id}")
         db["users"][user_id] = {"username": username, "packs": [], "language": "en", "status": None, "additional_info": None}
-        db["username_to_id"][username] = user_id
     return db
 
 def resize_image(image, user_id: str):
