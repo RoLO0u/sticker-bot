@@ -19,13 +19,25 @@ def cancel_button(caption: str) -> ReplyKeyboardMarkup:
     markup.add(KeyboardButton(caption))
     return markup
 
-def managing_button(caption: str, packs: list|tuple) -> ReplyKeyboardMarkup:
-    packs = [KeyboardButton(capt) for capt in packs]
+def managing_button(caption: str) -> ReplyKeyboardMarkup:
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(KeyboardButton(caption))
-    for i in range(0, len(packs), 3):
-        markup.add( *packs[i:i+3] )
-        # print(packs[0].to_json(), sep="new arg")
+    return markup
+
+def managing_button_inline(packs: list|tuple) -> InlineKeyboardMarkup:
+    """:param packs: packs => [["title", "name"], ["title1", "name1"]]"""
+    markup = InlineKeyboardMarkup(row_width=2)
+    packs = [InlineKeyboardButton(capt[0], callback_data=capt[1]) for capt in packs]
+    for i in range(0, len(packs), 2):
+        markup.add( *packs[i:i+2] )
+    return markup
+
+def managing_button_2(captions: list|tuple) -> ReplyKeyboardMarkup:
+    markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(*captions[:3])
+    markup.add(*captions[3:6])
+    markup.add(*captions[6:])
+    # markup.add(captions)
     return markup
 
 def pack_link_button(caption: str, url: str) -> InlineKeyboardMarkup:

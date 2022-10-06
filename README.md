@@ -41,9 +41,9 @@ simple example:
       "additional_info": null
     }
   },
-  "packs": {
-    "title": "Sticker pack ↓♪",
+  "packs": { 
     "dbeDPzgRzY": {
+      "title": "Sticker pack ↓♪",
       "adm": "602197013",
       "members": [
         "602197013"

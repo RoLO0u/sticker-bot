@@ -55,6 +55,6 @@ def random_string(L: int = 10) -> str:
     return ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k=L))
 
 def user_packs(packs: dict, user_packs_name: list) -> list:
-    return [packs[pack]["title"] for pack in user_packs_name]
+    return [[packs[pack]["title"], pack] for pack in user_packs_name]
 
 PM = lambda message: message.chat.type == "private"
