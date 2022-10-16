@@ -416,7 +416,7 @@ async def text_processing(message: types.Message):
                                 reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
 
                         case _:
-                            await message.answer(texts["unknown_exception_1"][user_lang])
+                            await message.answer(texts["unknown_exception_1"][user_lang]+"4")
 
                 case _:
                     await message.answer(texts["unknown_exception_1"][user_lang]+'1')
