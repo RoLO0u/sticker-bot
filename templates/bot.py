@@ -1,25 +1,30 @@
-import telebot
+import logging
 import json
 import os
 
+from aiogram import Bot, Dispatcher, executor, types, utils
+
 from templates.funcs import reg_user, load_db, upload_db, is_emoji, resize_image, \
-    pack_availability, random_string, user_packs, PM # Private Messages
+    pack_availability, random_string, user_packs # Private Messages
 from templates.markups import start_button, start_button_exception1, cancel_button, \
     managing_button, pack_link_button, managing_button_2, managing_button_inline
+
+logging.basicConfig(level=logging.INFO)
 
 token = os.getenv("BOT_TOKEN")
 
 with open("texts.json", "r", encoding="utf-8") as raw_texts:
     texts = json.load(raw_texts)
 
-bot = telebot.TeleBot(token)
+bot = Bot(token)
+dp = Dispatcher(bot)
 
 WATERMARK = "_by_paces_bot"
 
 # TODO correction of status
 
-@bot.message_handler(commands=["start"], func=PM)
-def start(message):
+@dp.message_handler(commands=["start"], chat_type="private")
+async def start(message: types.Message):
     user_id = str(message.from_user.id)
     username = message.from_user.username
     db = reg_user(user_id, username)
@@ -27,37 +32,38 @@ def start(message):
     
     if username is None:
         db["users"][user_id]["status"] = "start_exception_1"
-        bot.send_message(message.chat.id, texts["start_exception_1"][user_lang], parse_mode="HTML", \
+        await message.answer(texts["start_exception_1"][user_lang], parse_mode="HTML", \
             reply_markup=start_button_exception1( texts["start_button_exception_1"][user_lang] ))
 
     else:
         db["users"][user_id]["status"] = "start"
-        bot.send_message(message.chat.id, texts["start"][user_lang], parse_mode="HTML", \
+        await message.answer(texts["start"][user_lang], parse_mode="HTML", \
             reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
     upload_db(db)
 
-@bot.message_handler(commands=["test"], func=PM)
-def test_func(message):
+@dp.message_handler(commands=["test"], chat_type="private")
+async def test_func(message: types.Message):
     if message.from_user.id == 602197013:
-        to_check = 3
+        to_check = 0
         match to_check:
             case 0:
-                if pack_availability(bot.get_sticker_set, \
-                        telebot.apihelper.ApiTelegramException, message.text[6:]):
-                    print(1)
-                else:
-                    print(0)
+                # if pack_availability(bot.get_sticker_set, \
+                #         telebot.apihelper.ApiTelegramException, message.text[6:]):
+                await bot.get_sticker_set(message.get_args())
+                print(1)
+                # else:
+                #     print(0)
             case 1:
-                bot.send_sticker(message.chat.id, \
-                    bot.download_file( bot.get_file(bot.get_sticker_set("hxxhzkhRpq_by_paces_bot").stickers[0].file_id).file_path))
+                await bot.send_sticker(message.chat.id, \
+                    await bot.download_file( bot.get_file(bot.get_sticker_set("hxxhzkhRpq_by_paces_bot").stickers[0].file_id).file_path))
             case 2:
-                bot.send_sticker(chat_id=message.chat.id, sticker=bot.get_sticker_set("hxxhzkhRpq_by_paces_bot").stickers[0].file_id)
+                await bot.send_sticker(chat_id=message.chat.id, sticker=bot.get_sticker_set("hxxhzkhRpq_by_paces_bot").stickers[0].file_id)
             case 3:
-                bot.send_sticker(chat_id=message.chat.id, sticker="CAACAgIAAxUAAWMtsh1VasOoVWxE67jLt5UBaQkNAAIqIQACF7xxSVCXRGA5ki1uKQQ")
+                await bot.send_sticker(chat_id=message.chat.id, sticker="CAACAgIAAxUAAWMtsh1VasOoVWxE67jLt5UBaQkNAAIqIQACF7xxSVCXRGA5ki1uKQQ")
 
-@bot.message_handler(content_types=["text", "photo", "sticker"], func=PM)
-def text_processing(message):
+@dp.message_handler(content_types=["text", "photo", "sticker"], chat_type="private")
+async def text_processing(message: types.Message):
     user_id = str(message.from_user.id)
     username = message.from_user.username
 
@@ -92,28 +98,28 @@ def text_processing(message):
                         case Answers.join_btn_en|Answers.join_btn_ua:
 
                             # db["users"][user_id]["status"] = "start" # useless
-                            bot.send_message(message.chat.id, texts["joined"][user_lang], \
+                            await message.answer(texts["joined"][user_lang], \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
                         case Answers.create_btn_en|Answers.create_btn_ua:
                             
                             db["users"][user_id]["status"] = "creating"
 
-                            bot.send_message(message.chat.id, texts["creating1"][user_lang], \
+                            await message.answer(texts["creating1"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                         case Answers.man_btn_en|Answers.man_btn_ua:
 
                             db["users"][user_id]["status"] = "managing"
-                            bot.send_message(message.chat.id, texts["managing0"][user_lang], \
+                            await message.answer(texts["managing0"][user_lang], \
                                 reply_markup=managing_button(texts["back"][user_lang]))
                             
                             # packs_to_check = [(userpack, db["packs"][userpack]) for userpack in db["users"][user_lang]["packs"]]
 
                             to_pop = []
                             for pname in db["users"][user_id]["packs"]:
-                                if not pack_availability(bot.get_sticker_set, \
-                                        telebot.apihelper.ApiTelegramException, pname + WATERMARK) or not db["packs"][pname]["stickers"]:
+                                if not await pack_availability(bot.get_sticker_set, \
+                                    utils.exceptions.InvalidStickersSet, pname + WATERMARK) or not db["packs"][pname]["stickers"]:
                                     to_pop.append(pname)
                             for pname in to_pop:
                                 db["packs"].pop(pname)
@@ -121,12 +127,12 @@ def text_processing(message):
 
                             # user have packs
                             if db["users"][user_id]["packs"]:
-                                bot.send_message(message.chat.id, texts["managing"][user_lang], \
+                                await message.answer(texts["managing"][user_lang], \
                                     reply_markup=managing_button_inline(user_packs(db["packs"], \
                                     db["users"][user_id]["packs"])))
                             
                             else:
-                                bot.send_message(message.chat.id, texts["managing_e"][user_lang])
+                                await message.answer(texts["managing_e"][user_lang])
 
                         case Answers.ch_lan_en|Answers.ch_lan_ua:
 
@@ -134,11 +140,11 @@ def text_processing(message):
 
                             user_lang = db["users"][user_id]["language"]
 
-                            bot.send_message(message.chat.id, texts["lan_changed"][user_lang], \
+                            await message.answer(texts["lan_changed"][user_lang], \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
                         case _:
-                            bot.send_message(message.chat.id, texts["unknown_exception_2"][user_lang])
+                            await message.answer(texts["unknown_exception_2"][user_lang])
 
                 case "start_exception_1":
 
@@ -146,12 +152,12 @@ def text_processing(message):
                         
                         if username is None:
                             db["users"][user_id]["status"] = "start_exception_1"
-                            bot.send_message(message.chat.id, texts["start_exception_1"][user_lang], \
+                            await message.answer(texts["start_exception_1"][user_lang], \
                                 reply_markup=start_button_exception1( texts["start_button_exception_1"][user_lang] ))
 
                         else:
                             db["users"][user_id]["status"] = "start"
-                            bot.send_message(message.chat.id, texts["start"][user_lang], parse_mode="HTML", \
+                            await message.answer(texts["start"][user_lang], parse_mode="HTML", \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
                 
                 case "creating":
@@ -165,7 +171,7 @@ def text_processing(message):
 
                             db["users"][user_id]["status"] = "start"
 
-                            bot.send_message(message.chat.id, texts["cancel"][user_lang], parse_mode="HTML", \
+                            await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
                         case _ if len(message.text) <= 64:
@@ -179,11 +185,11 @@ def text_processing(message):
                             db["users"][user_id]["packs"].append(name)
                             db["users"][user_id]["status"] = "creating2"
 
-                            bot.send_message(message.chat.id, texts["creating2"][user_lang], \
+                            await message.answer(texts["creating2"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                         case _:
-                            bot.send_message(message.chat.id, texts["creating1_e1"][user_lang], \
+                            await message.answer(texts["creating1_e1"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                 case "creating2":
@@ -198,7 +204,7 @@ def text_processing(message):
                             db["users"][user_id]["status"] = "start"
                             db["packs"].pop( db["users"][user_id]["packs"].pop() )
 
-                            bot.send_message(message.chat.id, texts["cancel"][user_lang], parse_mode="HTML", \
+                            await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
                         
                         case _:
@@ -208,11 +214,11 @@ def text_processing(message):
                                 db["users"][user_id]["additional_info"] = message.text
                                 db["users"][user_id]["status"] = "creating3"
 
-                                bot.send_message(message.chat.id, texts["creating3"][user_lang], \
+                                await message.answer(texts["creating3"][user_lang], \
                                     reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                             else:
-                                bot.send_message(message.chat.id, texts["emoji_only_e"][user_lang], \
+                                await message.answer(texts["emoji_only_e"][user_lang], \
                                     reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                 case "creating3":
@@ -228,11 +234,11 @@ def text_processing(message):
                             db["users"][user_id]["additional_info"] = None
                             db["packs"].pop( db["users"][user_id]["packs"].pop() )
 
-                            bot.send_message(message.chat.id, texts["cancel"][user_lang], parse_mode="HTML", \
+                            await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
                         
                         case _:
-                            bot.send_message(message.chat.id, texts["image_only_e"][user_lang], \
+                            await message.answer(texts["image_only_e"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
                     
                 case "managing":
@@ -246,11 +252,11 @@ def text_processing(message):
 
                             db["users"][user_id]["status"] = "start"
 
-                            bot.send_message(message.chat.id, texts["backed"][user_lang],\
+                            await message.answer(texts["backed"][user_lang],\
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
                             
                         case _:
-                            bot.send_message(message.chat.id, texts["managing_exception_1"][user_lang])
+                            await message.answer(texts["managing_exception_1"][user_lang])
                 
                 case "managing2":
 
@@ -269,46 +275,47 @@ def text_processing(message):
                         
                         case Answers.back_btn:
                             db["users"][user_id]["status"] = "managing"
-                            bot.send_message(message.chat.id, texts["managing0"][user_lang], \
+                            await message.answer(texts["managing0"][user_lang], \
                                 reply_markup=managing_button(texts["back"][user_lang]))
 
                             to_pop = []
                             for pname in db["users"][user_id]["packs"]:
-                                if not pack_availability(bot.get_sticker_set, \
-                                        telebot.apihelper.ApiTelegramException, pname + WATERMARK):
+                                if not await pack_availability(bot.get_sticker_set, \
+                                        utils.exceptions.InvalidStickersSet, pname + WATERMARK):
                                     to_pop.append(pname)
                             for pname in to_pop:
                                 db["packs"].pop(pname)
                                 db["users"][user_id]["packs"].remove(pname)
                         
-                            bot.send_message(message.chat.id, texts["managing"][user_lang], \
+                            await message.answer(texts["managing"][user_lang], \
                                 reply_markup=managing_button_inline(user_packs(db["packs"], \
                                 db["users"][user_id]["packs"])))
 
                         case Answers.add_btn:
                             db["users"][user_id]["status"] = "managing_add_1"
-                            bot.send_message(message.chat.id, texts["managing_add_1"][user_lang], \
+                            await message.answer(texts["managing_add_1"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                         case Answers.del_stick_btn:
                             db["users"][user_id]["status"] = "managing_del_1"
-                            bot.send_message(message.chat.id, texts["managing_del_1"][user_lang], \
+                            await message.answer(texts["managing_del_1"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
                         
                         case Answers.del_pack_btn:
                             db["users"][user_id]["status"] = "managing_del2_1"
-                            bot.send_message(message.chat.id, texts["managing_del2_1"][user_lang], parse_mode="markdown", \
+                            await message.answer(texts["managing_del2_1"][user_lang], parse_mode="markdown", \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                         case Answers.show_btn:
-                            bot.send_sticker(message.chat.id, \
-                                sticker=bot.get_sticker_set(db["users"][user_id]["additional_info"]+WATERMARK).stickers[0].file_id)
+                            sticker = await bot.get_sticker_set(db["users"][user_id]["additional_info"]+WATERMARK)
+                            await bot.send_sticker(message.chat.id, \
+                                sticker=sticker.stickers[0].file_id)
 
                         # TODO this is temporary case                
                         case _:
                             msg = {"en": "Sorry, we don't have this function now. Use @Stickers to solve problem", \
                                 "ua": "Вибачте, ми не маєм цієї функції наразі. Скористуйтесь @Stickers, щоб вирішити вашу проблему"}
-                            bot.send_message(message.chat.id, msg[user_lang])
+                            await message.answer(msg[user_lang])
                 
                 case "managing_add_1":
                     
@@ -319,7 +326,7 @@ def text_processing(message):
 
                         case Answers.cancel_btn:
                             db["users"][user_id]["status"] = "managing2"
-                            bot.send_message(message.chat.id, texts["managing2"][user_lang], \
+                            await message.answer(texts["managing2"][user_lang], \
                                 reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
                         case _:
@@ -328,11 +335,11 @@ def text_processing(message):
 
                                 db["users"][user_id]["status"] = "managing_add_2"
                                 db["users"][user_id]["additional_info"] += f"-{message.text}"
-                                bot.send_message(message.chat.id, texts["managing_add_2"][user_lang], \
+                                await message.answer(texts["managing_add_2"][user_lang], \
                                     reply_markup=cancel_button(texts["cancel_button"][user_lang]))
                         
                             else:
-                                bot.send_message(message.chat.id, texts["emoji_only_e"][user_lang])
+                                await message.answer(texts["emoji_only_e"][user_lang])
                 
                 case "managing_add_2":
 
@@ -343,11 +350,11 @@ def text_processing(message):
 
                         case Answers.cancel_btn:
                             db["users"][user_id]["status"] = "managing2"
-                            bot.send_message(message.chat.id, texts["managing2"][user_lang], \
+                            await message.answer(texts["managing2"][user_lang], \
                                 reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
                         case _:
-                            bot.send_message(message.chat.id, texts["image_only_e"][user_lang])
+                            await message.answer(texts["image_only_e"][user_lang])
                 
                 # TODO delete set from his members also
 
@@ -360,11 +367,11 @@ def text_processing(message):
 
                         case Answers.cancel_btn:
                             db["users"][user_id]["status"] = "managing2"
-                            bot.send_message(message.chat.id, texts["managing2"][user_lang], \
+                            await message.answer(texts["managing2"][user_lang], \
                                 reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
                         case _:
-                            bot.send_message(message.chat.id, texts["sticker_only_e"][user_lang])
+                            await message.answer(texts["sticker_only_e"][user_lang])
                 
                 case "managing_del2_1":
 
@@ -376,7 +383,7 @@ def text_processing(message):
 
                         case Answers.cancel_btn:
                             db["users"][user_id]["status"] = "managing2"
-                            bot.send_message(message.chat.id, texts["managing2"][user_lang], \
+                            await message.answer(texts["managing2"][user_lang], \
                                 reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
                         case Answers.confirming:
@@ -384,18 +391,18 @@ def text_processing(message):
                             set_name = db["users"][user_id]["additional_info"]
                             db["users"][user_id]["packs"].remove(set_name)
                             db["packs"].pop(set_name)
-                            sticker_set = bot.get_sticker_set(set_name+WATERMARK)
+                            sticker_set = await bot.get_sticker_set(set_name+WATERMARK)
                             for sticker in sticker_set.stickers:
-                                bot.delete_sticker_from_set(sticker.file_id)
+                                await bot.delete_sticker_from_set(sticker.file_id)
                             db["users"][user_id]["additional_info"] = None
-                            bot.send_message(message.chat.id, texts["pack_deleted"][user_lang], \
+                            await message.answer(texts["pack_deleted"][user_lang], \
                                 reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
 
                         case _:
-                            bot.send_message(message.chat.id, texts["unknown_exception_1"][user_lang])
+                            await message.answer(texts["unknown_exception_1"][user_lang])
 
                 case _:
-                    bot.send_message(message.chat.id, texts["unknown_exception_1"][user_lang]+'1')
+                    await message.answer(texts["unknown_exception_1"][user_lang]+'1')
 
     
         case "photo":
@@ -409,56 +416,62 @@ def text_processing(message):
 
                     pack_name = db["users"][user_id]["packs"][-1]
                     pack_name_plus = pack_name + WATERMARK
-                    photo = resize_image( bot.download_file( bot.get_file(message.photo[len(message.photo)-1].file_id).file_path), user_id )
-
+                    raw_file = await bot.get_file(message.photo[len(message.photo)-1].file_id)
+                    photo = resize_image(await bot.download_file(raw_file.file_path), user_id )
+                    
                     try:
-
-                        if bot.create_new_sticker_set(int(user_id), pack_name_plus, \
+                        if await bot.create_new_sticker_set(int(user_id), pack_name_plus, \
                             db["packs"][pack_name]["title"], db["users"][user_id]["additional_info"], png_sticker=photo):
 
                             db["users"][user_id]["status"] = "start"
                             db["users"][user_id]["additional_info"] = None
                             db["packs"][pack_name]["status"] = "maked"
-                            db["packs"][pack_name]["stickers"] = [bot.get_sticker_set(pack_name_plus).stickers[0].file_unique_id]
+                            created_pack = await bot.get_sticker_set(pack_name_plus)
+                            db["packs"][pack_name]["stickers"] = [created_pack.stickers[0].file_unique_id]
 
-                            bot.send_message(message.chat.id, texts["created1"][user_lang], \
+                            await message.answer(texts["created1"][user_lang], \
                                 reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
-                            bot.send_message(message.chat.id, texts["created2"][user_lang], \
+                            await message.answer(texts["created2"][user_lang], \
                                 reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
 
                         else:
-                            bot.send_message(message.chat.id, texts["unknown_exception_1"][user_lang]+'2')
+                            await message.answer(texts["unknown_exception_1"][user_lang]+'2')
 
-                    except telebot.apihelper.ApiTelegramException as e:
-                        bot.send_message(message.chat.id, texts["known_e_1"][user_lang]+str(e).split()[-1])
+                    except utils.exceptions.InvalidStickersSet as e:
+                        await message.answer(texts["known_e_1"][user_lang]+str(e).split()[-1])
                 
                 case "managing_add_2":
 
                     pack_name, emojis = db["users"][user_id]["additional_info"].split("-")
                     pack_name_plus = pack_name + WATERMARK
-                    photo = resize_image( bot.download_file( bot.get_file(message.photo[len(message.photo)-1].file_id).file_path), user_id )
+                    file_raw = await bot.get_file(message.photo[len(message.photo)-1].file_id)
+                    file_raw = await bot.download_file(file_raw.file_path)
+                    photo = resize_image(file_raw, user_id )
                     
                     try:
-                        if bot.add_sticker_to_set(int(user_id), pack_name_plus, \
+                        
+                        if await bot.add_sticker_to_set(int(user_id), pack_name_plus, \
                             emojis, png_sticker=photo):
                             db["users"][user_id]["status"] = "start"
                             db["users"][user_id]["additional_info"] = None
-                            db["packs"][pack_name]["stickers"] = [sticker.file_unique_id for sticker in bot.get_sticker_set(pack_name_plus).stickers]
+                            sticker_set = await bot.get_sticker_set(pack_name_plus)
+                            db["packs"][pack_name]["stickers"] = [sticker.file_unique_id for sticker in sticker_set.stickers]
 
-                            bot.send_message(message.chat.id, texts["added1"][user_lang], \
+                            await message.answer(texts["added1"][user_lang], \
                                 reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
-                            bot.send_message(message.chat.id, texts["created2"][user_lang], \
+                            await message.answer(texts["created2"][user_lang], \
                                 reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
-                    except telebot.apihelper.ApiTelegramException:
+                    
+                    except utils.exceptions.InvalidStickersSet:
                         db["users"][user_id]["status"] = "start"
                         db["packs"].pop(pack_name)
                         db["users"][user_id]["additional_info"] = None
                         db["users"][user_id]["packs"].remove(pack_name)
-                        bot.send_message(message.chat.id, texts["managing_add_e"][user_lang], \
+                        await message.answer(texts["managing_add_e"][user_lang], \
                             reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
                         
                 case _:
-                    bot.send_message(message.chat.id, texts["unknown_exception_3"][user_lang])
+                    await message.answer(texts["unknown_exception_3"][user_lang])
         
         case "sticker":
 
@@ -478,44 +491,43 @@ def text_processing(message):
 
                         db["packs"][db["users"][user_id]["additional_info"]]["stickers"].remove(unique_id)
 
-                        bot.delete_sticker_from_set(sticker_id)
+                        await bot.delete_sticker_from_set(sticker_id)
 
-                        bot.send_message(message.chat.id, texts["deleted"][user_lang], \
+                        await message.answer(texts["deleted"][user_lang], \
                             reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
                     
                     else:
-                        bot.send_message(message.chat.id, texts["managing_del_e"][user_lang])
+                        await message.answer(texts["managing_del_e"][user_lang])
 
                 case _:
-                    bot.send_message(message.chat.id, texts["unknown_exception_3"][user_lang])
+                    await message.answer(texts["unknown_exception_3"][user_lang])
         
     upload_db(db)
 
-@bot.callback_query_handler(func=lambda call: True)
-def callhandler(call):
-    if call.message:
+@dp.callback_query_handler(lambda call: True and call.message)
+async def callhandler(call):
 
-        user_id = str(call.from_user.id)
-        username = call.from_user.username
+    user_id = str(call.from_user.id)
+    username = call.from_user.username
 
-        db = reg_user(user_id, username)
-        user_lang = db["users"][user_id]["language"]
-        status = db["users"][user_id]["status"]
+    db = reg_user(user_id, username)
+    user_lang = db["users"][user_id]["language"]
+    status = db["users"][user_id]["status"]
 
-        # it's managing case 👇
+    # it's managing case 👇
+    
+    if status == "managing":
         
-        if status == "managing":
-            
-            db["users"][user_id]["status"] = "managing2"
-            db["users"][user_id]["additional_info"] = call.data
+        db["users"][user_id]["status"] = "managing2"
+        db["users"][user_id]["additional_info"] = call.data
 
-            bot.send_message(call.message.chat.id, texts["managing2"][user_lang], \
-                reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
+        await call.message.answer(texts["managing2"][user_lang], \
+            reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
-        else:
-            bot.send_message(call.message.chat.id, texts["managing_call_e"][user_lang])
+    else:
+        await call.message.answer(texts["managing_call_e"][user_lang])
 
-        upload_db(db)
+    upload_db(db)
 
-def run(non_stop: bool) -> None:
-    bot.polling(non_stop=non_stop)
+def run() -> None:
+    executor.start_polling(dp, skip_updates=True)

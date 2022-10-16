@@ -2,7 +2,7 @@
 
 ## How it works?
 
-> The main method to use is create_new_sticker_set from telebot.TeleBot class <br>
+> The main method to use is create_new_sticker_set from aiogram.Bot class <br>
 > [documentation](https://core.telegram.org/bots/api#createnewstickerset)
 
 > Also add_sticker_to_set needed <br>

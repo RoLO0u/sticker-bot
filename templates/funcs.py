@@ -1,7 +1,6 @@
 import json
 import random
 import string
-import os
 from emoji import EMOJI_DATA
 from PIL import Image
 from io import BytesIO
@@ -23,14 +22,15 @@ def reg_user(user_id: str, username: str) -> dict:
     """reg user and imports db"""
     db = load_db()
     if not user_id in db["users"] and not username is None:
-        os.mkdir(f"photos/{user_id}")
         db["users"][user_id] = {"username": username, "packs": [], "language": "en", "status": "start", "additional_info": None}
     return db
 
-def resize_image(image, user_id: str):
-    with open(f"photos/{user_id}/image.png", 'wb') as new_file:
-        new_file.write(image)
-    image = Image.open(f"photos/{user_id}/image.png")
+def resize_image(image: BytesIO, user_id: str):
+    # with open(f"photos/{user_id}/image.png", 'wb') as new_file:
+    #     new_file.write(image)
+    # image = Image.open(f"photos/{user_id}/image.png")
+    # print(type(image))
+    image = Image.open(image)
     base = 512
     min_size = min(image.size)
     max_size = max(image.size)
@@ -43,9 +43,9 @@ def resize_image(image, user_id: str):
     bio.seek(0)
     return bio
 
-def pack_availability(func, exception, caption: str) -> bool:
+async def pack_availability(func, exception, caption: str) -> bool:
     try:
-        func(caption)
+        await func(caption)
     except exception:
         return False
     else:
@@ -56,5 +56,3 @@ def random_string(L: int = 10) -> str:
 
 def user_packs(packs: dict, user_packs_name: list) -> list:
     return [[packs[pack]["title"], pack] for pack in user_packs_name]
-
-PM = lambda message: message.chat.type == "private"
