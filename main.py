@@ -1,6 +1,7 @@
 import templates.bot
 import json
-from os.path import isfile
+from os import mkdir
+from os.path import isfile, isdir
 
 def main():
 
@@ -8,6 +9,9 @@ def main():
         db = {"users": {}, "packs": {}}
         with open("usersinfo.json", "w+", encoding="utf-8") as file:
             json.dump(db, file, indent=2, ensure_ascii=False)
+    
+    if not isdir("photos"):
+        mkdir("photos")
 
     print("WARNING",\
         "CHECK ACTUALITY OF emoji LIBRARY",\

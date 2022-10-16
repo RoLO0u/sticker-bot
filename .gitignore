@@ -3,3 +3,4 @@ usersinfo.json
 templates/__pycache__/*
 last_image.png
 photos/*
+venv/*
