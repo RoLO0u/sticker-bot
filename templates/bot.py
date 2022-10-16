@@ -1,13 +1,13 @@
 import telebot
 import json
+import os
 
 from templates.funcs import reg_user, load_db, upload_db, is_emoji, resize_image, \
     pack_availability, random_string, user_packs, PM # Private Messages
 from templates.markups import start_button, start_button_exception1, cancel_button, \
     managing_button, pack_link_button, managing_button_2, managing_button_inline
 
-with open("token.txt", "r") as raw_token:
-    token = raw_token.readlines()[0]
+token = os.getenv("BOT_TOKEN")
 
 with open("texts.json", "r", encoding="utf-8") as raw_texts:
     texts = json.load(raw_texts)
@@ -64,6 +64,8 @@ def text_processing(message):
     db = reg_user(user_id, username)
     user_lang = db["users"][user_id]["language"]
     status = db["users"][user_id]["status"]
+
+    # TODO move all things doing here in another file
 
     match message.content_type:
 
@@ -253,11 +255,14 @@ def text_processing(message):
                 case "managing2":
 
                     packs = user_packs(db["packs"], db["users"][user_id]["packs"])
+                    
+                    # TODO create inline sticker pick like in @Stickers bot
 
                     class Answers:
                         back_btn = texts["managing_buttons_2"][user_lang][-1]
                         add_btn = texts["managing_buttons_2"][user_lang][0]
                         del_stick_btn = texts["managing_buttons_2"][user_lang][1]
+                        del_pack_btn = texts["managing_buttons_2"][user_lang][-4]
                         show_btn = texts["managing_buttons_2"][user_lang][-2]
 
                     match message.text:
@@ -288,6 +293,11 @@ def text_processing(message):
                         case Answers.del_stick_btn:
                             db["users"][user_id]["status"] = "managing_del_1"
                             bot.send_message(message.chat.id, texts["managing_del_1"][user_lang], \
+                                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                        
+                        case Answers.del_pack_btn:
+                            db["users"][user_id]["status"] = "managing_del2_1"
+                            bot.send_message(message.chat.id, texts["managing_del2_1"][user_lang], parse_mode="markdown", \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                         case Answers.show_btn:
@@ -339,6 +349,8 @@ def text_processing(message):
                         case _:
                             bot.send_message(message.chat.id, texts["image_only_e"][user_lang])
                 
+                # TODO delete set from his members also
+
                 case "managing_del_1":
 
                     class Answers:
@@ -353,6 +365,34 @@ def text_processing(message):
 
                         case _:
                             bot.send_message(message.chat.id, texts["sticker_only_e"][user_lang])
+                
+                case "managing_del2_1":
+
+                    class Answers:
+                        cancel_btn = texts["cancel_button"][user_lang]
+                        confirming = texts["confirming"][user_lang]
+
+                    match message.text:
+
+                        case Answers.cancel_btn:
+                            db["users"][user_id]["status"] = "managing2"
+                            bot.send_message(message.chat.id, texts["managing2"][user_lang], \
+                                reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
+
+                        case Answers.confirming:
+                            db["users"][user_id]["status"] = "start"
+                            set_name = db["users"][user_id]["additional_info"]
+                            db["users"][user_id]["packs"].remove(set_name)
+                            db["packs"].pop(set_name)
+                            sticker_set = bot.get_sticker_set(set_name+WATERMARK)
+                            for sticker in sticker_set.stickers:
+                                bot.delete_sticker_from_set(sticker.file_id)
+                            db["users"][user_id]["additional_info"] = None
+                            bot.send_message(message.chat.id, texts["pack_deleted"][user_lang], \
+                                reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
+
+                        case _:
+                            bot.send_message(message.chat.id, texts["unknown_exception_1"][user_lang])
 
                 case _:
                     bot.send_message(message.chat.id, texts["unknown_exception_1"][user_lang]+'1')

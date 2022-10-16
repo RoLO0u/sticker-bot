@@ -66,11 +66,7 @@ simple example:
 
 ## Token
 
-token.txt file looks like:
-
-```txt
-0000000000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-```
+token takes from BOT_TOKEN env
 
 > Getting token <br>
 > [documentation](https://core.telegram.org/api)
