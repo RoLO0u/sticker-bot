@@ -6,7 +6,7 @@ def main():
 
     if not isfile("usersinfo.json"):
         db = {"users": {}, "packs": {}}
-        with open("usersinfo.json", encoding="utf-8") as file:
+        with open("usersinfo.json", "w+", encoding="utf-8") as file:
             json.dump(db, file, indent=2, ensure_ascii=False)
 
     print("WARNING",\
