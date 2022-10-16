@@ -3,6 +3,9 @@ import json
 import os
 
 from aiogram import Bot, Dispatcher, executor, types, utils
+from aiogram.utils.markdown import hide_link
+
+from templates import Exceptions
 
 from templates.funcs import reg_user, load_db, upload_db, is_emoji, resize_image, \
     pack_availability, random_string, user_packs # Private Messages
@@ -12,6 +15,9 @@ from templates.markups import start_button, start_button_exception1, cancel_butt
 logging.basicConfig(level=logging.INFO)
 
 token = os.getenv("BOT_TOKEN")
+
+if token == None:
+    raise Exceptions.TokenDoesNotDefined()
 
 with open("texts.json", "r", encoding="utf-8") as raw_texts:
     texts = json.load(raw_texts)
@@ -41,6 +47,17 @@ async def start(message: types.Message):
             reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
     upload_db(db)
+
+@dp.message_handler(commands=["help"], chat_type="private")
+async def help(message: types.Message):
+    user_id = str(message.from_user.id)
+    username = message.from_user.username
+
+    db = reg_user(user_id, username)
+    user_lang = db["users"][user_id]["language"]
+
+    await message.answer(f"{hide_link('https://i.imgur.com/ZRv0bDC.png')}"
+        f"{texts['help_1'][user_lang]}", parse_mode="HTML")
 
 @dp.message_handler(commands=["test"], chat_type="private")
 async def test_func(message: types.Message):
