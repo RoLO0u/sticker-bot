@@ -28,7 +28,7 @@ def change_status(user_id: str, change_to: str) -> None:
     users.update_one({"userid": user_id}, {"$set": {"status": change_to}})
 
 def change_pack_status(pack_name: str, change_to: str) -> None:
-    users.update_one({"packid": pack_name}, {"$set": {"status": change_to}})
+    packs.update_one({"packid": pack_name}, {"$set": {"status": change_to}})
 
 def change_lang(user_id: str, change_to: str) -> None:
     users.update_one({"userid": user_id}, {"$set": {"language": change_to}})
