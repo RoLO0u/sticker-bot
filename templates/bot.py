@@ -5,24 +5,27 @@ import os
 from aiogram import Bot, Dispatcher, executor, types, utils
 from aiogram.utils.markdown import hide_link
 
-from templates import Exceptions
+from templates import database, Exceptions
 
-from templates.funcs import reg_user, load_db, upload_db, is_emoji, resize_image, \
+from templates.funcs import is_emoji, resize_image, \
     pack_availability, random_string, user_packs # Private Messages
 from templates.markups import start_button, start_button_exception1, cancel_button, \
     managing_button, pack_link_button, managing_button_2, managing_button_inline
 
+# TODO move not bot work to other files
+# configuring aiogram bot
+
 logging.basicConfig(level=logging.INFO)
 
-token = os.getenv("BOT_TOKEN")
+TOKEN = os.getenv("BOT_TOKEN")
 
-if token == None:
+if TOKEN == None:
     raise Exceptions.TokenDoesNotDefined()
 
 with open("texts.json", "r", encoding="utf-8") as raw_texts:
     texts = json.load(raw_texts)
 
-bot = Bot(token)
+bot = Bot(TOKEN)
 dp = Dispatcher(bot)
 
 WATERMARK = "_by_paces_bot"
@@ -33,28 +36,24 @@ WATERMARK = "_by_paces_bot"
 async def start(message: types.Message):
     user_id = str(message.from_user.id)
     username = message.from_user.username
-    db = reg_user(user_id, username)
-    user_lang = db["users"][user_id]["language"]
+    user_lang, *_ = database.reg_user(user_id, username)
     
     if username is None:
-        db["users"][user_id]["status"] = "start_exception_1"
+        database.change_status(user_id, "start_exception_1")
         await message.answer(texts["start_exception_1"][user_lang], parse_mode="HTML", \
             reply_markup=start_button_exception1( texts["start_button_exception_1"][user_lang] ))
 
     else:
-        db["users"][user_id]["status"] = "start"
+        database.change_status(user_id, "start")
         await message.answer(texts["start"][user_lang], parse_mode="HTML", \
             reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
-
-    upload_db(db)
 
 @dp.message_handler(commands=["help"], chat_type="private")
 async def help(message: types.Message):
     user_id = str(message.from_user.id)
     username = message.from_user.username
 
-    db = reg_user(user_id, username)
-    user_lang = db["users"][user_id]["language"]
+    user_lang, *_ = database.reg_user(user_id, username)
 
     await message.answer(f"{hide_link('https://i.imgur.com/ZRv0bDC.png')}"
         f"{texts['help_1'][user_lang]}", parse_mode="HTML")
@@ -62,7 +61,7 @@ async def help(message: types.Message):
 @dp.message_handler(commands=["test"], chat_type="private")
 async def test_func(message: types.Message):
     if message.from_user.id == 602197013:
-        to_check = 0
+        to_check = 7
         match to_check:
             case 0:
                 # if pack_availability(bot.get_sticker_set, \
@@ -78,15 +77,21 @@ async def test_func(message: types.Message):
                 await bot.send_sticker(chat_id=message.chat.id, sticker=bot.get_sticker_set("hxxhzkhRpq_by_paces_bot").stickers[0].file_id)
             case 3:
                 await bot.send_sticker(chat_id=message.chat.id, sticker="CAACAgIAAxUAAWMtsh1VasOoVWxE67jLt5UBaQkNAAIqIQACF7xxSVCXRGA5ki1uKQQ")
+            case 4:
+                await message.answer(database.get_user_info(f"{message.from_user.id}"))
+            case 5:
+                database.change_status(f"{message.from_user.id}", "start")
+            case 6:
+                database.get_user_packs_name(f"{message.from_user.id}")
+            case 7:
+                database.get_all_packs()
 
 @dp.message_handler(content_types=["text", "photo", "sticker"], chat_type="private")
 async def text_processing(message: types.Message):
     user_id = str(message.from_user.id)
     username = message.from_user.username
 
-    db = reg_user(user_id, username)
-    user_lang = db["users"][user_id]["language"]
-    status = db["users"][user_id]["status"]
+    user_lang, status = database.reg_user(user_id, username)
 
     # TODO move all things doing here in another file
 
@@ -120,42 +125,43 @@ async def text_processing(message: types.Message):
 
                         case Answers.create_btn_en|Answers.create_btn_ua:
                             
-                            db["users"][user_id]["status"] = "creating"
+                            database.change_status(user_id, "creating")
 
                             await message.answer(texts["creating1"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                         case Answers.man_btn_en|Answers.man_btn_ua:
 
-                            db["users"][user_id]["status"] = "managing"
+                            database.change_status(user_id, "managing")
                             await message.answer(texts["managing0"][user_lang], \
                                 reply_markup=managing_button(texts["back"][user_lang]))
                             
                             # packs_to_check = [(userpack, db["packs"][userpack]) for userpack in db["users"][user_lang]["packs"]]
 
                             to_pop = []
-                            for pname in db["users"][user_id]["packs"]:
+                            for pname in database.get_user_packs_name(user_id):
                                 if not await pack_availability(bot.get_sticker_set, \
-                                    utils.exceptions.InvalidStickersSet, pname + WATERMARK) or not db["packs"][pname]["stickers"]:
+                                    utils.exceptions.InvalidStickersSet, pname + WATERMARK) or not database.get_pack(pname)["stickers"]:
+                                    # print(await pack_availability(bot.get_sticker_set, utils.exceptions.InvalidStickersSet, pname + WATERMARK), "\n", database.get_pack(pname), pname)
                                     to_pop.append(pname)
                             for pname in to_pop:
-                                db["packs"].pop(pname)
-                                db["users"][user_id]["packs"].remove(pname)
+                                # TODO don't forget to edit when members support added
+                                database.delete_pack(user_id, pname)
 
                             # user have packs
-                            if db["users"][user_id]["packs"]:
+                            if database.get_user_packs_name(user_id):
                                 await message.answer(texts["managing"][user_lang], \
-                                    reply_markup=managing_button_inline(user_packs(db["packs"], \
-                                    db["users"][user_id]["packs"])))
+                                    reply_markup=managing_button_inline(user_packs(database.get_all_packs(), \
+                                    database.get_user_packs_name(user_id))))
                             
                             else:
                                 await message.answer(texts["managing_e"][user_lang])
 
                         case Answers.ch_lan_en|Answers.ch_lan_ua:
 
-                            db["users"][user_id]["language"] = "en" if Answers.ch_lan_en == message.text else "ua"
+                            database.change_lang(user_id, "en" if Answers.ch_lan_en == message.text else "ua")
 
-                            user_lang = db["users"][user_id]["language"]
+                            user_lang = database.get_user_lang(user_id)
 
                             await message.answer(texts["lan_changed"][user_lang], \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
@@ -168,12 +174,12 @@ async def text_processing(message: types.Message):
                     if message.text in texts["start_button_exception_1"].values():
                         
                         if username is None:
-                            db["users"][user_id]["status"] = "start_exception_1"
+                            database.change_status(user_id, "start_exception_1")
                             await message.answer(texts["start_exception_1"][user_lang], \
                                 reply_markup=start_button_exception1( texts["start_button_exception_1"][user_lang] ))
 
                         else:
-                            db["users"][user_id]["status"] = "start"
+                            database.change_status(user_id, "start")
                             await message.answer(texts["start"][user_lang], parse_mode="HTML", \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
                 
@@ -186,7 +192,7 @@ async def text_processing(message: types.Message):
 
                         case Answers.create_btn_en|Answers.create_btn_ua:
 
-                            db["users"][user_id]["status"] = "start"
+                            database.change_status(user_id, "start")
 
                             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
@@ -195,12 +201,12 @@ async def text_processing(message: types.Message):
 
                             name = random_string()
 
-                            while name in db["packs"].keys():
+                            while name in database.get_packs_name():
                                 name = random_string()
                             
-                            db["packs"][name] = {"title": message.text, "adm": user_id, "members": [user_id], "stickers": [], "status": "making"}
-                            db["users"][user_id]["packs"].append(name)
-                            db["users"][user_id]["status"] = "creating2"
+                            database.create_pack(user_id, name, message.text)
+                            database.change_status(user_id, "creating2")
+                            database.change_name(user_id, name)
 
                             await message.answer(texts["creating2"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
@@ -218,8 +224,9 @@ async def text_processing(message: types.Message):
 
                         case Answers.create_btn_en|Answers.create_btn_ua:
 
-                            db["users"][user_id]["status"] = "start"
-                            db["packs"].pop( db["users"][user_id]["packs"].pop() )
+                            database.change_status(user_id, "start")
+                            database.delete_pack(user_id)
+                            database.change_name(user_id, None)
 
                             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
@@ -228,8 +235,8 @@ async def text_processing(message: types.Message):
 
                             if is_emoji(message.text):
 
-                                db["users"][user_id]["additional_info"] = message.text
-                                db["users"][user_id]["status"] = "creating3"
+                                database.change_emoji(user_id, message.text)
+                                database.change_status(user_id, "creating3")
 
                                 await message.answer(texts["creating3"][user_lang], \
                                     reply_markup=cancel_button(texts["cancel_button"][user_lang]))
@@ -247,9 +254,11 @@ async def text_processing(message: types.Message):
 
                         case Answers.cancel_btn_en|Answers.cancel_btn_ua:
 
-                            db["users"][user_id]["status"] = "start"
-                            db["users"][user_id]["additional_info"] = None
-                            db["packs"].pop( db["users"][user_id]["packs"].pop() )
+                            database.change_status(user_id, "start")
+                            pack_name = database.get_additional_info(user_id)
+                            database.delete_pack(user_id, pack_name["name"])
+                            database.change_emoji(user_id, None)
+                            database.change_name(user_id, None)
 
                             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
@@ -267,7 +276,7 @@ async def text_processing(message: types.Message):
 
                         case Answers.back_btn_en | Answers.back_btn_ua:
 
-                            db["users"][user_id]["status"] = "start"
+                            database.change_status(user_id, "start")
 
                             await message.answer(texts["backed"][user_lang],\
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
@@ -277,7 +286,7 @@ async def text_processing(message: types.Message):
                 
                 case "managing2":
 
-                    packs = user_packs(db["packs"], db["users"][user_id]["packs"])
+                    packs = user_packs(database.get_all_packs(), database.get_user_packs_name(user_id))
                     
                     # TODO create inline sticker pick like in @Stickers bot
 
@@ -291,40 +300,39 @@ async def text_processing(message: types.Message):
                     match message.text:
                         
                         case Answers.back_btn:
-                            db["users"][user_id]["status"] = "managing"
+                            database.change_status(user_id, "managing")
                             await message.answer(texts["managing0"][user_lang], \
                                 reply_markup=managing_button(texts["back"][user_lang]))
 
                             to_pop = []
-                            for pname in db["users"][user_id]["packs"]:
+                            for pname in database.get_user_packs_name(user_id):
                                 if not await pack_availability(bot.get_sticker_set, \
                                         utils.exceptions.InvalidStickersSet, pname + WATERMARK):
                                     to_pop.append(pname)
                             for pname in to_pop:
-                                db["packs"].pop(pname)
-                                db["users"][user_id]["packs"].remove(pname)
+                                database.delete_pack(user_id, pname)
                         
                             await message.answer(texts["managing"][user_lang], \
-                                reply_markup=managing_button_inline(user_packs(db["packs"], \
-                                db["users"][user_id]["packs"])))
+                                reply_markup=managing_button_inline(user_packs(database.get_all_packs(), \
+                                database.get_user_packs_name(user_id))))
 
                         case Answers.add_btn:
-                            db["users"][user_id]["status"] = "managing_add_1"
+                            database.change_status(user_id, "managing_add_1")
                             await message.answer(texts["managing_add_1"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                         case Answers.del_stick_btn:
-                            db["users"][user_id]["status"] = "managing_del_1"
+                            database.change_status(user_id, "managing_del_1")
                             await message.answer(texts["managing_del_1"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
                         
                         case Answers.del_pack_btn:
-                            db["users"][user_id]["status"] = "managing_del2_1"
+                            database.change_status(user_id, "managing_del2_1")
                             await message.answer(texts["managing_del2_1"][user_lang], parse_mode="markdown", \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
                         case Answers.show_btn:
-                            sticker = await bot.get_sticker_set(db["users"][user_id]["additional_info"]+WATERMARK)
+                            sticker = await bot.get_sticker_set(database.get_additional_info(user_id)["name"]+WATERMARK)
                             await bot.send_sticker(message.chat.id, \
                                 sticker=sticker.stickers[0].file_id)
 
@@ -342,7 +350,7 @@ async def text_processing(message: types.Message):
                     match message.text:
 
                         case Answers.cancel_btn:
-                            db["users"][user_id]["status"] = "managing2"
+                            database.change_status(user_id, "managing2")
                             await message.answer(texts["managing2"][user_lang], \
                                 reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
@@ -350,8 +358,8 @@ async def text_processing(message: types.Message):
 
                             if is_emoji(message.text):
 
-                                db["users"][user_id]["status"] = "managing_add_2"
-                                db["users"][user_id]["additional_info"] += f"-{message.text}"
+                                database.change_status(user_id, "managing_add_2")
+                                database.change_emoji(user_id, message.text)
                                 await message.answer(texts["managing_add_2"][user_lang], \
                                     reply_markup=cancel_button(texts["cancel_button"][user_lang]))
                         
@@ -366,7 +374,7 @@ async def text_processing(message: types.Message):
                     match message.text:
 
                         case Answers.cancel_btn:
-                            db["users"][user_id]["status"] = "managing2"
+                            database.change_status(user_id, "managing2")
                             await message.answer(texts["managing2"][user_lang], \
                                 reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
@@ -383,7 +391,7 @@ async def text_processing(message: types.Message):
                     match message.text:
 
                         case Answers.cancel_btn:
-                            db["users"][user_id]["status"] = "managing2"
+                            database.change_status(user_id, "managing2")
                             await message.answer(texts["managing2"][user_lang], \
                                 reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
@@ -399,19 +407,18 @@ async def text_processing(message: types.Message):
                     match message.text:
 
                         case Answers.cancel_btn:
-                            db["users"][user_id]["status"] = "managing2"
+                            database.change_status(user_id, "managing2")
                             await message.answer(texts["managing2"][user_lang], \
                                 reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
                         case Answers.confirming:
-                            db["users"][user_id]["status"] = "start"
-                            set_name = db["users"][user_id]["additional_info"]
-                            db["users"][user_id]["packs"].remove(set_name)
-                            db["packs"].pop(set_name)
+                            database.change_status(user_id, "start")
+                            set_name = database.get_additional_info(user_id)["name"]
+                            database.delete_pack(user_id, set_name)
                             sticker_set = await bot.get_sticker_set(set_name+WATERMARK)
                             for sticker in sticker_set.stickers:
                                 await bot.delete_sticker_from_set(sticker.file_id)
-                            db["users"][user_id]["additional_info"] = None
+                            database.change_name(user_id, None)
                             await message.answer(texts["pack_deleted"][user_lang], \
                                 reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
 
@@ -431,20 +438,25 @@ async def text_processing(message: types.Message):
                     # TODO: make multiple emojis to sticker possible
                     # TODO: make webm and tgs image format possible
 
-                    pack_name = db["users"][user_id]["packs"][-1]
+                    additional_info = database.get_additional_info(user_id) # db["users"][user_id]["packs"][-1]
+                    pack_name = additional_info["name"]
                     pack_name_plus = pack_name + WATERMARK
+                    # print(1, pack_name)
                     raw_file = await bot.get_file(message.photo[len(message.photo)-1].file_id)
                     photo = resize_image(await bot.download_file(raw_file.file_path), user_id )
+                    emoji = additional_info["emoji"]
                     
                     try:
                         if await bot.create_new_sticker_set(int(user_id), pack_name_plus, \
-                            db["packs"][pack_name]["title"], db["users"][user_id]["additional_info"], png_sticker=photo):
+                            database.get_pack(pack_name)["title"], emoji, png_sticker=photo):
 
-                            db["users"][user_id]["status"] = "start"
-                            db["users"][user_id]["additional_info"] = None
-                            db["packs"][pack_name]["status"] = "maked"
+                            database.change_status(user_id, "start")
+                            database.change_name(user_id, None)
+                            database.change_emoji(user_id, None)
+                            database.change_pack_status(pack_name, "maked")
                             created_pack = await bot.get_sticker_set(pack_name_plus)
-                            db["packs"][pack_name]["stickers"] = [created_pack.stickers[0].file_unique_id]
+                            # print(created_pack.stickers, created_pack.stickers[0].file_unique_id)
+                            database.change_pack_stickers(pack_name, [created_pack.stickers[0].file_unique_id])
 
                             await message.answer(texts["created1"][user_lang], \
                                 reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
@@ -459,7 +471,10 @@ async def text_processing(message: types.Message):
                 
                 case "managing_add_2":
 
-                    pack_name, emojis = db["users"][user_id]["additional_info"].split("-")
+                    additional_info = database.get_additional_info(user_id)
+                    emoji = additional_info["emoji"]
+                    pack_name = additional_info["name"]
+
                     pack_name_plus = pack_name + WATERMARK
                     file_raw = await bot.get_file(message.photo[len(message.photo)-1].file_id)
                     file_raw = await bot.download_file(file_raw.file_path)
@@ -468,11 +483,12 @@ async def text_processing(message: types.Message):
                     try:
                         
                         if await bot.add_sticker_to_set(int(user_id), pack_name_plus, \
-                            emojis, png_sticker=photo):
-                            db["users"][user_id]["status"] = "start"
-                            db["users"][user_id]["additional_info"] = None
+                            emoji, png_sticker=photo):
+                            database.change_status(user_id, "start")
+                            database.change_name(user_id, None)
+                            database.change_emoji(user_id, None)
                             sticker_set = await bot.get_sticker_set(pack_name_plus)
-                            db["packs"][pack_name]["stickers"] = [sticker.file_unique_id for sticker in sticker_set.stickers]
+                            database.change_pack_stickers(pack_name, [sticker.file_unique_id for sticker in sticker_set.stickers])
 
                             await message.answer(texts["added1"][user_lang], \
                                 reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
@@ -480,10 +496,10 @@ async def text_processing(message: types.Message):
                                 reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
                     
                     except utils.exceptions.InvalidStickersSet:
-                        db["users"][user_id]["status"] = "start"
-                        db["packs"].pop(pack_name)
-                        db["users"][user_id]["additional_info"] = None
-                        db["users"][user_id]["packs"].remove(pack_name)
+                        database.change_status(user_id, "start")
+                        database.change_name(user_id, None)
+                        database.change_emoji(user_id, None)
+                        database.delete_pack(pack_name)
                         await message.answer(texts["managing_add_e"][user_lang], \
                             reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
                         
@@ -496,7 +512,7 @@ async def text_processing(message: types.Message):
 
                 case "managing_del_1":
 
-                    db["users"][user_id]["status"] = "start"
+                    database.change_status(user_id, "start")
 
                     sticker_id = message.sticker.file_id
                     unique_id = message.sticker.file_unique_id
@@ -504,9 +520,11 @@ async def text_processing(message: types.Message):
                     # TODO: make warning message if it's last sticker
 
                     # checking if sticker in user stickerpack
-                    if unique_id in db["packs"][db["users"][user_id]["additional_info"]]["stickers"]:
+                    if unique_id in database.get_pack(database.get_additional_info(user_id)["name"])["stickers"]:
 
-                        db["packs"][db["users"][user_id]["additional_info"]]["stickers"].remove(unique_id)
+                        pack_name = database.get_additional_info(user_id)["name"]
+
+                        database.remove_sticker_from_pack(pack_name, unique_id)
 
                         await bot.delete_sticker_from_set(sticker_id)
 
@@ -518,8 +536,6 @@ async def text_processing(message: types.Message):
 
                 case _:
                     await message.answer(texts["unknown_exception_3"][user_lang])
-        
-    upload_db(db)
 
 @dp.callback_query_handler(lambda call: True and call.message)
 async def callhandler(call):
@@ -527,24 +543,20 @@ async def callhandler(call):
     user_id = str(call.from_user.id)
     username = call.from_user.username
 
-    db = reg_user(user_id, username)
-    user_lang = db["users"][user_id]["language"]
-    status = db["users"][user_id]["status"]
+    user_lang, status = database.reg_user(user_id, username)
 
     # it's managing case 👇
     
     if status == "managing":
         
-        db["users"][user_id]["status"] = "managing2"
-        db["users"][user_id]["additional_info"] = call.data
+        database.change_status(user_id, "managing2")
+        database.change_name(user_id, call.data)
 
         await call.message.answer(texts["managing2"][user_lang], \
             reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
 
     else:
         await call.message.answer(texts["managing_call_e"][user_lang])
-
-    upload_db(db)
 
 def run() -> None:
     executor.start_polling(dp, skip_updates=True)

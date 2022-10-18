@@ -27,7 +27,7 @@ def managing_button(caption: str) -> ReplyKeyboardMarkup:
 def managing_button_inline(packs: list|tuple) -> InlineKeyboardMarkup:
     """:param packs: packs => [["title", "name"], ["title1", "name1"]]"""
     markup = InlineKeyboardMarkup(row_width=2)
-    packs = [InlineKeyboardButton(capt[0], callback_data=capt[1]) for capt in packs]
+    packs = [InlineKeyboardButton(pack[0], callback_data=pack[1]) for pack in packs]
     for i in range(0, len(packs), 2):
         markup.add( *packs[i:i+2] )
     return markup

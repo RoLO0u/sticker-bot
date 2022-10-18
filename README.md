@@ -115,3 +115,7 @@ Traceback (most recent call last):
          ^^^^^^^^^^^
 SyntaxError: name capture 'join_btn_en' makes remaining patterns unreachable
 ```
+
+## mongodb
+
+if db founds nothing it return None

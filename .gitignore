@@ -1,6 +1,15 @@
+# old
+
 token.txt
 usersinfo.json
-templates/__pycache__/*
 last_image.png
 photos/*
+
+# useless
+
+templates/__pycache__/*
 venv/*
+
+# for testing
+
+secrets.txt
