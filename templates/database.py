@@ -3,10 +3,6 @@ import os
 
 # Configuring mongodb
 
-# MONGOHOST = os.getenv("MONGOHOST")
-# MONGOPASSWORD = os.getenv("MONGOPASSWORD")
-# MONGOPORT = os.getenv("MONGOPORT")
-# MONGOUSER = os.getenv("MONGOUSER")
 MONGO_URL = os.getenv("MONGO_URL")
 
 db_client = pymongo.MongoClient(MONGO_URL)
@@ -60,7 +56,6 @@ def create_pack(user_id: str, pack_name: str, title: str) -> None:
     packs.insert_one({"packid": pack_name, "title": title, "adm": user_id, "members": [user_id], "stickers": [], "status": "making"})
     # getting user packs and append one
     user_packs = users.find_one({"userid": user_id})["packs"] + [pack_name]
-    # print(user_packs, [pack_name], users.find_one({"userid": user_id})["packs"], sep="\n")
     users.update_one({"userid": user_id}, {"$set": {"packs": user_packs}})
 
 def get_all_packs() -> list:

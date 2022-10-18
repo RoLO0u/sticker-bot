@@ -9,10 +9,6 @@ def is_emoji(chars: str) -> bool:
     return all([char in EMOJI_DATA for char in chars])
 
 def resize_image(image: BytesIO, user_id: str):
-    # with open(f"photos/{user_id}/image.png", 'wb') as new_file:
-    #     new_file.write(image)
-    # image = Image.open(f"photos/{user_id}/image.png")
-    # print(type(image))
     image = Image.open(image)
     base = 512
     min_size = min(image.size)

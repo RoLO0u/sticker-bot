@@ -119,7 +119,6 @@ async def text_processing(message: types.Message):
 
                         case Answers.join_btn_en|Answers.join_btn_ua:
 
-                            # db["users"][user_id]["status"] = "start" # useless
                             await message.answer(texts["joined"][user_lang], \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
@@ -135,14 +134,11 @@ async def text_processing(message: types.Message):
                             database.change_status(user_id, "managing")
                             await message.answer(texts["managing0"][user_lang], \
                                 reply_markup=managing_button(texts["back"][user_lang]))
-                            
-                            # packs_to_check = [(userpack, db["packs"][userpack]) for userpack in db["users"][user_lang]["packs"]]
 
                             to_pop = []
                             for pname in database.get_user_packs_name(user_id):
                                 if not await pack_availability(bot.get_sticker_set, \
                                     utils.exceptions.InvalidStickersSet, pname + WATERMARK) or not database.get_pack(pname)["stickers"]:
-                                    # print(await pack_availability(bot.get_sticker_set, utils.exceptions.InvalidStickersSet, pname + WATERMARK), "\n", database.get_pack(pname), pname)
                                     to_pop.append(pname)
                             for pname in to_pop:
                                 # TODO don't forget to edit when members support added
@@ -438,7 +434,7 @@ async def text_processing(message: types.Message):
                     # TODO: make multiple emojis to sticker possible
                     # TODO: make webm and tgs image format possible
 
-                    additional_info = database.get_additional_info(user_id) # db["users"][user_id]["packs"][-1]
+                    additional_info = database.get_additional_info(user_id)
                     pack_name = additional_info["name"]
                     pack_name_plus = pack_name + WATERMARK
                     # print(1, pack_name)
