@@ -109,7 +109,7 @@ async def text_processing(message: types.Message):
                         join_btn_en, join_btn_ua = answers[0]
                         create_btn_en, create_btn_ua = answers[1]
                         man_btn_en, man_btn_ua = answers[2]
-                        ch_lan_en, ch_lan_ua = answers[3]
+                        ch_lan_en, ch_lan_ua, ch_lan_is = answers[3]
 
                     # TODO: make match case better. More: README.md
 
@@ -153,9 +153,23 @@ async def text_processing(message: types.Message):
                             else:
                                 await message.answer(texts["managing_e"][user_lang])
 
-                        case Answers.ch_lan_en|Answers.ch_lan_ua:
+                        case Answers.ch_lan_en|Answers.ch_lan_ua|Answers.ch_lan_is:
 
-                            database.change_lang(user_id, "en" if Answers.ch_lan_en == message.text else "ua")
+                            match message.text:
+                                
+                                case Answers.ch_lan_en:
+
+                                    change_to = "en"
+                                
+                                case Answers.ch_lan_ua:
+
+                                    change_to = "ua"
+
+                                case Answers.ch_lan_is:
+
+                                    change_to = "is"
+
+                            database.change_lang(user_id, change_to)
 
                             user_lang = database.get_user_lang(user_id)
 

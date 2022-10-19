@@ -4,7 +4,7 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardBut
 
 def start_button(start_buttons: list|tuple, change_lang_buttons) -> ReplyKeyboardMarkup:
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(KeyboardButton(change_lang_buttons[0]), KeyboardButton(change_lang_buttons[1]))
+    markup.add(KeyboardButton(change_lang_buttons[0]), KeyboardButton(change_lang_buttons[1]), KeyboardButton(change_lang_buttons[2]))
     markup.add(KeyboardButton(start_buttons[0]), KeyboardButton(start_buttons[1] ))
     markup.add(KeyboardButton(start_buttons[2]))
     return markup
