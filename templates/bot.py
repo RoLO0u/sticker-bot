@@ -106,9 +106,9 @@ async def text_processing(message: types.Message):
                     answers = list(zip(*texts["start_buttons"].values())) + [texts["change_lang_buttons"]] # -> [('Join pack', 'Приєднатись до пакунку'), ('Create pack', 'Створити пакунок'), ('Add sticker', 'Додати наліпку'), ["Change language to 🇬🇧 (English)", "Змінити мову на 🇺🇦 (Українську)"]]
 
                     class Answers:
-                        join_btn_en, join_btn_ua = answers[0]
-                        create_btn_en, create_btn_ua = answers[1]
-                        man_btn_en, man_btn_ua = answers[2]
+                        join_btn_en, join_btn_ua, join_btn_is = answers[0]
+                        create_btn_en, create_btn_ua, create_btn_is = answers[1]
+                        man_btn_en, man_btn_ua, man_btn_is = answers[2]
                         ch_lan_en, ch_lan_ua, ch_lan_is = answers[3]
 
                     # TODO: make match case better. More: README.md
@@ -117,19 +117,19 @@ async def text_processing(message: types.Message):
 
                         # TODO check packs availibility
 
-                        case Answers.join_btn_en|Answers.join_btn_ua:
+                        case Answers.join_btn_en|Answers.join_btn_ua|Answers.join_btn_is:
 
                             await message.answer(texts["joined"][user_lang], \
                                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
-                        case Answers.create_btn_en|Answers.create_btn_ua:
+                        case Answers.create_btn_en|Answers.create_btn_ua|Answers.create_btn_is:
                             
                             database.change_status(user_id, "creating")
 
                             await message.answer(texts["creating1"][user_lang], \
                                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
-                        case Answers.man_btn_en|Answers.man_btn_ua:
+                        case Answers.man_btn_en|Answers.man_btn_ua|Answers.man_btn_is:
 
                             database.change_status(user_id, "managing")
                             await message.answer(texts["managing0"][user_lang], \
@@ -196,11 +196,11 @@ async def text_processing(message: types.Message):
                 case "creating":
 
                     class Answers:
-                        create_btn_en, create_btn_ua = texts["cancel_button"].values()
+                        create_btn_en, create_btn_ua, create_btn_is = texts["cancel_button"].values()
 
                     match message.text:
 
-                        case Answers.create_btn_en|Answers.create_btn_ua:
+                        case Answers.create_btn_en|Answers.create_btn_ua|Answers.create_btn_is:
 
                             database.change_status(user_id, "start")
 
@@ -228,11 +228,11 @@ async def text_processing(message: types.Message):
                 case "creating2":
 
                     class Answers:
-                        create_btn_en, create_btn_ua = texts["cancel_button"].values()
+                        create_btn_en, create_btn_ua, create_btn_is = texts["cancel_button"].values()
 
                     match message.text:
 
-                        case Answers.create_btn_en|Answers.create_btn_ua:
+                        case Answers.create_btn_en|Answers.create_btn_ua|Answers.create_btn_is:
 
                             database.change_status(user_id, "start")
                             database.delete_pack(user_id)
@@ -258,11 +258,11 @@ async def text_processing(message: types.Message):
                 case "creating3":
 
                     class Answers:
-                        cancel_btn_en, cancel_btn_ua = texts["cancel_button"].values()
+                        cancel_btn_en, cancel_btn_ua, cancel_btn_is = texts["cancel_button"].values()
 
                     match message.text:
 
-                        case Answers.cancel_btn_en|Answers.cancel_btn_ua:
+                        case Answers.cancel_btn_en|Answers.cancel_btn_ua|Answers.cancel_btn_is:
 
                             database.change_status(user_id, "start")
                             pack_name = database.get_additional_info(user_id)
@@ -280,11 +280,11 @@ async def text_processing(message: types.Message):
                 case "managing":
 
                     class Answers:
-                        back_btn_en, back_btn_ua = texts["back"].values()
+                        back_btn_en, back_btn_ua, back_btn_is = texts["back"].values()
 
                     match message.text:
 
-                        case Answers.back_btn_en | Answers.back_btn_ua:
+                        case Answers.back_btn_en | Answers.back_btn_ua | Answers.back_btn_is:
 
                             database.change_status(user_id, "start")
 
