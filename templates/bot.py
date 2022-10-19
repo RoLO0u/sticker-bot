@@ -3,6 +3,7 @@ import json
 import os
 
 from aiogram import Bot, Dispatcher, executor, types, utils
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.utils.markdown import hide_link
 
 from templates import database, Exceptions
@@ -11,6 +12,11 @@ from templates.funcs import is_emoji, resize_image, \
     pack_availability, random_string, user_packs # Private Messages
 from templates.markups import start_button, start_button_exception1, cancel_button, \
     managing_button, pack_link_button, managing_button_2, managing_button_inline
+from templates.throttling import rate_limit, setup
+
+# configuring storage
+
+storage = MemoryStorage()
 
 # TODO move not bot work to other files
 # configuring aiogram bot
@@ -26,12 +32,17 @@ with open("texts.json", "r", encoding="utf-8") as raw_texts:
     texts = json.load(raw_texts)
 
 bot = Bot(TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=storage)
 
 WATERMARK = "_by_paces_bot"
 
+# setuping antiflood
+
+setup(dp)
+
 # TODO correction of status
 
+@rate_limit(limit=10, key="/start")
 @dp.message_handler(commands=["start"], chat_type="private")
 async def start(message: types.Message):
     user_id = str(message.from_user.id)
@@ -48,6 +59,7 @@ async def start(message: types.Message):
         await message.answer(texts["start"][user_lang], parse_mode="HTML", \
             reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
+@rate_limit(limit=10, key="/help")
 @dp.message_handler(commands=["help"], chat_type="private")
 async def help(message: types.Message):
     user_id = str(message.from_user.id)
@@ -58,6 +70,7 @@ async def help(message: types.Message):
     await message.answer(f"{hide_link('https://i.imgur.com/ZRv0bDC.png')}"
         f"{texts['help_1'][user_lang]}", parse_mode="HTML")
 
+@rate_limit(limit=10, key="test")
 @dp.message_handler(commands=["test"], chat_type="private")
 async def test_func(message: types.Message):
     if message.from_user.id == 602197013:
@@ -86,6 +99,7 @@ async def test_func(message: types.Message):
             case 7:
                 database.get_all_packs()
 
+@rate_limit(limit=1, key="everything")
 @dp.message_handler(content_types=["text", "photo", "sticker"], chat_type="private")
 async def text_processing(message: types.Message):
     user_id = str(message.from_user.id)

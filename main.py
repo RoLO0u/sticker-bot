@@ -2,6 +2,7 @@ import templates.bot
 import json
 from os import mkdir
 from os.path import isfile, isdir
+from templates import throttling
 
 def main():
 
