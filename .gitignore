@@ -8,6 +8,7 @@ photos/*
 # useless
 
 templates/__pycache__/*
+templates/handlers/__pycache__/*
 venv/*
 
 # for testing

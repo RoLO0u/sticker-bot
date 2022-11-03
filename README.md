@@ -9,7 +9,6 @@
 > [documentation](https://core.telegram.org/bots/api#addstickertoset)
 
 > Finding emoji in message <br>
-> [stackoverflow](https://stackoverflow.com/questions/36216665/find-there-is-an-emoji-in-a-string-in-python3) <br>
 > [library emoji](https://pypi.org/project/emoji/)
 > ```python
 > # -*- coding: utf-8 -*-
@@ -21,59 +20,32 @@
 > print("😘👍" in EMOJI_DATA) # -> False
 > ```
 
-## Database look
+## Things to think
 
-database is usersinfo.json file
+### aiogram has FSM (Final State Machine):
 
-simple example:
+Should I use it, instead of database functions?
 
-```json
-{
-  "users": {
-    "602197013": {
-      "username": "feddunn",
-      "packs": [
-        "dbeDPzgRzY",
-        "gqHYhZPCwa"
-      ],
-      "language": "ua",
-      "status": "start",
-      "additional_info": null
-    }
-  },
-  "packs": { 
-    "dbeDPzgRzY": {
-      "title": "Sticker pack ↓♪",
-      "adm": "602197013",
-      "members": [
-        "602197013"
-      ],
-      "stickers": [],
-      "status": "maked"
-    },
-    "gqHYhZPCwa": {
-      "title": "Sticker pack ↓♪211",
-      "adm": "602197013",
-      "members": [
-        "602197013"
-      ],
-      "stickers": [],
-      "status": "maked"
-    }
-  }
-}
-```
+## Database
+
+Database maked in pymongo and uses MONGO_URL from environment
 
 ## Token
 
-token takes from BOT_TOKEN env
+token takes from BOT_TOKEN environment
 
 > Getting token <br>
 > [documentation](https://core.telegram.org/api)
 
 ## TODO
 
+### Complete texts for interslavic
+
 ### make match case better
+
+<details>
+
+<summary>why not simple</summary>
 
 Code example:
 
@@ -115,7 +87,10 @@ Traceback (most recent call last):
          ^^^^^^^^^^^
 SyntaxError: name capture 'join_btn_en' makes remaining patterns unreachable
 ```
+</details>
 
 ## mongodb
+
+Use environment if you want to use it on an server by MONGO_URL
 
 if db founds nothing it return None

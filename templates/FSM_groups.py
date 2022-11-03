@@ -1,0 +1,22 @@
+from aiogram.fsm.state import StatesGroup, State
+
+class StartFSM(StatesGroup):
+    start = State()
+    exception = State()
+
+class ManagingFSM(StatesGroup):
+    choosing_pack = State()
+    menu = State()
+    collecting_emoji_add = State() # to add
+    collecting_photo_add = State() # to add
+    collecting_sticker = State() # to delete sticker
+    are_you_sure = State() # to delete pack
+
+class CreatingFSM(StatesGroup):
+    creating_name = State()
+    collecting_emoji = State()
+    collecting_photo = State()
+
+class JoiningFSM(StatesGroup):
+    """TODO make Joining possible"""
+    not_have_now = ...

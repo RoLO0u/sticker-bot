@@ -1,6 +1,9 @@
 import pymongo
 import os
 
+from typing import List, Dict, Union
+from aiogram import Bot
+
 # Configuring mongodb
 
 MONGO_URL = os.getenv("MONGO_URL")
@@ -24,9 +27,6 @@ def insert_dict() -> None:
     test.insert_one({"Some dict": {"Hi": "World"}})
 # ---
 
-def change_status(user_id: str, change_to: str) -> None:
-    users.update_one({"userid": user_id}, {"$set": {"status": change_to}})
-
 def change_pack_status(pack_name: str, change_to: str) -> None:
     packs.update_one({"packid": pack_name}, {"$set": {"status": change_to}})
 
@@ -45,38 +45,46 @@ def change_title(user_id: str, change_to: str | None) -> None:
 def change_pack_stickers(pack_name: str, change_to: list) -> None:
     packs.update_one({"packid": pack_name}, {"$set": {"stickers": change_to}})
 
-def reg_user(user_id: str, username: str) -> tuple:
+def reg_user(user_id: str) -> str:
     if not users.count_documents({"userid": user_id}):
-        users.insert_one({"userid": user_id, "username": username, "packs": [], "language": "en", "status": "start", \
+        users.insert_one({"userid": user_id, "packs": [], "language": "en", \
             "additional_info": {"emoji": None, "name": None, "title": None}})
     user_info = users.find_one({"userid": user_id})
-    return user_info["language"], user_info["status"]
+    return user_info["language"]
 
 def create_pack(user_id: str, pack_name: str, title: str) -> None:
-    packs.insert_one({"packid": pack_name, "title": title, "adm": user_id, "members": [user_id], "stickers": [], "status": "making"})
+    packs.insert_one({"packid": pack_name, "title": title, "adm": user_id, "members": [user_id], "status": "making"})
     # getting user packs and append one
     user_packs = users.find_one({"userid": user_id})["packs"] + [pack_name]
     users.update_one({"userid": user_id}, {"$set": {"packs": user_packs}})
 
-def get_all_packs() -> list:
+def get_all_packs() -> List[dict]:
     return [pack for pack in packs.find()]
 
-def get_pack(pack_name: str) -> dict:
+def get_pack(pack_name: str) -> Dict[str, Union[list, str]]:
     return packs.find_one({"packid": pack_name})
 
-def get_packs_name() -> list:
+def get_packs_by_ids(ids: List[str], bot: Bot) -> List[dict]:
+    # TODO think: write titles in database or get from telegram
+    return [packs.find_one({packid["packid"]: bot.get_sticker_set(packid).title}) for packid in ids]
+
+def get_packs_name() -> List[str]:
     return [pack["packid"] for pack in get_all_packs()]
 
-def get_user_packs_name(user_id: str) -> list:
+def get_user_packs(user_id: str) -> List[Dict[str, str]]:
+    """:param user_id: id of user"""
+    return [{packid : get_pack_title(packid)} for packid in get_user_packs_id(user_id)]
+
+def get_user_packs_id(user_id: str) -> List[str]:
     return users.find_one({"userid": user_id})["packs"]
 
 def get_user_lang(user_id: str) -> str:
     return users.find_one({"userid": user_id})["language"]
 
-def get_packs_title(pack_name: str) -> str:
+def get_pack_title(pack_name: str) -> str:
     return packs.find_one({"packid": pack_name})["title"]
 
-def get_additional_info(user_id: str) -> str:
+def get_additional_info(user_id: str) -> Dict[str, Union[None, str]]:
     return users.find_one({"userid": user_id})["additional_info"]
 
 def remove_sticker_from_pack(pack_name: str, sticker_unique_id: str) -> None:
@@ -90,6 +98,6 @@ def delete_pack(user_id: str, pack_name: str|None = None) -> None:
         pack_name = get_additional_info(user_id)["name"]
     packs.delete_one({"packid": pack_name})
     # getting user packs and removing empty one
-    user_packs = users.find_one({"userid": user_id})["packs"]
+    user_packs: list = users.find_one({"userid": user_id})["packs"]
     user_packs.remove(pack_name)
     users.update_one({"userid": user_id}, {"$set": {"packs": user_packs}})

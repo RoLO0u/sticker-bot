@@ -1,46 +1,65 @@
 # -*- coding: utf-8 -*-
 
+from typing import Dict, List
+
+import random
+
+from templates.const import CAPTCHA_CAPTIONS
+
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
-def start_button(start_buttons: list|tuple, change_lang_buttons) -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(KeyboardButton(change_lang_buttons[0]), KeyboardButton(change_lang_buttons[1]), KeyboardButton(change_lang_buttons[2]))
-    markup.add(KeyboardButton(start_buttons[0]), KeyboardButton(start_buttons[1] ))
-    markup.add(KeyboardButton(start_buttons[2]))
+def start_button(start_buttons: list, change_lang_buttons: list) -> ReplyKeyboardMarkup:
+    keyboard = [
+        [KeyboardButton(text=change_lang_buttons[0]), KeyboardButton(text=change_lang_buttons[1]), KeyboardButton(text=change_lang_buttons[2])],
+        [KeyboardButton(text=start_buttons[0]), KeyboardButton(text=start_buttons[1] )],
+        [KeyboardButton(text=start_buttons[2])]
+    ]
+    markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
     return markup
     
-def start_button_exception1(start_buttons_exception: str) -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup()
-    markup.add(KeyboardButton(start_buttons_exception))
+def start_button_exception1(caption: str) -> ReplyKeyboardMarkup:
+    keyboard = [[KeyboardButton(text=caption)]]
+    markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
     return markup
 
 def cancel_button(caption: str) -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(KeyboardButton(caption))
+    keyboard = [[KeyboardButton(text=caption)]]
+    markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
     return markup
 
 def managing_button(caption: str) -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(KeyboardButton(caption))
+    keyboard = [[KeyboardButton(text=caption)]]
+    markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
     return markup
 
-def managing_button_inline(packs: list|tuple) -> InlineKeyboardMarkup:
+def managing_button_inline(packs: List[Dict[str, str]]) -> InlineKeyboardMarkup:
     """:param packs: packs => [["title", "name"], ["title1", "name1"]]"""
-    markup = InlineKeyboardMarkup(row_width=2)
-    packs = [InlineKeyboardButton(pack[0], callback_data=pack[1]) for pack in packs]
-    for i in range(0, len(packs), 2):
-        markup.add( *packs[i:i+2] )
+    packs = [list(pack.items())[0] for pack in packs]
+    keyboard = [InlineKeyboardButton(text=pack[1], callback_data=pack[0]) for pack in packs]
+    splited_keyboard = []
+    for i in range(0, len(keyboard), 2):
+        splited_keyboard.append(keyboard[i:i+2])
+    markup = InlineKeyboardMarkup(inline_keyboard=splited_keyboard, row_width=2)
     return markup
 
 def managing_button_2(captions: list|tuple) -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(*captions[:3])
-    markup.add(*captions[3:6])
-    markup.add(*captions[6:])
-    # markup.add(captions)
+    keyboard = list()
+    for num in range(0, len(captions)-1, 3):
+        keyboard.append([KeyboardButton(text=capt) for capt in captions[num:num+3]])
+    keyboard.append([KeyboardButton(text=captions[-1])])
+    markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
     return markup
 
 def pack_link_button(caption: str, url: str) -> InlineKeyboardMarkup:
-    markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton(caption, url=url))
+    keyboard = [[InlineKeyboardButton(text=caption, url=url)]]
+    markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+    return markup
+
+def captcha_inline() -> InlineKeyboardMarkup:
+    random_capts = [(key, CAPTCHA_CAPTIONS[key]) for key in list(CAPTCHA_CAPTIONS.keys())]
+    random.shuffle(random_capts)
+    random_capts = dict(random_capts)
+    listed_markup = [InlineKeyboardButton(text=capt, callback_data=random_capts[capt]) for capt in random_capts]
+    listed_markup = [listed_markup[:3], listed_markup[3:]]
+    markup = InlineKeyboardMarkup(row_width=3, inline_keyboard=listed_markup)
     return markup
