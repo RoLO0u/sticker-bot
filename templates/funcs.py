@@ -9,7 +9,7 @@ from io import BytesIO
 from templates import database
 from templates.const import WATERMARK
 
-from aiogram.types import BufferedInputFile, InputFile
+from aiogram.types import BufferedInputFile, InputFile, StickerSet
 from aiogram.exceptions import TelegramBadRequest
 
 def is_emoji(chars: str) -> bool:
@@ -62,11 +62,9 @@ async def get_create_add_info(user_id: str, get_file, photo, download_file) -> L
     return pack_name, pack_name_plus, title, photo, emoji
 
 async def have_stickers(packid: str, get_sticker_set) -> bool:
-    return not not await get_sticker_set(packid).stickers # It for some reason faster than bool(obj) in 2 times
+    sticker_set: StickerSet = await get_sticker_set(packid)
+    return not not sticker_set.stickers # It for some reason faster than bool(obj) in 2 times
     # https://stackoverflow.com/questions/25594231/why-is-not-faster-than-bool-in-python-or-speed-of-python-functions-vs-s
-
-def get_title_by_packid(packid: str, get_sticker_set):
-    return get_sticker_set(packid).title
 
 def random_string(L: int = 10) -> str:
     return ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k=L))
