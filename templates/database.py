@@ -87,11 +87,6 @@ def get_pack_title(pack_name: str) -> str:
 def get_additional_info(user_id: str) -> Dict[str, Union[None, str]]:
     return users.find_one({"userid": user_id})["additional_info"]
 
-def remove_sticker_from_pack(pack_name: str, sticker_unique_id: str) -> None:
-    stickers = get_pack(pack_name)["stickers"]
-    stickers.remove(sticker_unique_id)
-    packs.update_one({"packid": pack_name}, {"$set": {"stickers": stickers}})
-
 def delete_pack(user_id: str, pack_name: str|None = None) -> None:
     """:param pack_name: if None use users additional info as pack_name"""
     if pack_name is None:

@@ -29,12 +29,13 @@ async def delete_sticker_from_pack(                     \
 
     # TODO: make warning message if it's last sticker
 
+    sticker_set = await bot.get_sticker_set(database.get_additional_info(user_id)["name"]+WATERMARK)
+    stickers_un_id = [sticker.file_unique_id for sticker in sticker_set.stickers]
+
     # checking if sticker in user stickerpack
-    if unique_id in database.get_pack(database.get_additional_info(user_id)["name"])["stickers"]:
+    if unique_id in stickers_un_id:
 
         pack_name = database.get_additional_info(user_id)["name"]
-
-        database.remove_sticker_from_pack(pack_name, unique_id)
 
         await bot.delete_sticker_from_set(sticker_id)
 
