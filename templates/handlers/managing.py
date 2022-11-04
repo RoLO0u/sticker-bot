@@ -93,8 +93,7 @@ async def menu(                                         \
         case Answers.show_btn:
             if await have_stickers(database.get_additional_info(user_id)["name"], bot.get_sticker_set):
                 sticker = await bot.get_sticker_set(database.get_additional_info(user_id)["name"]+WATERMARK)
-                await message.answer_sticker(message.chat.id, \
-                    sticker=sticker.stickers[0].file_id)
+                await message.answer_sticker(sticker=sticker.stickers[0].file_id)
             else:
                 await message.answer(texts["managing_show_e"][user_lang])
 

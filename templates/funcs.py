@@ -62,7 +62,7 @@ async def get_create_add_info(user_id: str, get_file, photo, download_file) -> L
     return pack_name, pack_name_plus, title, photo, emoji
 
 async def have_stickers(packid: str, get_sticker_set) -> bool:
-    sticker_set: StickerSet = await get_sticker_set(packid)
+    sticker_set: StickerSet = await get_sticker_set(packid+WATERMARK)
     return not not sticker_set.stickers # It for some reason faster than bool(obj) in 2 times
     # https://stackoverflow.com/questions/25594231/why-is-not-faster-than-bool-in-python-or-speed-of-python-functions-vs-s
 
