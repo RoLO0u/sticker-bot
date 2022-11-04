@@ -1,4 +1,4 @@
-# python 3.11.0
+# python 3.10.8
 --pre
 aiofiles==22.1.0
 aiogram==3.0.0b5
