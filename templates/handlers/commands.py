@@ -29,10 +29,9 @@ async def start(                                \
 async def help(                                        \
         message: types.Message,                        \
         texts: Dict[str, Dict[str, Union[str, list]]], \
-        user_id: str                                   \
+        user_id: str,                                  \
+        user_lang: str                                 \
         ) -> Any:
-
-    user_lang, *_ = database.reg_user(user_id)
 
     await message.answer(f"{hide_link('https://i.imgur.com/ZRv0bDC.png')}"
         f"{texts['help_1'][user_lang]}", parse_mode="HTML")
