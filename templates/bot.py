@@ -13,8 +13,10 @@ from templates.mongo import MongoStorage
 async def run():
 
     # configuring storage
+    
+    URI = os.getenv("MONGO_URL")
 
-    storage = MongoStorage()
+    storage = MongoStorage(uri=URI)
 
     # TODO move not bot work to other files
     # configuring aiogram bot
