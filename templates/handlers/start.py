@@ -24,31 +24,31 @@ async def start_menu(                                   \
         ) -> Any:
     # TODO check packs availibility
 
-    answers = list(zip(*texts["start_buttons"].values())) + [texts["change_lang_buttons"]] # -> [('Join pack', 'Приєднатись до пакунку'), ('Create pack', 'Створити пакунок'), ('Add sticker', 'Додати наліпку'), ["Change language to 🇬🇧 (English)", "Змінити мову на 🇺🇦 (Українську)"]]
-
     class Answers:
-        join_btn_en, join_btn_ua, join_btn_is = answers[0]
-        create_btn_en, create_btn_ua, create_btn_is = answers[1]
-        man_btn_en, man_btn_ua, man_btn_is = answers[2]
-        ch_lan_en, ch_lan_ua, ch_lan_is = answers[3]
+        join_btn = texts["start_buttons"][user_lang][0]
+        create_btn = texts["start_buttons"][user_lang][1]
+        man_btn = texts["start_buttons"][user_lang][2]
+        ch_lan_en, ch_lan_ua, ch_lan_is = texts["change_lang_buttons"]
 
     # TODO: make match case better. More: README.md
 
     match message.text:
 
-        case Answers.join_btn_en|Answers.join_btn_ua|Answers.join_btn_is:
+        case Answers.join_btn:
 
-            await message.answer(texts["joined"][user_lang], \
-                reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
+            await state.set_state(JoiningFSM.join_pass)
 
-        case Answers.create_btn_en|Answers.create_btn_ua|Answers.create_btn_is:
+            await message.answer(texts["joining1"][user_lang], \
+                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+
+        case Answers.create_btn:
             
             await state.set_state(CreatingFSM.creating_name)
 
             await message.answer(texts["creating1"][user_lang], \
                 reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
-        case Answers.man_btn_en|Answers.man_btn_ua|Answers.man_btn_is:
+        case Answers.man_btn:
 
             await state.set_state(ManagingFSM.choosing_pack)
             await message.answer(texts["managing0"][user_lang], \

@@ -23,7 +23,7 @@ class AntiFloodMiddleware(BaseMiddleware):
         user_storage: Dict[str, List[bool, int]] = await my_storage.get_data(user=user_id)
 
         data["user_id"] = user_id
-        data["user_lang"] = reg_user(user_id)
+        data["user_lang"] = reg_user(user_id, event.from_user.username)
 
         # print(user_storage, 0)
 

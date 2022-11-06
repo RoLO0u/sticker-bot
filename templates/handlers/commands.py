@@ -16,7 +16,6 @@ async def start(                                \
         state: FSMContext,                      \
         texts:                                  \
         Dict[str, Dict[str, Union[str, list]]], \
-        user_id: str,                           \
         user_lang: str                          \
         ) -> Any:
     
@@ -40,7 +39,6 @@ async def help(                                        \
 async def test(                 \
         message: types.Message, \
         bot: Bot,               \
-        user_id: str            \
         ) -> Any:
     to_check = 8
     match to_check:

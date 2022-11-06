@@ -96,9 +96,7 @@ async def collecting_photo_add(                         \
             await state.set_state(StartFSM.start)
             database.change_name(user_id, None)
             database.change_emoji(user_id, None)
-            sticker_set = await bot.get_sticker_set(pack_name_plus)
-            database.change_pack_stickers(pack_name, [sticker.file_unique_id for sticker in sticker_set.stickers])
-
+            
             await message.answer(texts["added1"][user_lang], \
                 reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
             await message.answer(texts["created2"][user_lang], \

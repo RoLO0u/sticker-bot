@@ -18,5 +18,5 @@ class CreatingFSM(StatesGroup):
     collecting_photo = State()
 
 class JoiningFSM(StatesGroup):
-    """TODO make Joining possible"""
-    not_have_now = ...
+    kick = State()
+    join_pass = State()
