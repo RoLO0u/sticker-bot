@@ -6,8 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from templates import database
 from templates.FSM_groups import StartFSM, ManagingFSM
-from templates.markups import start_button, managing_button, managing_button_2, managing_button_inline, cancel_button
-from templates.funcs import delete_non_exist, have_stickers
+from templates.markups import start_button, managing_button_2
 from templates.const import WATERMARK
 
 router = Router()
@@ -34,8 +33,6 @@ async def delete_sticker_from_pack(                     \
 
     # checking if sticker in user stickerpack
     if unique_id in stickers_un_id:
-
-        pack_name = database.get_additional_info(user_id)["name"]
 
         await bot.delete_sticker_from_set(sticker_id)
 

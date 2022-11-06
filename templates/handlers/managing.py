@@ -5,7 +5,7 @@ from aiogram import types, Router, Bot, F
 from aiogram.fsm.context import FSMContext
 
 from templates import database
-from templates.FSM_groups import StartFSM, ManagingFSM
+from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM
 from templates.markups import start_button, managing_button, managing_button_2, managing_button_inline, cancel_button
 from templates.funcs import delete_non_exist, have_stickers
 from templates.const import WATERMARK
@@ -45,8 +45,6 @@ async def menu(                                         \
         user_lang: str                                  \
         ) -> Any:
 
-    packs = database.get_user_packs(user_id)
-    
     # TODO create inline sticker pick like in @Stickers bot
 
     class Answers:
@@ -55,6 +53,8 @@ async def menu(                                         \
         del_stick_btn = texts["managing_buttons_2"][user_lang][1]
         del_pack_btn = texts["managing_buttons_2"][user_lang][-4]
         show_btn = texts["managing_buttons_2"][user_lang][-2]
+        invite_btn = texts["managing_buttons_2"][user_lang][4]
+        kick_btn = texts["managing_buttons_2"][user_lang][5]
 
     match message.text:
         
@@ -96,6 +96,16 @@ async def menu(                                         \
                 await message.answer_sticker(sticker=sticker.stickers[0].file_id)
             else:
                 await message.answer(texts["managing_show_e"][user_lang])
+        
+        case Answers.invite_btn:
+            token = database.get_choosen_pack(user_id)
+            token = token["packid"]+token["password"]
+            await message.answer(texts["how_to_invite"][user_lang].format(token), parse_mode="markdown")
+
+        case Answers.kick_btn:
+            await state.set_state(JoiningFSM.kick)
+            await message.answer(texts["kick"][user_lang], \
+                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
 
         # TODO this is temporary case                
         case _:
@@ -115,7 +125,7 @@ async def choosing_pack(\
         ) -> Any:
 
     user_id = str(callback_query.from_user.id)
-    user_lang = database.reg_user(user_id)
+    user_lang = database.reg_user(user_id, callback_query.from_user.username)
 
     await state.set_state(ManagingFSM.menu)
     database.change_name(user_id, callback_query.data)

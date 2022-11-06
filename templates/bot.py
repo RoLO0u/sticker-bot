@@ -49,6 +49,7 @@ async def run():
     dp.include_router(inline.router)
     dp.include_router(add_sticker.router)
     dp.include_router(delete.router)
+    dp.include_router(group.router)
 
     dp.message.middleware(throttling.AntiFloodMiddleware())
 

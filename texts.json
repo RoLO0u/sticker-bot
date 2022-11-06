@@ -6,7 +6,6 @@
 "help_1": {"en": "Do you have some issues?\nContact with @feddunn!", "ua": "Маєте проблеми?\nЗв'яжіться з @feddunn!", 
     "is": "Iměti něktory problemy?\nKontakt s @feddunn!"},
 "change_lang_buttons": ["Change language to 🇬🇧 (English)", "Змінити мову на 🇺🇦 (Українську)", "izměniti jezyk na 🕍☦️(Medžuslovjansky)"],
-"joined": {"en": "We don't have this function now😢", "ua": "Ми не маємо наразі цієї функції😢", "is": "My ne iměti sej junkcija sejčas😢"},
 "creating1": {"en": "How your pack will named (up to 64 characters)?🤔", "ua": "Як ви назвете свій пакунок (до 64 символів)?🤔", 
     "is": "Kak tvoj paket volja nazyvati (po 64 simbols)?🤔"},
 "creating1_e1": {"en": "Sorry, but telegram wants less characters😢", "ua": "Вибач, але телеграм вимагає менше символів😢", 
@@ -78,4 +77,18 @@
 "back": {"en": "↩️ Return", "ua": "↩️ Повернутись", "is": "↩️ Povratok"},
 "backed": {"en": "↩️ Returned ✅", "ua": "↩️ Повернено ✅", "is":"↩️ Povratono ✅"},
 "known_e_1": {"en": "Telegram says you can't create pack, try after ", "ua": "Телеграм не хоче, щоб ти створив пак, спробуй через ",
-    "is": "Telegram ne hče tvoriti paket, probovati za "}}
+    "is": "Telegram ne hče tvoriti paket, probovati za "},
+"how_to_invite": {"en": "To invite member tell him your unique token `{}`\nThen he must type it me after \"👥Join\" button was pressed", 
+    "ua": "Щоб запросити учасника, напишіть йому унікальний токен `{}`\nПотім він має написати мені після того, як кнопка \"👥Добавити учасника\" була натиснута",
+    "is": "To invite member tell him your unique token `{}`\nThen he must type it me after \"👥Join\" button was pressed"},
+"joining_e1": {"en": "Your token invalid😠", "ua": "Ваш токен не валідний😠", "is": "Your token invalid😠"},
+"joining_e2": {"en": "This user don't managing this pack", "ua": "Цей користувач не керує цим пакунком", 
+    "is": "This user don't managing this pack"},
+"joining1": {"en": "OK. Now send me token you have", "ua": "Добре. Зараз надішли свій токен", 
+    "is": "OK. Now send me token you have"},
+"joined": {"en": "✅ Joined", "ua": "✅ Приєднано", "is": "✅ Joined"},
+"kick": {"en": "Type username to kick (without @ )", 
+    "ua": "Напиши нікнейм, щоб викинути (без @ )",
+    "is": "Type username to kick (without @ )"},
+"kicked": {"en": "✅ Kicked", "ua": "✅ Викинуто", "is": "✅ Kicked"}
+}
