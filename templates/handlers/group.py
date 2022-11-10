@@ -36,7 +36,7 @@ async def join_by_password(                             \
                 database.add_user(user_id, pack["packid"])
 
                 await state.set_state(StartFSM.start)
-                await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
+                await message.answer(texts["joined"][user_lang], parse_mode="HTML", \
                     reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
 
             else:
