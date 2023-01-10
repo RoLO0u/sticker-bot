@@ -36,8 +36,7 @@ async def pack_exists(get_sticker_set, packid: str) -> bool:
         await get_sticker_set(packid)
     except TelegramBadRequest:
         return False
-    else:
-        return True
+    return True
 
 async def delete_non_exist(get_sticker_set, user_id: str) -> None:
 
@@ -47,7 +46,7 @@ async def delete_non_exist(get_sticker_set, user_id: str) -> None:
             to_pop.append(pname)
     for pname in to_pop:
         # TODO don't forget to edit when members support added
-        database.delete_pack(user_id, pname)
+        database.delete_pack(user_id)
 
 async def get_create_add_info(user_id: str, get_file, photo, download_file) -> List[Union[str, InputFile]]:
 

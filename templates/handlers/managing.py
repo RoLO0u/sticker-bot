@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from templates import database
 from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM
-from templates.markups import start_button, managing_button, managing_button_2, managing_button_inline, cancel_button
+from templates.markups import start_button, managing_button_2, managing_button_inline, single_button
 from templates.funcs import delete_non_exist, have_stickers
 from templates.const import WATERMARK
 
@@ -28,6 +28,8 @@ async def choosing_pack_t(                              \
         case Answers.back_btn_en | Answers.back_btn_ua | Answers.back_btn_is:
 
             await state.set_state(StartFSM.start)
+
+            texts["backed"][user_lang]
 
             await message.answer(texts["backed"][user_lang],\
                 reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
@@ -62,7 +64,7 @@ async def menu(                                         \
             
             await state.set_state(ManagingFSM.choosing_pack)
             await message.answer(texts["managing0"][user_lang], \
-                reply_markup=managing_button(texts["back"][user_lang]))
+                reply_markup=single_button(texts["back"][user_lang]))
 
             # Delete pack for db if it was deleted
             await delete_non_exist(bot.get_sticker_set, user_id)
@@ -75,20 +77,22 @@ async def menu(                                         \
             else:
                 await message.answer(texts["managing_e"][user_lang])
 
+        # TODO somehow unite next 3 cases (very similar looks)
+
         case Answers.add_btn:
             await state.set_state(ManagingFSM.collecting_emoji_add)
             await message.answer(texts["managing_add_1"][user_lang], \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case Answers.del_stick_btn:
             await state.set_state(ManagingFSM.collecting_sticker)
             await message.answer(texts["managing_del_1"][user_lang], \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
         
         case Answers.del_pack_btn:
             await state.set_state(ManagingFSM.are_you_sure)
             await message.answer(texts["managing_del2_1"][user_lang], parse_mode="markdown", \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case Answers.show_btn:
             if await have_stickers(database.get_additional_info(user_id)["name"], bot.get_sticker_set):
@@ -105,13 +109,12 @@ async def menu(                                         \
         case Answers.kick_btn:
             await state.set_state(JoiningFSM.kick)
             await message.answer(texts["kick"][user_lang], \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         # TODO this is temporary case                
         case _:
             msg = {"en": "Sorry, we don't have this function now. Use @Stickers to solve problem you have", \
-                "ua": "Вибачте, ми не маєм цієї функції наразі. Скористуйтесь @Stickers, щоб вирішити вашу проблему", \
-                "is": "Sorry, we don't have this function now. Use @Stickers to solve problem you have"}
+                "ua": "Вибачте, ми не маєм цієї функції наразі. Скористуйтесь @Stickers, щоб вирішити вашу проблему"}
             await message.answer(msg[user_lang])
 
 @router.callback_query(F.data, \

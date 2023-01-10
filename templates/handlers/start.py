@@ -7,7 +7,7 @@ from aiogram.exceptions import TelegramBadRequest
 
 from templates import database
 from templates.FSM_groups import StartFSM, ManagingFSM, CreatingFSM, JoiningFSM
-from templates.markups import managing_button, start_button, cancel_button, managing_button_inline
+from templates.markups import start_button, managing_button_inline, single_button
 from templates.funcs import delete_non_exist
 from templates.const import WATERMARK
 
@@ -22,13 +22,14 @@ async def start_menu(                                   \
         user_id: str,                                   \
         user_lang: str                                  \
         ) -> Any:
+    
     # TODO check packs availibility
 
     class Answers:
         join_btn = texts["start_buttons"][user_lang][0]
         create_btn = texts["start_buttons"][user_lang][1]
         man_btn = texts["start_buttons"][user_lang][2]
-        ch_lan_en, ch_lan_ua, ch_lan_is = texts["change_lang_buttons"]
+        ch_lan_en, ch_lan_ua = texts["change_lang_buttons"]
 
     # TODO: make match case better. More: README.md
 
@@ -39,20 +40,20 @@ async def start_menu(                                   \
             await state.set_state(JoiningFSM.join_pass)
 
             await message.answer(texts["joining1"][user_lang], \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case Answers.create_btn:
             
             await state.set_state(CreatingFSM.creating_name)
 
             await message.answer(texts["creating1"][user_lang], \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case Answers.man_btn:
 
             await state.set_state(ManagingFSM.choosing_pack)
             await message.answer(texts["managing0"][user_lang], \
-                reply_markup=managing_button(texts["back"][user_lang]))
+                reply_markup=single_button(texts["back"][user_lang]))
 
             # Delete pack for db if it was deleted
             await delete_non_exist(bot.get_sticker_set, user_id)
@@ -65,7 +66,7 @@ async def start_menu(                                   \
             else:
                 await message.answer(texts["managing_e"][user_lang])
 
-        case Answers.ch_lan_en|Answers.ch_lan_ua|Answers.ch_lan_is:
+        case Answers.ch_lan_en|Answers.ch_lan_ua:
 
             match message.text:
                 
@@ -74,9 +75,6 @@ async def start_menu(                                   \
                 
                 case Answers.ch_lan_ua:
                     change_to = "ua"
-
-                case Answers.ch_lan_is:
-                    change_to = "is"
 
             database.change_lang(user_id, change_to)
 

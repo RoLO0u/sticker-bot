@@ -1,3 +1,5 @@
+import logging
+
 from typing import Dict, Any, Union
 
 from aiogram import types, Router, Bot, F
@@ -6,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 
 from templates import database
 from templates.FSM_groups import CreatingFSM, StartFSM
-from templates.markups import start_button, cancel_button, pack_link_button
+from templates.markups import start_button, pack_link_button, single_button
 from templates.funcs import random_string, is_emoji, get_create_add_info
 from templates.const import WATERMARK
 
@@ -47,11 +49,11 @@ async def creating_name(                                \
             database.change_name(user_id, name)
 
             await message.answer(texts["creating2"][user_lang], \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case _:
             await message.answer(texts["creating1_e1"][user_lang], \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
 
 @router.message(CreatingFSM.collecting_emoji, F.text)
@@ -64,11 +66,11 @@ async def collecting_emoji(                             \
         ) -> Any:
 
     class Answers:
-        create_btn_en, create_btn_ua, create_btn_is = texts["cancel_button"].values()
+        create_btn = texts["cancel_button"][user_lang]
 
     match message.text:
 
-        case Answers.create_btn_en | Answers.create_btn_ua | Answers.create_btn_is:
+        case Answers.create_btn:
 
             await state.set_state(StartFSM.start)
             database.delete_pack(user_id)
@@ -85,11 +87,11 @@ async def collecting_emoji(                             \
                 await state.set_state(CreatingFSM.collecting_photo)
 
                 await message.answer(texts["creating3"][user_lang], \
-                    reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                    reply_markup=single_button(texts["cancel_button"][user_lang]))
 
             else:
                 await message.answer(texts["emoji_only_e"][user_lang], \
-                    reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                    reply_markup=single_button(texts["cancel_button"][user_lang]))
 
 
 @router.message(CreatingFSM.collecting_photo, F.text)
@@ -102,11 +104,11 @@ async def collecting_photo_t(                           \
         ) -> Any:
 
     class Answers:
-        cancel_btn_en, cancel_btn_ua, cancel_btn_is = texts["cancel_button"].values()
+        cancel_btn = texts["cancel_button"][user_lang]
 
     match message.text:
 
-        case Answers.cancel_btn_en|Answers.cancel_btn_ua|Answers.cancel_btn_is:
+        case Answers.cancel_btn:
 
             await state.set_state(StartFSM.start)
             additional_info = database.get_additional_info(user_id)
@@ -119,7 +121,7 @@ async def collecting_photo_t(                           \
         
         case _:
             await message.answer(texts["image_only_e"][user_lang], \
-                reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
 
 @router.message(CreatingFSM.collecting_photo, F.photo)
@@ -137,6 +139,8 @@ async def collecting_photo(                             \
 
     pack_name, pack_name_plus, title, photo, emoji = \
         await get_create_add_info(user_id, bot.get_file, message.photo, bot.download_file)
+    
+    print(pack_name_plus)
     
     try:
         if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
@@ -163,3 +167,5 @@ async def collecting_photo(                             \
 
         # temporary
         await message.answer(f"""Please send this message to @feddunn\n{type(e).__name__}""")
+        
+        logging.critical(e)

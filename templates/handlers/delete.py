@@ -95,8 +95,7 @@ async def confirming_pack_deleting(                     \
             for sticker in sticker_set.stickers:
                 await bot.delete_sticker_from_set(sticker.file_id)
 
-            database.delete_pack(user_id, set_name)
-            database.change_name(user_id, None)
+            database.delete_pack(set_name)
 
             await message.answer(texts["pack_deleted"][user_lang], \
                 reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))

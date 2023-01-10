@@ -122,12 +122,12 @@ def get_pack_title(pack_name: str) -> str:
 def get_additional_info(user_id: str) -> Dict[str, Union[None, str]]:
     return users.find_one({"userid": user_id})["additional_info"]
 
-def delete_pack(user_id: str, pack_name: str|None = None) -> None:
+def delete_pack(user_id: str) -> None:
     """:param pack_name: if None use users additional info as pack_name"""
-    if pack_name is None:
-        pack_name = get_additional_info(user_id)["name"]
+    pack_name = get_additional_info(user_id)["name"]
     packs.delete_one({"packid": pack_name})
     # getting user packs and removing empty one
+    # TODO use update_many to delete pack from many users
     user_packs: list = users.find_one({"userid": user_id})["packs"]
     user_packs.remove(pack_name)
     users.update_one({"userid": user_id}, {"$set": {"packs": user_packs}})

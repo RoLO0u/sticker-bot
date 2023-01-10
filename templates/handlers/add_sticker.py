@@ -1,12 +1,12 @@
 from typing import Dict, Any, Union
 
-from aiogram import types, Router, Bot, F, utils
+from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
 
 from templates import database
 from templates.FSM_groups import StartFSM, ManagingFSM
-from templates.markups import managing_button_2, cancel_button, start_button, pack_link_button
+from templates.markups import managing_button_2, start_button, pack_link_button, single_button
 from templates.funcs import is_emoji, get_create_add_info, pack_exists
 from templates.const import WATERMARK
 
@@ -38,7 +38,7 @@ async def collecting_emoji_add(                         \
                 await state.set_state(ManagingFSM.collecting_photo_add)
                 database.change_emoji(user_id, message.text)
                 await message.answer(texts["managing_add_2"][user_lang], \
-                    reply_markup=cancel_button(texts["cancel_button"][user_lang]))
+                    reply_markup=single_button(texts["cancel_button"][user_lang]))
         
             else:
                 await message.answer(texts["emoji_only_e"][user_lang])

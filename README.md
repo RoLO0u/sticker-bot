@@ -28,7 +28,7 @@ Should I use it, instead of database functions?
 
 ## Database
 
-Database maked in pymongo and uses MONGO_URL from environment
+Database maked in pymongo and uses MONGO_URI from environment
 
 ## Token
 

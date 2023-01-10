@@ -28,7 +28,6 @@ async def start(                                \
 async def help(                                        \
         message: types.Message,                        \
         texts: Dict[str, Dict[str, Union[str, list]]], \
-        user_id: str,                                  \
         user_lang: str                                 \
         ) -> Any:
 

@@ -25,8 +25,6 @@ class AntiFloodMiddleware(BaseMiddleware):
         data["user_id"] = user_id
         data["user_lang"] = reg_user(user_id, event.from_user.username)
 
-        # print(user_storage, 0)
-
         if not user_storage:
             user_storage["data"] = [time, False]
         elif user_storage["data"][1]:
@@ -38,8 +36,6 @@ class AntiFloodMiddleware(BaseMiddleware):
             return
         else:
             user_storage["data"][0] = time
-
-        # print(user_storage, 1)
         
         await my_storage.set_data(user=user_id, data=user_storage)
 

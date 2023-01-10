@@ -11,6 +11,7 @@ __pycache__/*
 templates/__pycache__/*
 templates/handlers/__pycache__/*
 venv/*
+.vscode/
 
 # for testing
 
