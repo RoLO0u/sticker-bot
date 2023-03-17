@@ -168,4 +168,4 @@ async def collecting_photo(                             \
         # temporary
         await message.answer(f"""Please send this message to @feddunn\n{type(e).__name__}""")
         
-        logging.critical(e)
+        raise e

@@ -108,3 +108,5 @@ async def collecting_photo_add(                         \
 
         # temporary
         await message.answer(f"""Please send this message to @feddunn\n{type(e).__name__}""")
+        
+        raise e
