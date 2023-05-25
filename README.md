@@ -1,6 +1,18 @@
 # <p align="center">Sticker packs telegram bot</p>
 
-## How it works?
+![GitHub](https://img.shields.io/github/license/RoLO0u/sticker-bot?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/RoLO0u/sticker-bot?style=for-the-badge) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/RoLO0u/sticker-bot?style=for-the-badge) ![PyPI - Implementation](https://img.shields.io/pypi/implementation/aiogram?style=for-the-badge) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aiogram?style=for-the-badge) ![GitHub watchers](https://img.shields.io/github/watchers/RoLO0u/sticker-bot?style=for-the-badge)
+
+## Installation
+
+Bot simply can be installed by running code on machine using required variables
+
+## Required variables
+
+* BOT_TOKEN ─ token bot will use to interact with telegram API
+* MONGO_URI ─ uri to your mongo database
+* BOT_NAME ─ bot surname (e.g. BOT_NAME="paces_bot", where t.me/paces_bot ─ link to bot)
+
+## Using emoji library
 
 > The main method to use is create_new_sticker_set from aiogram.Bot class <br>
 > [documentation](https://core.telegram.org/bots/api#createnewstickerset)
@@ -20,15 +32,11 @@
 > print("😘👍" in EMOJI_DATA) # -> False
 > ```
 
-## Things to think
-
-### aiogram has FSM (Final State Machine):
-
-Should I use it, instead of database functions?
-
 ## Database
 
 Database maked in pymongo and uses MONGO_URI from environment
+
+Working on postgresql database
 
 ## Token
 
@@ -38,8 +46,6 @@ token takes from BOT_TOKEN environment
 > [documentation](https://core.telegram.org/api)
 
 ## TODO
-
-### Complete texts for interslavic
 
 ### make match case better
 
