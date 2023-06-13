@@ -1,4 +1,4 @@
-from typing import Dict, Any, Union
+from typing import Any
 
 from aiogram import types, Router, Bot, F
 
@@ -9,6 +9,7 @@ from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM
 from templates.markups import start_button, managing_button_2, managing_button_inline, single_button
 from templates.funcs import delete_non_exist, have_stickers
 from templates.const import WATERMARK
+from templates.types import Texts, TextsButtons
 
 router = Router()
 
@@ -16,23 +17,24 @@ router = Router()
 async def choosing_pack_t(                              \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         user_lang: str                                  \
         ) -> Any:
     
     class Answers:
-        back_btn_en, back_btn_ua, back_btn_is = texts["back"].values()
+        back_btn_en, back_btn_ua = texts["back"].values()
 
     match message.text:
 
-        case Answers.back_btn_en | Answers.back_btn_ua | Answers.back_btn_is:
+        case Answers.back_btn_en | Answers.back_btn_ua:
 
             await state.set_state(StartFSM.start)
 
             texts["backed"][user_lang]
 
             await message.answer(texts["backed"][user_lang],\
-                reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
             
         case _:
             await message.answer(texts["managing_exception_1"][user_lang])
@@ -41,7 +43,8 @@ async def choosing_pack_t(                              \
 async def menu(                                         \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
         user_lang: str                                  \
@@ -50,13 +53,13 @@ async def menu(                                         \
     # TODO create inline sticker pick like in @Stickers bot
 
     class Answers:
-        back_btn = texts["managing_buttons_2"][user_lang][-1]
-        add_btn = texts["managing_buttons_2"][user_lang][0]
-        del_stick_btn = texts["managing_buttons_2"][user_lang][1]
-        del_pack_btn = texts["managing_buttons_2"][user_lang][-4]
-        show_btn = texts["managing_buttons_2"][user_lang][-2]
-        invite_btn = texts["managing_buttons_2"][user_lang][4]
-        kick_btn = texts["managing_buttons_2"][user_lang][5]
+        back_btn = texts_buttons["managing_2"][user_lang][-1]
+        add_btn = texts_buttons["managing_2"][user_lang][0]
+        del_stick_btn = texts_buttons["managing_2"][user_lang][1]
+        del_pack_btn = texts_buttons["managing_2"][user_lang][-4]
+        show_btn = texts_buttons["managing_2"][user_lang][-2]
+        invite_btn = texts_buttons["managing_2"][user_lang][4]
+        kick_btn = texts_buttons["managing_2"][user_lang][5]
 
     match message.text:
         
@@ -70,9 +73,10 @@ async def menu(                                         \
             await delete_non_exist(bot.get_sticker_set, user_id)
         
             # user have packs
-            if database.get_user_packs_id(user_id):
+            user = database.User(user_id)
+            if user.get_packs_id():
                 await message.answer(texts["managing"][user_lang], \
-                    reply_markup=managing_button_inline( list(database.get_user_packs(user_id)) ))
+                    reply_markup=managing_button_inline( list(user.get_packs()) ))
             
             else:
                 await message.answer(texts["managing_e"][user_lang])
@@ -95,14 +99,17 @@ async def menu(                                         \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case Answers.show_btn:
-            if await have_stickers(database.get_additional_info(user_id)["name"], bot.get_sticker_set):
-                sticker = await bot.get_sticker_set(database.get_additional_info(user_id)["name"]+WATERMARK)
+            pack_name = database.User(user_id).get_additional_info()["name"]
+            assert pack_name is not None
+            if await have_stickers(pack_name, bot.get_sticker_set):
+                sticker = await bot.get_sticker_set(pack_name+WATERMARK)
                 await message.answer_sticker(sticker=sticker.stickers[0].file_id)
             else:
                 await message.answer(texts["managing_show_e"][user_lang])
         
         case Answers.invite_btn:
-            token = database.get_choosen_pack(user_id)
+            token = database.User(user_id).get_chosen()
+            assert not isinstance(token["packid"], list) and not isinstance(token["password"], list)
             token = token["packid"]+token["password"]
             await message.answer(texts["how_to_invite"][user_lang].format(token), parse_mode="markdown")
 
@@ -118,20 +125,23 @@ async def menu(                                         \
             await message.answer(msg[user_lang])
 
 @router.callback_query(F.data, \
-    lambda callback_query: callback_query.data in database.get_user_packs_id(str(callback_query.from_user.id)), \
+    lambda callback_query: callback_query.data in database.User(str(callback_query.from_user.id)).get_packs_id(), \
     ManagingFSM.choosing_pack)
 async def choosing_pack(\
         callback_query: types.CallbackQuery,            \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         # for no idk reason middleware don't work with callback query handlers :<
         ) -> Any:
 
     user_id = str(callback_query.from_user.id)
-    user_lang = database.reg_user(user_id, callback_query.from_user.username)
+    assert callback_query.from_user.username is not None
+    user_lang = database.User.register(user_id, callback_query.from_user.username)
 
     await state.set_state(ManagingFSM.menu)
-    database.change_name(user_id, callback_query.data)
+    database.User(user_id).change_name(callback_query.data)
 
+    assert callback_query.message is not None
     await callback_query.message.answer(texts["managing2"][user_lang], \
-        reply_markup=managing_button_2(texts["managing_buttons_2"][user_lang]))
+        reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))

@@ -1,4 +1,4 @@
-from typing import Dict, Union, Any
+from typing import Any
 from aiogram import Router, F, types
 
 from aiogram.fsm.context import FSMContext
@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from templates import database
 from templates.FSM_groups import StartFSM, JoiningFSM
 from templates.markups import start_button
+from templates.types import Texts, TextsButtons
 
 router = Router()
 
@@ -13,46 +14,55 @@ router = Router()
 async def join_by_password(                             \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
         user_lang: str                                  \
         ) -> Any:
 
     class Answers:
-        cancel_btn = texts["cancel_button"][user_lang]
+        cancel_btn = texts_buttons["cancel"][user_lang][0]
+    assert message.text is not None
 
     match message.text:
 
         case Answers.cancel_btn:
-            
             await state.set_state(StartFSM.start)
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
     
         case _:
-
-            if (pack := database.get_pack_pass(message.text)) and (len(message.text) == 20):
-
-                database.add_user(user_id, pack["packid"])
-
-                await state.set_state(StartFSM.start)
-                await message.answer(texts["joined"][user_lang], parse_mode="HTML", \
-                    reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
-
-            else:
+            
+            if len(message.text) != 20:
                 await message.answer(texts["joining_e1"][user_lang])
+                return
+            pack = database.Pack.get_pass(message.text)
+            if pack is None:
+                await message.answer(texts["joining_e1"][user_lang])                
+                return
+            if user_id in pack['members']:
+                await message.answer(texts["joining_e3"][user_lang])
+                return
+                
+            database.Pack(pack["packid"]).add_user(user_id)
+
+            await state.set_state(StartFSM.start)
+            await message.answer(texts["joined"][user_lang], parse_mode="HTML", \
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
 
 @router.message(JoiningFSM.kick, F.text)
 async def kick_t(                                       \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
-        user_id: str,                                    \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
+        user_id: str,                                   \
         user_lang: str                                  \
         ) -> Any:
     
     class Answers:
-        cancel_btn = texts["cancel_button"][user_lang]
+        cancel_btn = texts_buttons["cancel"][user_lang][0]
+    assert message.text is not None
 
     match message.text:
 
@@ -60,16 +70,21 @@ async def kick_t(                                       \
             
             await state.set_state(StartFSM.start)
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
         
         case _:
+            
+            user_to_kick = database.get_user_by_uname(message.text)
+            assert user_to_kick is not None
+            pack_id = database.User(user_id).get_chosen()["packid"]
+            assert not isinstance(pack_id, list)
 
-            if database.in_pack(user_kick := database.get_user_by_uname(message.text)["userid"], pack := database.get_choosen_pack(user_id)["packid"]) and user_kick != user_id:
+            if database.Pack(pack_id).include(user_kick := user_to_kick["userid"], ) and user_kick != user_id:
 
                 await state.set_state(StartFSM.start)
-                database.remove_user_from_pack(user_kick, pack)
+                database.User(user_kick).remove_user_from_pack(pack_id)
                 await message.answer(texts["kicked"][user_lang], \
-                    reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
+                    reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
 
             else:
                 await message.answer(texts["joining_e2"][user_lang])

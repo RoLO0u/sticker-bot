@@ -25,8 +25,10 @@ async def run():
     if TOKEN == None:
         raise Exceptions.TokenDoesNotDefined()
 
-    with open("texts.json", "r", encoding="utf-8") as raw_texts:
-        texts = json.load(raw_texts)
+    with open("texts.json", "r", encoding="utf-8") as raw:
+        texts = json.load(raw)
+    with open("texts_buttons.json", "r", encoding="utf-8") as raw:
+        texts_buttons = json.load(raw)
 
     bot = Bot(TOKEN)
 
@@ -35,6 +37,7 @@ async def run():
     dp["dp"] = dp
     dp["storage"] = storage
     dp["texts"] = texts
+    dp["texts_buttons"] = texts_buttons
     dp["bot"] = bot
     dp["bot_info"] = await bot.me()
         
@@ -45,7 +48,7 @@ async def run():
 
     dp.message.filter(F.chat.type=="private")
 
-    for handler in (commands, start, managing, creating, inline, add_sticker, delete, group):
+    for handler in (commands, start, managing, creating, inline, add_sticker, delete, group, errors):
         dp.include_router(handler.router)
 
     dp.message.middleware(throttling.AntiFloodMiddleware())

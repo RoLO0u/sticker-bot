@@ -3,7 +3,7 @@ This module has mongo storage for finite-state machine
     based on `motor <https://github.com/mongodb/motor>`_ driver
 """
 
-from typing import Union, Dict, Optional, List, Tuple, AnyStr
+from typing import Union, Dict, Optional, List, Tuple, Literal
 from aiogram import Bot
 from aiogram.fsm.state import State
 from aiogram.fsm.storage.base import (
@@ -16,6 +16,7 @@ from aiogram.fsm.storage.base import (
 
 try:
     import pymongo
+    import pymongo.errors
     import motor
     from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 except ModuleNotFoundError as e:
@@ -27,7 +28,6 @@ STATE = 'aiogram_state'
 DATA = 'aiogram_data'
 BUCKET = 'aiogram_bucket'
 COLLECTIONS = (STATE, DATA, BUCKET)
-
 
 class MongoStorage(BaseStorage):
     """
@@ -52,12 +52,13 @@ class MongoStorage(BaseStorage):
         self._password = password
         self._kwargs = kwargs  # custom client options like SSL configuration, etc.
 
-        self._mongo: Optional[AsyncIOMotorClient] = None
-        self._db: Optional[AsyncIOMotorDatabase] = None
+        self._mongo = Optional[AsyncIOMotorClient]
+        self._db = Optional[AsyncIOMotorDatabase]
+        
 
         self._index = index
 
-    async def get_client(self) -> AsyncIOMotorClient:
+    async def get_client(self) -> AsyncIOMotorClient: # type: ignore
         if isinstance(self._mongo, AsyncIOMotorClient):
             return self._mongo
 
@@ -87,8 +88,8 @@ class MongoStorage(BaseStorage):
 
     @staticmethod
     def resolve_state(value):
-        from aiogram.filters.state import State
-
+        from aiogram.fsm.state import State
+        
         if value is None:
             return
 
@@ -100,7 +101,7 @@ class MongoStorage(BaseStorage):
 
         return str(value)
 
-    async def get_db(self) -> AsyncIOMotorDatabase:
+    async def get_db(self) -> AsyncIOMotorDatabase: # type: ignore
         """
         Get Mongo db
         This property is awaitable.
@@ -137,7 +138,9 @@ class MongoStorage(BaseStorage):
         elif chat is None:
             chat = user
 
-        return chat, user
+        # VS Code:
+        # Pylance thinks chat or user can be None
+        return chat, user # type: ignore
 
     @staticmethod
     async def apply_index(db):
@@ -178,7 +181,7 @@ class MongoStorage(BaseStorage):
         return result.get('state') if result else self.resolve_state(key.destiny)
 
     async def set_data(self, *, chat: Union[str, int, None] = None, user: Union[str, int, None] = None,
-                       data: Dict = None):
+                       data: Optional[Dict] = None):
         chat, user = self.check_address(chat=chat, user=user)
         db = await self.get_db()
         if not data:
@@ -196,7 +199,7 @@ class MongoStorage(BaseStorage):
         return result.get('data') if result else default or {}
 
     async def update_data(self, *, chat: Union[str, int, None] = None, user: Union[str, int, None] = None,
-                          data: Dict = None, **kwargs):
+                          data: Optional[Dict] = None, **kwargs):
         if data is None:
             data = {}
         temp_data = await self.get_data(chat=chat, user=user, default={})
@@ -214,7 +217,7 @@ class MongoStorage(BaseStorage):
         return result.get('bucket') if result else default or {}
 
     async def set_bucket(self, *, chat: Union[str, int, None] = None, user: Union[str, int, None] = None,
-                         bucket: Dict = None):
+                         bucket: Optional[Dict] = None):
         chat, user = self.check_address(chat=chat, user=user)
         db = await self.get_db()
 
@@ -223,7 +226,7 @@ class MongoStorage(BaseStorage):
 
     async def update_bucket(self, *, chat: Union[str, int, None] = None,
                             user: Union[str, int, None] = None,
-                            bucket: Dict = None, **kwargs):
+                            bucket: Optional[Dict] = None, **kwargs):
         if bucket is None:
             bucket = {}
         temp_bucket = await self.get_bucket(chat=chat, user=user)

@@ -6,5 +6,6 @@ from templates.handlers import (
     inline, 
     managing, 
     start, 
-    group
+    group,
+    errors
     )

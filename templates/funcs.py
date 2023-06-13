@@ -1,7 +1,7 @@
 import random
 import string
 
-from typing import List, Union
+from typing import BinaryIO, Tuple, Optional
 from emoji import EMOJI_DATA
 from PIL import Image
 from io import BytesIO
@@ -15,8 +15,8 @@ from aiogram.exceptions import TelegramBadRequest
 def is_emoji(chars: str) -> bool:
     return all([char in EMOJI_DATA for char in chars])
 
-def resize_image(image: BytesIO) -> InputFile:
-    image = Image.open(image)
+def resize_image(imageIO: BinaryIO) -> InputFile:
+    image = Image.open(imageIO)
     base = 512
     min_size = min(image.size)
     max_size = max(image.size)
@@ -40,18 +40,21 @@ async def pack_exists(get_sticker_set, packid: str) -> bool:
 
 async def delete_non_exist(get_sticker_set, user_id: str) -> None:
 
+    user = database.User(user_id)
     to_pop = []
-    for pname in database.get_user_packs_id(user_id):
+    for pname in user.get_packs_id():
         if not await pack_exists(get_sticker_set, pname+WATERMARK):
             to_pop.append(pname)
     for pname in to_pop:
         # TODO don't forget to edit when members support added
-        database.delete_pack(user_id)
+        user.delete_pack()
 
-async def get_create_add_info(user_id: str, get_file, photo, download_file) -> List[Union[str, InputFile]]:
+async def get_create_add_info(user_id: str, get_file, photo, download_file) -> Tuple[str, str, Optional[str], InputFile, Optional[str]]:
 
-    additional_info = database.get_additional_info(user_id)
+    user = database.User(user_id)
+    additional_info = user.get_additional_info()
     pack_name = additional_info["name"]
+    assert pack_name is not None
     pack_name_plus = pack_name + WATERMARK
     title = additional_info["title"]
     raw_file = await get_file(photo[len(photo)-1].file_id)

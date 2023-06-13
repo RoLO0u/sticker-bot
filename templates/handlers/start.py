@@ -1,15 +1,14 @@
-from typing import Any, Dict, Union
+from typing import Any
 
 from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
-from aiogram.exceptions import TelegramBadRequest
 
 from templates import database
 from templates.FSM_groups import StartFSM, ManagingFSM, CreatingFSM, JoiningFSM
 from templates.markups import start_button, managing_button_inline, single_button
 from templates.funcs import delete_non_exist
-from templates.const import WATERMARK
+from templates.types import Texts, TextsButtons
 
 router = Router()
 
@@ -17,7 +16,8 @@ router = Router()
 async def start_menu(                                   \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
         user_lang: str                                  \
@@ -26,10 +26,10 @@ async def start_menu(                                   \
     # TODO check packs availibility
 
     class Answers:
-        join_btn = texts["start_buttons"][user_lang][0]
-        create_btn = texts["start_buttons"][user_lang][1]
-        man_btn = texts["start_buttons"][user_lang][2]
-        ch_lan_en, ch_lan_ua = texts["change_lang_buttons"]
+        join_btn = texts_buttons["start"][user_lang][0]
+        create_btn = texts_buttons["start"][user_lang][1]
+        man_btn = texts_buttons["start"][user_lang][2]
+        ch_lan_en, ch_lan_ua = texts_buttons["change_lang"]['en'][0], texts_buttons["change_lang"]['ua'][0]
 
     # TODO: make match case better. More: README.md
 
@@ -59,9 +59,10 @@ async def start_menu(                                   \
             await delete_non_exist(bot.get_sticker_set, user_id)
 
             # user have packs
-            if database.get_user_packs_id(user_id):
+            user = database.User(user_id)
+            if user.get_packs_id():
                 await message.answer(texts["managing"][user_lang], \
-                    reply_markup=managing_button_inline( list(database.get_user_packs(user_id)) ))
+                    reply_markup=managing_button_inline( list(user.get_packs()) ))
             
             else:
                 await message.answer(texts["managing_e"][user_lang])
@@ -75,11 +76,14 @@ async def start_menu(                                   \
                 
                 case Answers.ch_lan_ua:
                     change_to = "ua"
+                    
+                case _:
+                    raise NotImplementedError("No implementation when user clicked on other change language than 'en' or 'ua'")
 
-            database.change_lang(user_id, change_to)
+            database.User(user_id).change_lang(change_to)
 
             await message.answer(texts["lan_changed"][change_to], \
-                reply_markup=start_button( texts["start_buttons"][change_to], texts["change_lang_buttons"] ))
+                reply_markup=start_button( texts_buttons["start"][change_to], texts_buttons["change_lang"] ))
 
         case _:
             await message.answer(texts["unknown_exception_2"][user_lang])

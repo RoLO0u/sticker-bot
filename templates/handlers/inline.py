@@ -14,6 +14,7 @@ async def callback_query_handler(callback_query: CallbackQuery, storage: MongoSt
 
     user_id = str(callback_query.from_user.id)
     time = monotonic()
+    assert callback_query.message is not None
 
     await callback_query.message.answer("You are unbanned now\nNext time be careful and don't type too fast")
     await storage.set_data(user=user_id, data={"data": [time, False]})

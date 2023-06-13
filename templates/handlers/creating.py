@@ -1,6 +1,6 @@
 import logging
 
-from typing import Dict, Any, Union
+from typing import Any
 
 from aiogram import types, Router, Bot, F
 
@@ -11,6 +11,7 @@ from templates.FSM_groups import CreatingFSM, StartFSM
 from templates.markups import start_button, pack_link_button, single_button
 from templates.funcs import random_string, is_emoji, get_create_add_info
 from templates.const import WATERMARK
+from templates.types import Texts, TextsButtons
 
 router = Router()
 
@@ -19,34 +20,38 @@ router = Router()
 async def creating_name(                                \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
         user_lang: str                                  \
         ) -> Any:
 
     class Answers:
-        cancel_btn = texts["cancel_button"][user_lang]
+        cancel_btn = texts_buttons["cancel"][user_lang][0]
+        
+    text = message.text
+    assert text is not None # text will never be none because router has filter
 
-    match message.text:
+    match text:
 
         case Answers.cancel_btn:
 
             await state.set_state(StartFSM.start)
 
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
 
-        case _ if len(message.text) <= 64:
+        case _ if len(text) <= 64:
 
             name = random_string()
-
             while name in database.get_packs_name():
                 name = random_string()
             
-            database.create_pack(user_id, name, message.text)
-            database.change_title(user_id, message.text)
+            user = database.User(user_id)
+            database.User(user_id).create(name, text)
+            user.change_title(text)
             await state.set_state(CreatingFSM.collecting_emoji)
-            database.change_name(user_id, name)
+            user.change_name(name)
 
             await message.answer(texts["creating2"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
@@ -60,30 +65,32 @@ async def creating_name(                                \
 async def collecting_emoji(                             \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
         user_lang: str                                  \
         ) -> Any:
 
     class Answers:
-        create_btn = texts["cancel_button"][user_lang]
+        create_btn = texts_buttons["cancel"][user_lang][0]
 
     match message.text:
 
         case Answers.create_btn:
 
             await state.set_state(StartFSM.start)
-            database.delete_pack(user_id)
-            database.change_name(user_id, None)
+            user = database.User(user_id)
+            user.delete_pack()
+            user.change_name(None)
 
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
         
         case _:
 
-            if is_emoji(message.text):
+            if is_emoji(message.text): # type: ignore
 
-                database.change_emoji(user_id, message.text)
+                database.User(user_id).change_emoji(message.text)
                 await state.set_state(CreatingFSM.collecting_photo)
 
                 await message.answer(texts["creating3"][user_lang], \
@@ -98,26 +105,27 @@ async def collecting_emoji(                             \
 async def collecting_photo_t(                           \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
         user_lang: str                                  \
         ) -> Any:
 
     class Answers:
-        cancel_btn = texts["cancel_button"][user_lang]
+        cancel_btn = texts_buttons["cancel"][user_lang][0]
 
     match message.text:
 
         case Answers.cancel_btn:
 
             await state.set_state(StartFSM.start)
-            additional_info = database.get_additional_info(user_id)
-            database.delete_pack(user_id, additional_info["name"])
-            database.change_emoji(user_id, None)
-            database.change_name(user_id, None)
+            user = database.User(user_id)
+            user.delete_pack()
+            user.change_emoji(None)
+            user.change_name(None)
 
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts["start_buttons"][user_lang], texts["change_lang_buttons"] ))
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
         
         case _:
             await message.answer(texts["image_only_e"][user_lang], \
@@ -128,7 +136,8 @@ async def collecting_photo_t(                           \
 async def collecting_photo(                             \
         message: types.Message,                         \
         state: FSMContext,                              \
-        texts: Dict[str, Dict[str, Union[str, list]]],  \
+        texts: Texts,                                   \
+        texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
         user_lang: str                                  \
@@ -139,6 +148,8 @@ async def collecting_photo(                             \
 
     pack_name, pack_name_plus, title, photo, emoji = \
         await get_create_add_info(user_id, bot.get_file, message.photo, bot.download_file)
+    assert title is not None
+    assert emoji is not None
     
     print(pack_name_plus)
     
@@ -147,15 +158,16 @@ async def collecting_photo(                             \
             title=title, emojis=emoji, png_sticker=photo):
 
             await state.set_state(StartFSM.start)
-            database.change_name(user_id, None)
-            database.change_emoji(user_id, None)
-            database.change_title(user_id, None)
-            database.change_pack_status(pack_name, "maked")
+            user = database.User(user_id)
+            user.change_name(None)
+            user.change_emoji(None)
+            user.change_title(None)
+            database.Pack(pack_name).change_status("maked") # TODO migrate 'maked' to 'made' (cringe)
 
             await message.answer(texts["created1"][user_lang], \
                 reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
             await message.answer(texts["created2"][user_lang], \
-                reply_markup=start_button(texts["start_buttons"][user_lang], texts["change_lang_buttons"]))
+                reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
 
         else:
             await message.answer(texts["unknown_exception_1"][user_lang]+'2')

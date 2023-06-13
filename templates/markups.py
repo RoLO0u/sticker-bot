@@ -8,9 +8,9 @@ from templates.const import CAPTCHA_CAPTIONS
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
-def start_button(start_buttons: list, change_lang_buttons: list) -> ReplyKeyboardMarkup:
+def start_button(start_buttons: list, change_lang_buttons: Dict[str, List[str]]) -> ReplyKeyboardMarkup:
     keyboard = [
-        [KeyboardButton(text=change_lang_buttons[0]), KeyboardButton(text=change_lang_buttons[1])],
+        [KeyboardButton(text=change_lang_buttons[lang][0]) for lang in change_lang_buttons],
         [KeyboardButton(text=start_buttons[0]), KeyboardButton(text=start_buttons[1] )],
         [KeyboardButton(text=start_buttons[2])]
     ]
@@ -22,8 +22,8 @@ def single_button(caption: str) -> ReplyKeyboardMarkup:
 
 def managing_button_inline(packs: List[Dict[str, str]]) -> InlineKeyboardMarkup:
     """:param packs: packs => [{"name": "title"}, {"name1": "title1"}]"""
-    packs: List[Tuple] = [list(pack.items())[0] for pack in packs]
-    keyboard = [InlineKeyboardButton(text=pack[1], callback_data=pack[0]) for pack in packs]
+    unwrapped_packs: List[Tuple] = [list(pack.items())[0] for pack in packs]
+    keyboard = [InlineKeyboardButton(text=pack[1], callback_data=pack[0]) for pack in unwrapped_packs]
     splited_keyboard = []
     for i in range(0, len(keyboard), 2):
         splited_keyboard.append(keyboard[i:i+2])
@@ -46,4 +46,4 @@ def captcha_inline() -> InlineKeyboardMarkup:
     random_capts = dict(random_capts)
     listed_markup = [InlineKeyboardButton(text=capt, callback_data=random_capts[capt]) for capt in random_capts]
     listed_markup = [listed_markup[:3], listed_markup[3:]]
-    return InlineKeyboardMarkup(row_width=3, inline_keyboard=listed_markup)
+    return InlineKeyboardMarkup(inline_keyboard=listed_markup)

@@ -16,3 +16,4 @@ venv/*
 # for testing
 
 secrets.txt
+env.sh
