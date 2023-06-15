@@ -96,7 +96,7 @@ class User(Object):
     
     @classmethod
     def get(cls, user_id: str) -> dict:
-        user = users.find_one({"packid": user_id})
+        user = users.find_one({"userid": user_id})
         if user is None:
             raise NotFoundException(object=cls.__name__)
         return user
