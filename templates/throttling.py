@@ -1,7 +1,7 @@
 import logging
 
 from time import monotonic
-from typing import Any, Awaitable, Callable, Dict, Tuple, Coroutine, List
+from typing import Any, Awaitable, Callable, Dict, Coroutine, List
 
 from aiogram.types import Message, TelegramObject
 from aiogram.types.error_event import ErrorEvent
@@ -36,7 +36,7 @@ class AntiFloodMiddleware(BaseMiddleware):
         data["user_id"] = user_id
         data["user_lang"] = database.User.register(user_id, username)
 
-        if not user_storage  and not user_storage["data"]:
+        if not user_storage or not user_storage.get("data"):
             user_storage["data"] = [time, False]
         elif user_storage["data"][1]:
             return
