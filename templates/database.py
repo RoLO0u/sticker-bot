@@ -1,7 +1,8 @@
 import pymongo
 import os
 
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
+from abc import ABC, abstractmethod, abstractclassmethod
 
 from templates.funcs import random_string
 from templates.Exceptions import NotFoundException
@@ -27,18 +28,31 @@ def insert_dict() -> None:
     
 # ---
 
-class Pack:
+class Object(ABC):
+    
+    @abstractclassmethod
+    def get(cls, name: str) -> dict:
+        return dict()
+    
+    @abstractmethod
+    def change(self, parameter: str, change_to: Optional[str]) -> None:
+        pass
+
+class Pack(Object):
     
     def __init__(self, name: str) -> None:
         self.name = name
         self.pack = self.get(name)
-    
-    @staticmethod
-    def get(name: str) -> dict:
+        
+    @classmethod
+    def get(cls, name: str) -> dict:
         pack = packs.find_one({"packid": name})
         if pack is None:
-            raise NotFoundException(object="pack")
+            raise NotFoundException(object=cls.__name__)
         return pack
+        
+    def change(self, parameter: str, change_to: str | None) -> None:
+        packs.update_one({"packid": self.name}, {"$set": {parameter: change_to}})
 
     def change_status(self, change_to: str) -> None:
         packs.update_one({"packid": self.name}, {"$set": {"status": change_to}})
@@ -74,18 +88,18 @@ class Pack:
         if by_id == by_pass:
             return by_pass
     
-class User:
+class User(Object):
     
     def __init__(self, user_id: str) -> None:
         self.id = user_id
         self.user = self.get(user_id)
     
-    @staticmethod
-    def get(user_id: str) -> dict:
-        user_info = users.find_one({"userid": user_id})
-        if user_info is None:
-            raise NotFoundException
-        return user_info
+    @classmethod
+    def get(cls, user_id: str) -> dict:
+        user = users.find_one({"packid": user_id})
+        if user is None:
+            raise NotFoundException(object=cls.__name__)
+        return user
     
     def create(self, name: str, title: str) -> None:
         packs.insert_one({"packid": name, "title": title, "adm": self.id, "members": [self.id], "status": "making",
@@ -95,19 +109,22 @@ class User:
         users.update_one({"userid": self.id}, {"$set": {"packs": user_packs}})
     
     def change(self, parameter: str, change_to: str | None) -> None:
-        users.update_one({"userid": self.id}, {"$set": {f"{parameter}": change_to}})
+        users.update_one({"userid": self.id}, {"$set": {parameter: change_to}})
     
     def change_lang(self, change_to: str) -> None:
         self.change("language", change_to)
     
-    def change_emoji(self, change_to: str | None) -> None:
+    def change_emoji(self, change_to: Optional[str]) -> None:
         self.change("additional_info.emoji", change_to)
 
-    def change_name(self, change_to: str | None) -> None:
+    def change_name(self, change_to: Optional[str]) -> None:
         self.change("additional_info.name", change_to)
 
-    def change_title(self, change_to: str | None) -> None:
+    def change_title(self, change_to: Optional[str]) -> None:
         self.change("additional_info.title", change_to)
+        
+    def change_username(self, change_to: Optional[str]) -> None:
+        self.change("username", change_to)
         
     @staticmethod
     def register(user_id: str, username: str) -> str:
@@ -116,6 +133,9 @@ class User:
                 "additional_info": {"emoji": None, "name": None, "title": None}})
         user_info = users.find_one({"userid": user_id})
         assert user_info is not None
+        if user_info["username"] != username:
+            user = User(user_id)
+            user.change_username(username)
         return user_info["language"]
     
     @staticmethod
@@ -146,14 +166,14 @@ class User:
         return self.user["additional_info"]
 
     def delete_pack(self) -> None:
-        """:param pack_name: if None use users additional info as pack_name"""
         pack_name = self.get_additional_info()["name"]
-        # getting user packs and removing empty one
-        # TODO use update_many to delete pack from many users
-        user_packs: list = self.user["packs"]
-        user_packs.remove(pack_name)
-        packs.delete_one({"packid": pack_name})
-        users.update_one({"userid": self.id}, {"$set": {"packs": user_packs}})
+        assert pack_name is not None
+        pack = Pack(pack_name)
+        for pack_member in pack.pack["members"]:
+            member_packs: list = User(pack_member).user["packs"]
+            member_packs.remove(pack.name)
+            users.update_one({"userid": pack_member}, {"$set": {"packs": member_packs}})
+        packs.delete_one({"packid": pack.name})
         
     def remove_user_from_pack(self, pack_id: str) -> None:
 
@@ -168,8 +188,7 @@ class User:
         users.update_one({"userid": self.id}, {"$set": {"packs": user_packs}})
 
 def get_user_by_uname(username: str) -> Union[None, Dict]:
-    if user := users.find_one({"username": username}):
-        return user
+    return users.find_one({"username": username})
 
 def get_all_packs() -> List[dict]:
     return [pack for pack in packs.find()]
