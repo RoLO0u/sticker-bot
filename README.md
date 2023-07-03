@@ -34,7 +34,7 @@ Bot simply can be installed by running code on machine using required variables
 
 ## Database
 
-Database maked in pymongo and uses MONGO_URI from environment
+Database made in pymongo and uses MONGO_URI from environment
 
 Working on postgresql database
 

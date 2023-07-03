@@ -8,8 +8,9 @@ from aiogram.types.error_event import ErrorEvent
 from aiogram.dispatcher.middlewares.base import BaseMiddleware
 
 from templates.markups import captcha_inline
-from templates import database
-from templates.mongo import MongoStorage
+from templates.database import baseDB
+from templates.database.fsm.mongo import MongoStorage
+from templates.database.fsm.postgres import PostgreStorage
 from templates.Exceptions import EmptyUsernameException
 
 class AntiFloodMiddleware(BaseMiddleware):
@@ -21,11 +22,12 @@ class AntiFloodMiddleware(BaseMiddleware):
         
         assert event.from_user is not None
         
+        User: baseDB.User = data["User"]
         user_id = str(event.from_user.id)
         time = monotonic()
 
         my_storage = data.get("storage")
-        assert isinstance(my_storage, MongoStorage)
+        assert isinstance(my_storage, MongoStorage) or isinstance(my_storage, PostgreStorage)
 
         user_storage: Dict[str, List[float | bool]] = await my_storage.get_data(user=user_id)
 
@@ -34,7 +36,7 @@ class AntiFloodMiddleware(BaseMiddleware):
             raise EmptyUsernameException
         
         data["user_id"] = user_id
-        data["user_lang"] = database.User.register(user_id, username)
+        data["user_lang"] = User.register(user_id, username)
 
         if not user_storage or not user_storage.get("data"):
             user_storage["data"] = [time, False]
@@ -61,11 +63,13 @@ class ErrorsMiddleware(BaseMiddleware):
         
         assert event.update.message is not None
         assert event.update.message.from_user is not None
+    
+        User: baseDB.User = data["User"]
         user_id = str(event.update.message.from_user.id)
         time = monotonic()
 
         my_storage = data.get("storage")
-        assert isinstance(my_storage, MongoStorage)
+        assert isinstance(my_storage, MongoStorage) or isinstance(my_storage, PostgreStorage)
 
         user_storage: Dict[str, List[float | bool]] = await my_storage.get_data(user=user_id)
 
@@ -75,7 +79,7 @@ class ErrorsMiddleware(BaseMiddleware):
                 raise EmptyUsernameException
         
         data["user_id"] = user_id
-        data["user_lang"] = database.User.get(user_id)['language'] if database.User.is_exist(user_id) else 'en'
+        data["user_lang"] = User.get(user_id)['language'] if User.is_exist(user_id) else 'en'
 
         if not user_storage or not user_storage.get("exception_data"):
             user_storage["exception_data"] = [time, False]

@@ -1,12 +1,10 @@
-import logging
-
-from typing import Any
+from typing import Any, Type
 
 from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
 
-from templates import database
+from templates.database import baseDB
 from templates.FSM_groups import CreatingFSM, StartFSM
 from templates.markups import start_button, pack_link_button, single_button
 from templates.funcs import random_string, is_emoji, get_create_add_info
@@ -23,7 +21,9 @@ async def creating_name(                                \
         texts: Texts,                                   \
         texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        MiscDB: Type[baseDB.MiscDB],                    \
+        User: Type[baseDB.User]                         \
         ) -> Any:
 
     class Answers:
@@ -44,11 +44,11 @@ async def creating_name(                                \
         case _ if len(text) <= 64:
 
             name = random_string()
-            while name in database.get_packs_name():
+            while name in MiscDB.get_packs_name():
                 name = random_string()
             
-            user = database.User(user_id)
-            database.User(user_id).create(name, text)
+            user = User(user_id)
+            User(user_id).create(name, text)
             user.change_title(text)
             await state.set_state(CreatingFSM.collecting_emoji)
             user.change_name(name)
@@ -68,7 +68,8 @@ async def collecting_emoji(                             \
         texts: Texts,                                   \
         texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User]                         \
         ) -> Any:
 
     class Answers:
@@ -79,7 +80,7 @@ async def collecting_emoji(                             \
         case Answers.create_btn:
 
             await state.set_state(StartFSM.start)
-            user = database.User(user_id)
+            user = User(user_id)
             user.delete_pack()
             user.change_name(None)
 
@@ -90,7 +91,7 @@ async def collecting_emoji(                             \
 
             if is_emoji(message.text): # type: ignore
 
-                database.User(user_id).change_emoji(message.text)
+                User(user_id).change_emoji(message.text)
                 await state.set_state(CreatingFSM.collecting_photo)
 
                 await message.answer(texts["creating3"][user_lang], \
@@ -108,7 +109,8 @@ async def collecting_photo_t(                           \
         texts: Texts,                                   \
         texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User]                         \
         ) -> Any:
 
     class Answers:
@@ -119,7 +121,7 @@ async def collecting_photo_t(                           \
         case Answers.cancel_btn:
 
             await state.set_state(StartFSM.start)
-            user = database.User(user_id)
+            user = User(user_id)
             user.delete_pack()
             user.change_emoji(None)
             user.change_name(None)
@@ -140,29 +142,29 @@ async def collecting_photo(                             \
         texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User],                        \
+        Pack: Type[baseDB.Pack]                         \
         ) -> Any:
 
     # TODO: make multiple emojis to sticker possible
     # TODO: make webm and tgs image format possible
 
     pack_name, pack_name_plus, title, photo, emoji = \
-        await get_create_add_info(user_id, bot.get_file, message.photo, bot.download_file)
+        await get_create_add_info(user_id, User, bot.get_file, message.photo, bot.download_file)
     assert title is not None
     assert emoji is not None
-    
-    print(pack_name_plus)
     
     try:
         if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
             title=title, emojis=emoji, png_sticker=photo):
 
             await state.set_state(StartFSM.start)
-            user = database.User(user_id)
+            user = User(user_id)
             user.change_name(None)
             user.change_emoji(None)
             user.change_title(None)
-            database.Pack(pack_name).change_status("maked") # TODO migrate 'maked' to 'made' (cringe)
+            Pack(pack_name).change_status("maked") # TODO migrate 'maked' to 'made' (cringe)
 
             await message.answer(texts["created1"][user_lang], \
                 reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
@@ -172,7 +174,8 @@ async def collecting_photo(                             \
         else:
             await message.answer(texts["unknown_exception_1"][user_lang]+'2')
 
-    # TODO explore what exception happens when telegram don't want to user create pack
+    # TODO explore what exception happens when telegram doesn't want to user create pack
+    # TODO maybe create something to save logs
 
     except Exception as e:
         await message.answer(texts["known_e_1"][user_lang]+str(e).split()[-1])

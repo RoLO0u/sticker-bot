@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, Type
 from aiogram import Router, F, types
 
 from aiogram.fsm.context import FSMContext
 
-from templates import database
+from templates.database import baseDB
 from templates.FSM_groups import StartFSM, JoiningFSM
 from templates.markups import start_button
 from templates.types import Texts, TextsButtons
@@ -17,7 +17,8 @@ async def join_by_password(                             \
         texts: Texts,                                   \
         texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        Pack: Type[baseDB.Pack]                         \
         ) -> Any:
 
     class Answers:
@@ -36,7 +37,7 @@ async def join_by_password(                             \
             if len(message.text) != 20:
                 await message.answer(texts["joining_e1"][user_lang])
                 return
-            pack = database.Pack.get_pass(message.text)
+            pack = Pack.get_pass(message.text)
             if pack is None:
                 await message.answer(texts["joining_e1"][user_lang])                
                 return
@@ -44,9 +45,9 @@ async def join_by_password(                             \
                 await message.answer(texts["joining_e3"][user_lang])
                 return
                 
-            database.Pack(pack["packid"]).add_user(user_id)
+            Pack(pack["packid"]).add_user(user_id)
 
-            await state.set_state(StartFSM.start)
+            await state.set_state(state=StartFSM.start)
             await message.answer(texts["joined"][user_lang], parse_mode="HTML", \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
 
@@ -57,7 +58,10 @@ async def kick_t(                                       \
         texts: Texts,                                   \
         texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        MiscDB: Type[baseDB.MiscDB],                    \
+        User: Type[baseDB.User],                        \
+        Pack: Type[baseDB.Pack]                         \
         ) -> Any:
     
     class Answers:
@@ -74,15 +78,15 @@ async def kick_t(                                       \
         
         case _:
             
-            user_to_kick = database.get_user_by_uname(message.text)
+            user_to_kick = User.get_by_username(message.text)
             assert user_to_kick is not None
-            pack_id = database.User(user_id).get_chosen()["packid"]
+            pack_id = User(user_id).get_chosen()["packid"]
             assert not isinstance(pack_id, list)
 
-            if database.Pack(pack_id).include(user_kick := user_to_kick["userid"], ) and user_kick != user_id:
+            if Pack(pack_id).include(user_kick := user_to_kick["userid"], ) and user_kick != user_id:
 
                 await state.set_state(StartFSM.start)
-                database.User(user_kick).remove_user_from_pack(pack_id)
+                User(user_kick).remove_user_from_pack(pack_id)
                 await message.answer(texts["kicked"][user_lang], \
                     reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
 

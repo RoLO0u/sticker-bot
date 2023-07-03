@@ -10,6 +10,8 @@ photos/*
 __pycache__/*
 templates/__pycache__/*
 templates/handlers/__pycache__/*
+templates/database/__pycache__/
+templates/database/fsm/__pycache__/
 venv/*
 .vscode/
 

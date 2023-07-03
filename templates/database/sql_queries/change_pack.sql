@@ -1,0 +1,1 @@
+UPDATE public.packs SET {}=%s WHERE packid=%s

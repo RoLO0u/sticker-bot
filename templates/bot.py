@@ -4,19 +4,10 @@ import os
 
 from aiogram import Bot, Dispatcher, F
 
-# from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-
 from templates import Exceptions, throttling, const
 from templates.handlers import *
-from templates.mongo import MongoStorage
 
 async def run():
-
-    # configuring storage
-    
-    URI = os.getenv("MONGO_URI")
-
-    storage = MongoStorage(uri=URI)
     
     # configuring aiogram bot
 
@@ -32,8 +23,33 @@ async def run():
 
     bot = Bot(TOKEN)
 
-    dp = Dispatcher(storage=storage, name="main")
+    # configuring storage
+    
+    db_type = os.getenv("DB")
+    
+    if db_type == "mongodb":
+        from templates.database.fsm.mongo import MongoStorage
+        from templates.database import mongodb
+        
+        URI = os.getenv("MONGO_URI")
+        storage = MongoStorage(uri=URI)
+        mainDB = mongodb
+        
+    elif db_type == "postgresql":
+        from templates.database.fsm.postgres import PostgreStorage
+        from templates.database import postgresql
+        postgresql.MiscDB.create_tables()
+        storage = PostgreStorage(**postgresql.kwargs) # type: ignore
+        mainDB = postgresql
+        
+    else:
+        raise Exceptions.InvalidEnvException("DB variable is not valid (either mongodb or postgresql)")
 
+    dp = Dispatcher(storage=storage, name="main")
+    
+    dp["User"] = mainDB.User
+    dp["Pack"] = mainDB.Pack
+    dp["MiscDB"] = mainDB.MiscDB
     dp["dp"] = dp
     dp["storage"] = storage
     dp["texts"] = texts
@@ -57,5 +73,3 @@ async def run():
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:
         await bot.session.close()
-                
-    # TODO FUTURE delete set from his members also
