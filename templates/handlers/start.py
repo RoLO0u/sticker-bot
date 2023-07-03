@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Type
 
 from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
 
-from templates import database
+from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM, CreatingFSM, JoiningFSM
 from templates.markups import start_button, managing_button_inline, single_button
 from templates.funcs import delete_non_exist
@@ -20,7 +20,8 @@ async def start_menu(                                   \
         texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User]                                    \
         ) -> Any:
     
     # TODO check packs availibility
@@ -56,10 +57,10 @@ async def start_menu(                                   \
                 reply_markup=single_button(texts["back"][user_lang]))
 
             # Delete pack for db if it was deleted
-            await delete_non_exist(bot.get_sticker_set, user_id)
+            await delete_non_exist(bot.get_sticker_set, User, user_id)
 
             # user have packs
-            user = database.User(user_id)
+            user = User(user_id)
             if user.get_packs_id():
                 await message.answer(texts["managing"][user_lang], \
                     reply_markup=managing_button_inline( list(user.get_packs()) ))
@@ -80,7 +81,7 @@ async def start_menu(                                   \
                 case _:
                     raise NotImplementedError("No implementation when user clicked on other change language than 'en' or 'ua'")
 
-            database.User(user_id).change_lang(change_to)
+            User(user_id).change_lang(change_to)
 
             await message.answer(texts["lan_changed"][change_to], \
                 reply_markup=start_button( texts_buttons["start"][change_to], texts_buttons["change_lang"] ))

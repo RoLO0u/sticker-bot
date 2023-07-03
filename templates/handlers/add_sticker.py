@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, Type
 from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
 
-from templates import database
+from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM
 from templates.markups import managing_button_2, start_button, pack_link_button, single_button
 from templates.funcs import is_emoji, get_create_add_info, pack_exists
@@ -19,7 +19,8 @@ async def collecting_emoji_add(                         \
         texts: Texts,                                   \
         texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User]                         \
         ) -> Any:
     
     class Answers:
@@ -38,7 +39,7 @@ async def collecting_emoji_add(                         \
                                        # ignore because router has filter for text already
 
                 await state.set_state(ManagingFSM.collecting_photo_add)
-                database.User(user_id).change_emoji(message.text)
+                User(user_id).change_emoji(message.text)
                 await message.answer(texts["managing_add_2"][user_lang], \
                     reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
         
@@ -52,7 +53,8 @@ async def collecting_photo_add_t(                       \
         texts: Texts,                                   \
         texts_buttons: TextsButtons,                    \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User]                         \
         ) -> Any:
     
     class Answers:
@@ -62,7 +64,7 @@ async def collecting_photo_add_t(                       \
 
         case Answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
-            database.User(user_id).change_emoji(None)
+            User(user_id).change_emoji(None)
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
 
@@ -77,15 +79,16 @@ async def collecting_photo_add(                         \
         texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                  \
+        User: Type[baseDB.User]                         \
         ) -> Any:
 
     pack_name, pack_name_plus, _, photo, emoji = \
-        await get_create_add_info(user_id, bot.get_file, message.photo, bot.download_file)
+        await get_create_add_info(user_id, User, bot.get_file, message.photo, bot.download_file)
 
     if not await pack_exists(bot.get_sticker_set, pack_name_plus):
-        await state.set_state(StartFSM.start)
-        user = database.User(user_id)
+        await state.set_state(state=StartFSM.start)
+        user = User(user_id)
         user.delete_pack()
         user.change_name(None)
         user.change_emoji(None)
@@ -101,7 +104,7 @@ async def collecting_photo_add(                         \
                 emoji, png_sticker=photo):
             
             await state.set_state(StartFSM.start)
-            user = database.User(user_id)
+            user = User(user_id)
             user.change_name(None)
             user.change_emoji(None)
             

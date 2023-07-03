@@ -2,10 +2,10 @@ import pymongo
 import os
 
 from typing import List, Dict, Union, Optional
-from abc import ABC, abstractmethod, abstractclassmethod
 
 from templates.funcs import random_string
 from templates.Exceptions import NotFoundException
+from templates.database import baseDB
 
 # Configuring mongodb
 
@@ -28,21 +28,7 @@ def insert_dict() -> None:
     
 # ---
 
-class Object(ABC):
-    
-    @abstractclassmethod
-    def get(cls, name: str) -> dict:
-        return dict()
-    
-    @abstractmethod
-    def change(self, parameter: str, change_to: Optional[str]) -> None:
-        pass
-
-class Pack(Object):
-    
-    def __init__(self, name: str) -> None:
-        self.name = name
-        self.pack = self.get(name)
+class Pack(baseDB.Pack):
         
     @classmethod
     def get(cls, name: str) -> dict:
@@ -53,18 +39,14 @@ class Pack(Object):
         
     def change(self, parameter: str, change_to: str | None) -> None:
         packs.update_one({"packid": self.name}, {"$set": {parameter: change_to}})
-
-    def change_status(self, change_to: str) -> None:
-        packs.update_one({"packid": self.name}, {"$set": {"status": change_to}})
     
-    def change_stickers(self, change_to: str) -> None:
-        packs.update_one({"packid": self.name}, {"$set": {"stickers": change_to}})
-    
-    def include(self, user_id) -> bool:
-        if user_id in self.pack["members"]:
-            return True
-        return False
-    
+    @staticmethod
+    def get_pass(password: str) -> Optional[dict]:
+        by_id = packs.find_one({"packid": password[:10]})
+        by_pass = packs.find_one({"password": password[10:]})
+        if by_id == by_pass:
+            return by_pass
+        
     def add_user(self, user_id: str) -> None:
         self.pack['members'].append(user_id)
 
@@ -72,27 +54,10 @@ class Pack(Object):
         user_packs = user.get_packs_id()
         user_packs.append(self.name)
 
-        users.update_one({"userid": user_id}, {"$set": {"packs": user_packs}})
-        packs.update_one({"packid": self.name}, {"$set": {"members": self.pack["members"]}})
+        user.change("packs", user_packs)
+        self.change("members", self.pack["members"])
         
-    def get_title(self) -> str:
-        title = self.pack["title"]
-        if not isinstance(title, str):
-            raise TypeError
-        return title
-    
-    @staticmethod
-    def get_pass(password) -> Union[None, dict]:
-        by_id = packs.find_one({"packid": password[:10]})
-        by_pass = packs.find_one({"password": password[10:]})
-        if by_id == by_pass:
-            return by_pass
-    
-class User(Object):
-    
-    def __init__(self, user_id: str) -> None:
-        self.id = user_id
-        self.user = self.get(user_id)
+class User(baseDB.User):
     
     @classmethod
     def get(cls, user_id: str) -> dict:
@@ -105,26 +70,11 @@ class User(Object):
         packs.insert_one({"packid": name, "title": title, "adm": self.id, "members": [self.id], "status": "making",
         "password": random_string()})
         # getting user packs and append one
-        user_packs = User.get(self.id)["packs"] + [name]
+        user_packs = self.user["packs"] + [name]
         users.update_one({"userid": self.id}, {"$set": {"packs": user_packs}})
     
-    def change(self, parameter: str, change_to: str | None) -> None:
+    def change(self, parameter: str, change_to: str | list | None) -> None:
         users.update_one({"userid": self.id}, {"$set": {parameter: change_to}})
-    
-    def change_lang(self, change_to: str) -> None:
-        self.change("language", change_to)
-    
-    def change_emoji(self, change_to: Optional[str]) -> None:
-        self.change("additional_info.emoji", change_to)
-
-    def change_name(self, change_to: Optional[str]) -> None:
-        self.change("additional_info.name", change_to)
-
-    def change_title(self, change_to: Optional[str]) -> None:
-        self.change("additional_info.title", change_to)
-        
-    def change_username(self, change_to: Optional[str]) -> None:
-        self.change("username", change_to)
         
     @staticmethod
     def register(user_id: str, username: str) -> str:
@@ -134,19 +84,17 @@ class User(Object):
         user_info = users.find_one({"userid": user_id})
         assert user_info is not None
         if user_info["username"] != username:
-            user = User(user_id)
-            user.change_username(username)
+            User(user_id).change_username(username)
         return user_info["language"]
     
     @staticmethod
-    def get_by_username(username: str) -> Union[None, dict]:
+    def get_by_username(username: str) -> Optional[dict]:
         if user := users.find_one({"username": username}):
             return user
-        return
     
     @staticmethod
     def is_exist(user_id: str) -> bool:
-        return bool(users.count_documents({"userid": user_id}))
+        return bool(users.count_documents(filter={"userid": user_id}))
 
     def get_chosen(self) -> Dict[str, Union[list, str]]:
         chosen_pack = self.get_additional_info()["name"]
@@ -156,18 +104,10 @@ class User(Object):
     def get_packs(self) -> List[Dict[str, str]]:
         return [{packid : Pack(packid).get_title()} for packid in self.get_packs_id()]
 
-    def get_packs_id(self) -> List[str]:
-        return self.user["packs"]
-    
-    def get_user_lang(self) -> str:
-        return self.user["language"]
-    
-    def get_additional_info(self) -> Dict[str, Union[None, str]]:
-        return self.user["additional_info"]
-
-    def delete_pack(self) -> None:
-        pack_name = self.get_additional_info()["name"]
-        assert pack_name is not None
+    def delete_pack(self, pack_name: Optional[str] = None) -> None:
+        if pack_name is None:
+            pack_name = self.get_additional_info()["name"]
+            assert pack_name is not None
         pack = Pack(pack_name)
         for pack_member in pack.pack["members"]:
             member_packs: list = User(pack_member).user["packs"]
@@ -176,7 +116,6 @@ class User(Object):
         packs.delete_one({"packid": pack.name})
         
     def remove_user_from_pack(self, pack_id: str) -> None:
-
         members = Pack.get(pack_id)["members"]
         if isinstance(members, list):
             members.remove(self.id)
@@ -187,11 +126,8 @@ class User(Object):
         packs.update_one({"packid": pack_id}, {"$set": {"members": members}})
         users.update_one({"userid": self.id}, {"$set": {"packs": user_packs}})
 
-def get_user_by_uname(username: str) -> Union[None, Dict]:
-    return users.find_one({"username": username})
-
-def get_all_packs() -> List[dict]:
-    return [pack for pack in packs.find()]
-
-def get_packs_name() -> List[str]:
-    return [pack["packid"] for pack in get_all_packs()]
+class MiscDB(baseDB.MiscDB):
+    
+    @staticmethod
+    def get_all_packs() -> List[dict]:
+        return [pack for pack in packs.find()]

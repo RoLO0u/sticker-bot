@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Type
 
 from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
 
-from templates import database
+from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM
 from templates.markups import start_button, managing_button_2
 from templates.const import WATERMARK
@@ -20,7 +20,8 @@ async def delete_sticker_from_pack(                     \
         texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User]                         \
         ) -> Any:
 
     await state.set_state(StartFSM.start)
@@ -31,7 +32,7 @@ async def delete_sticker_from_pack(                     \
 
     # TODO: make warning message if it's last sticker
 
-    name = database.User(user_id).get_additional_info()["name"]
+    name = User(user_id).get_additional_info()["name"]
     assert name is not None
     sticker_set = await bot.get_sticker_set(name+WATERMARK)
     stickers_un_id = [sticker.file_unique_id for sticker in sticker_set.stickers]
@@ -77,7 +78,8 @@ async def confirming_pack_deleting(                     \
         texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User]                         \
         ) -> Any:
     
     class Answers:
@@ -95,7 +97,7 @@ async def confirming_pack_deleting(                     \
 
             await state.set_state(StartFSM.start)
 
-            user = database.User(user_id)
+            user = User(user_id)
             set_name = user.get_additional_info()["name"]
             assert set_name is not None
 

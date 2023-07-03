@@ -5,7 +5,7 @@ from aiogram import Router, F
 
 from aiogram.types import CallbackQuery
 
-from templates.mongo import MongoStorage
+from templates.database.fsm.mongo import MongoStorage
 
 router = Router()
 

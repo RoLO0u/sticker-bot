@@ -1,0 +1,5 @@
+CREATE DATABASE aiogram
+    WITH
+    OWNER = %s
+    ENCODING = 'UTF8'
+    CONNECTION LIMIT = -1;

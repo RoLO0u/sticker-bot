@@ -1,12 +1,12 @@
 import random
 import string
 
-from typing import BinaryIO, Tuple, Optional
+from typing import BinaryIO, Tuple, Optional, Type, Dict, Any
 from emoji import EMOJI_DATA
 from PIL import Image
 from io import BytesIO
 
-from templates import database
+from templates.database import baseDB
 from templates.const import WATERMARK
 
 from aiogram.types import BufferedInputFile, InputFile, StickerSet
@@ -38,20 +38,20 @@ async def pack_exists(get_sticker_set, packid: str) -> bool:
         return False
     return True
 
-async def delete_non_exist(get_sticker_set, user_id: str) -> None:
+async def delete_non_exist(get_sticker_set, User: Type[baseDB.User], user_id: str) -> None:
 
-    user = database.User(user_id)
+    user = User(user_id)
     to_pop = []
     for pname in user.get_packs_id():
         if not await pack_exists(get_sticker_set, pname+WATERMARK):
             to_pop.append(pname)
     for pname in to_pop:
         # TODO don't forget to edit when members support added
-        user.delete_pack()
+        user.delete_pack(pname)
 
-async def get_create_add_info(user_id: str, get_file, photo, download_file) -> Tuple[str, str, Optional[str], InputFile, Optional[str]]:
+async def get_create_add_info(user_id: str, User: Type[baseDB.User], get_file, photo, download_file) -> Tuple[str, str, Optional[str], InputFile, Optional[str]]:
 
-    user = database.User(user_id)
+    user = User(user_id)
     additional_info = user.get_additional_info()
     pack_name = additional_info["name"]
     assert pack_name is not None
@@ -70,3 +70,22 @@ async def have_stickers(packid: str, get_sticker_set) -> bool:
 
 def random_string(L: int = 10) -> str:
     return ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k=L))
+
+def convert_pack_sql(data: Tuple[Any, ...]) -> Dict[str, Any]:
+    return {
+            "packid": data[0],
+            "title": data[1],
+            "adm": data[2],
+            "members": data[3],
+            "status": data[4],
+            "password": data[5]
+            }
+    
+def convert_user_sql(data: Tuple[Any, ...]) -> Dict[str, Any]:
+    return {
+            "userid": data[0],
+            "packs": data[1],
+            "username": data[2],
+            "language": data[3],
+            "additional_info": data[4]
+            }

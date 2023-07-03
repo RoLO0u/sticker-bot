@@ -18,7 +18,7 @@
 "start_exception_1": {"en": "❌ Please do your username to use this bot", "ua": "❌ Будь ласка, зробіть псевдонім, щоб користуватись ботом"},
 "unknown_exception_1": {"en": "Oops... Unknown exception happened😕.\nForward this message to tech support @feddunn.\nException №",
     "ua": "Упс... Невідома помилка😕.\nПовідомте про цю помилку технічній підтримці @feddunn.\nПомилка №"},
-"unknown_exception_2": {"en": "Oops... I don't know this command😕", "ua": "Упс... Я не знаю цю команду😕"},
+"unknown_exception_2": {"en": "Oops... I don't know this command😕\nUse /start to start over", "ua": "Упс... Я не знаю цю команду😕\nСкористайтесь /start, щоб почати знову"},
 "unknown_exception_3": {"en": "Oops... I don't need this photo now😕", "ua": "Упс... Мені не потрібне це фото😕"},
 "managing0": {"en": "Wait⏳", "ua": "Зачекайте⏳"},
 "managing_e": {"en": "Oops... You don't have any packs😕", "ua": "Упс... У вас немає пакунків наліпок😕"},

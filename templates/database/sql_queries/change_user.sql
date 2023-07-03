@@ -1,0 +1,1 @@
+UPDATE public.users SET {}=%s WHERE userid=%s

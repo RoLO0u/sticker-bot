@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Type
 
 from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
 
-from templates import database
+from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM
 from templates.markups import start_button, managing_button_2, managing_button_inline, single_button
 from templates.funcs import delete_non_exist, have_stickers
@@ -12,6 +12,9 @@ from templates.const import WATERMARK
 from templates.types import Texts, TextsButtons
 
 router = Router()
+
+def callback_query_filter(callback_query: types.CallbackQuery, User: Type[baseDB.User]) -> bool:
+    return callback_query.data in User(str(callback_query.from_user.id)).get_packs_id()
 
 @router.message(ManagingFSM.choosing_pack, F.text)
 async def choosing_pack_t(                              \
@@ -47,7 +50,8 @@ async def menu(                                         \
         texts_buttons: TextsButtons,                    \
         bot: Bot,                                       \
         user_id: str,                                   \
-        user_lang: str                                  \
+        user_lang: str,                                 \
+        User: Type[baseDB.User]                     \
         ) -> Any:
 
     # TODO create inline sticker pick like in @Stickers bot
@@ -70,10 +74,10 @@ async def menu(                                         \
                 reply_markup=single_button(texts["back"][user_lang]))
 
             # Delete pack for db if it was deleted
-            await delete_non_exist(bot.get_sticker_set, user_id)
+            await delete_non_exist(bot.get_sticker_set, User, user_id)
         
             # user have packs
-            user = database.User(user_id)
+            user = User(user_id)
             if user.get_packs_id():
                 await message.answer(texts["managing"][user_lang], \
                     reply_markup=managing_button_inline( list(user.get_packs()) ))
@@ -99,7 +103,7 @@ async def menu(                                         \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case Answers.show_btn:
-            pack_name = database.User(user_id).get_additional_info()["name"]
+            pack_name = User(user_id).get_additional_info()["name"]
             assert pack_name is not None
             if await have_stickers(pack_name, bot.get_sticker_set):
                 sticker = await bot.get_sticker_set(pack_name+WATERMARK)
@@ -108,7 +112,7 @@ async def menu(                                         \
                 await message.answer(texts["managing_show_e"][user_lang])
         
         case Answers.invite_btn:
-            token = database.User(user_id).get_chosen()
+            token = User(user_id).get_chosen()
             assert not isinstance(token["packid"], list) and not isinstance(token["password"], list)
             token = token["packid"]+token["password"]
             await message.answer(texts["how_to_invite"][user_lang].format(token), parse_mode="markdown")
@@ -125,22 +129,22 @@ async def menu(                                         \
             await message.answer(msg[user_lang])
 
 @router.callback_query(F.data, \
-    lambda callback_query: callback_query.data in database.User(str(callback_query.from_user.id)).get_packs_id(), \
-    ManagingFSM.choosing_pack)
+    ManagingFSM.choosing_pack, \
+    callback_query_filter)
 async def choosing_pack(\
         callback_query: types.CallbackQuery,            \
         state: FSMContext,                              \
         texts: Texts,                                   \
         texts_buttons: TextsButtons,                    \
-        # for no idk reason middleware don't work with callback query handlers :<
+        User: Type[baseDB.User]                         \
         ) -> Any:
 
     user_id = str(callback_query.from_user.id)
     assert callback_query.from_user.username is not None
-    user_lang = database.User.register(user_id, callback_query.from_user.username)
+    user_lang = User.register(user_id, callback_query.from_user.username)
 
     await state.set_state(ManagingFSM.menu)
-    database.User(user_id).change_name(callback_query.data)
+    User(user_id).change_name(callback_query.data)
 
     assert callback_query.message is not None
     await callback_query.message.answer(texts["managing2"][user_lang], \
