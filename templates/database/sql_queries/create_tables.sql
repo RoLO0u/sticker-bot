@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     "username" varchar(64),
     "language" varchar(4) NOT NULL,
     "additional_info" json,
-	PRIMARY KEY ("user_id")
+	PRIMARY KEY ("userid")
 );
 
 CREATE TABLE IF NOT EXISTS public.packs (

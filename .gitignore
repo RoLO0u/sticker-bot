@@ -7,11 +7,7 @@ photos/*
 
 # useless
 
-__pycache__/*
-templates/__pycache__/*
-templates/handlers/__pycache__/*
-templates/database/__pycache__/
-templates/database/fsm/__pycache__/
+**/__pycache__/
 venv/*
 .vscode/
 
@@ -19,3 +15,8 @@ venv/*
 
 secrets.txt
 env.sh
+
+# Docker secrets
+
+db/
+.env
