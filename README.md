@@ -1,4 +1,4 @@
-# <p align="center">Sticker packs telegram bot</p>
+# Sticker packs telegram bot
 
 ![GitHub](https://img.shields.io/github/license/RoLO0u/sticker-bot?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/RoLO0u/sticker-bot?style=for-the-badge) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/RoLO0u/sticker-bot?style=for-the-badge) ![PyPI - Implementation](https://img.shields.io/pypi/implementation/aiogram?style=for-the-badge) ![Python Version](https://img.shields.io/badge/Python-3.10-informational?style=for-the-badge&logo=python) ![GitHub watchers](https://img.shields.io/github/watchers/RoLO0u/sticker-bot?style=for-the-badge)
 
@@ -6,19 +6,39 @@
 
 Bot simply can be installed by running code on machine using required variables
 
+Or using virtual environment variables AND docker
+
 ## Required variables
 
-* BOT_TOKEN ─ token bot will use to interact with telegram API
+### Database configuration
+
+* DB - db name, which will be used for bot to store users info.
+> In current version either "mongodb" or "postgresql"
+
+#### If you're using mongodb
+
 * MONGO_URI ─ uri to your mongo database
-* BOT_NAME ─ bot surname (e.g. BOT_NAME="paces_bot", where t.me/paces_bot ─ link to bot)
+
+#### If you're using postgresql
+
+* PGDATABASE
+* PGHOST
+* PGPASSWORD
+* PGPORT
+* PGUSER
+
+### Telegram bot configuration
+
+* BOT_TOKEN ─ token bot will use to interact with telegram API
+> Use [@BotFather](https://t.me/BotFather) to get bot token
+* BOT_NAME ─ bot surname 
+> e.g. BOT_NAME="paces_bot", where t.me/paces_bot ─ link to bot
+
+## API
+
+This bot uses aiogram, therefore [official telegram api](https://core.telegram.org/bots/api)
 
 ## Using emoji library
-
-> The main method to use is create_new_sticker_set from aiogram.Bot class <br>
-> [documentation](https://core.telegram.org/bots/api#createnewstickerset)
-
-> Also add_sticker_to_set needed <br>
-> [documentation](https://core.telegram.org/bots/api#addstickertoset)
 
 > Finding emoji in message <br>
 > [library emoji](https://pypi.org/project/emoji/)
@@ -32,18 +52,7 @@ Bot simply can be installed by running code on machine using required variables
 > print("😘👍" in EMOJI_DATA) # -> False
 > ```
 
-## Database
-
-Database made in pymongo and uses MONGO_URI from environment
-
-Working on postgresql database
-
-## Token
-
-token takes from BOT_TOKEN environment
-
-> Getting token <br>
-> [documentation](https://core.telegram.org/api)
+Emojies are constantly adding to the telegram, so you need to update version of the emoji library
 
 ## TODO
 
@@ -95,8 +104,10 @@ SyntaxError: name capture 'join_btn_en' makes remaining patterns unreachable
 ```
 </details>
 
-## mongodb
+## Resources
 
-Use environment if you want to use it on an server by MONGO_URL
+* [aiogram 3 documentation](https://docs.aiogram.dev/en/dev-3.x/)
 
-if db founds nothing it return None
+* [Telegram API](https://core.telegram.org/bots/api)
+
+* [Anti-flood bot](https://github.com/RoLO0u/anti-flood-bot)

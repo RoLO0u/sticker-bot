@@ -20,3 +20,7 @@ env.sh
 
 db/
 .env
+
+# Some docker sh*t
+
+.compose.yaml.swp
