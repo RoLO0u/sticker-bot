@@ -14,7 +14,7 @@ idna==3.4
 magic-filter==1.0.9
 motor==3.1.1
 multidict==6.0.2
-Pillow==9.3.0
+Pillow==10.0.1
 psycopg2==2.9.6
 pydantic==1.10.2
 pymongo==4.3.3
