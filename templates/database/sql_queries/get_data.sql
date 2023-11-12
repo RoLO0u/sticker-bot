@@ -1,1 +1,1 @@
-SELECT data FROM public.data WHERE user_id=%s
+SELECT data FROM public.data WHERE user_id=%s;

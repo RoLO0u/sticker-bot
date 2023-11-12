@@ -69,13 +69,13 @@ class PostgreStorage(BaseStorage):
                 ) as conn:
             return conn
         
-    async def set_state(self, bot: Bot, key: StorageKey, state: StateType = None) -> None:
+    async def set_state(self, key: StorageKey, state: StateType = None) -> None:
         state = self.resolve_state(state)
         user_id = str(key.user_id)
         self._cur.execute(parse_sql("set_state.sql"), (user_id,state,user_id,user_id,state))
         self._conn.commit()
         
-    async def get_state(self, bot: Bot, key: StorageKey) -> Optional[str]:
+    async def get_state(self, key: StorageKey) -> Optional[str]:
         self._cur.execute(parse_sql("get_state.sql"), (str(key.user_id),))
         result = self._cur.fetchone()
         self._conn.commit()

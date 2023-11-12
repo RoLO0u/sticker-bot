@@ -1,1 +1,1 @@
-UPDATE public.packs SET {}=%s WHERE packid=%s
+UPDATE public.packs SET {}=%s WHERE packid=%s;

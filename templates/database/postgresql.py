@@ -43,6 +43,15 @@ class Pack(baseDB.Pack):
         assert result is not None
         return convert_pack_sql(result)
     
+    @classmethod
+    @default
+    def get_by_pass(cls, password: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
+        assert _cur is not None
+        _cur.execute(parse_sql("get_pack_by_pass.sql"), (password,))
+        result = _cur.fetchone()
+        assert result is not None
+        return convert_pack_sql(result)
+    
     def add_user(self, user_id: str) -> None:
         self.pack['members'].append(user_id)
 
@@ -64,11 +73,11 @@ class Pack(baseDB.Pack):
     
     @staticmethod
     @default
-    def get_pass(password: str, _cur: Optional[cursor] = None) -> Optional[dict]:
+    def get_pass(password: str, _cur: Optional[cursor] = None) -> Optional[Dict]:
         assert _cur is not None
-        by_id = _cur.execute(parse_sql("get_pack.sql"), (password[:10],))
-        by_pass = _cur.execute(parse_sql("get_pack_by_pass.sql"), (password[10:],))
-        if by_id == by_pass:
+        by_id = Pack.get(password[:10])        
+        by_pass = Pack.get_by_pass(password[10:])
+        if (by_id == by_pass):
             return by_pass
         
 class User(baseDB.User):

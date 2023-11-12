@@ -33,10 +33,12 @@ async def join_by_password( \
             
             if len(message.text) != 20:
                 await message.answer(texts["joining_e1"][user_lang])
+                print("1")
                 return
             pack = Pack.get_pass(message.text)
             if pack is None:
                 await message.answer(texts["joining_e1"][user_lang])                
+                print("2")
                 return
             if user_id in pack['members']:
                 await message.answer(texts["joining_e3"][user_lang])

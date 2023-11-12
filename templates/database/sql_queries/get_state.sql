@@ -1,1 +1,1 @@
-SELECT state FROM public.state WHERE user_id=%s
+SELECT state FROM public.state WHERE user_id=%s;

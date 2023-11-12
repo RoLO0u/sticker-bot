@@ -146,7 +146,7 @@ async def collecting_photo( \
     
     try:
         if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
-            title=title, emojis=emoji, png_sticker=photo):
+            title=title, stickers=[types.InputSticker(sticker=photo, emoji_list=list(emoji))], sticker_format="static"):
 
             await state.set_state(StartFSM.start)
             user = User(user_id)

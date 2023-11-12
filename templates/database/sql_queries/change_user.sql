@@ -1,1 +1,1 @@
-UPDATE public.users SET {}=%s WHERE userid=%s
+UPDATE public.users SET {}=%s WHERE userid=%s;
