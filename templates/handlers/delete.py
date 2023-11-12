@@ -112,4 +112,4 @@ async def confirming_pack_deleting(                     \
                 reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
 
         case _:
-            await message.answer(texts["unknown_exception_2"][user_lang])
+            await message.answer(texts["unknown_exception_4"][user_lang])
