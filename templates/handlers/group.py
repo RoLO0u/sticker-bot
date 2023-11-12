@@ -6,28 +6,25 @@ from aiogram.fsm.context import FSMContext
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM, JoiningFSM
 from templates.markups import start_button
-from templates.types import Texts, TextsButtons
+from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
 @router.message(JoiningFSM.join_pass, F.text)
-async def join_by_password(                             \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        Pack: Type[baseDB.Pack]                         \
+async def join_by_password( \
+        message: types.Message, \
+        state: FSMContext, \
+        user_id: str, \
+        user_lang: str, \
+        Pack: Type[baseDB.Pack] \
         ) -> Any:
 
-    class Answers:
-        cancel_btn = texts_buttons["cancel"][user_lang][0]
+    answers = Answers(user_lang).get_cancel_btn()
     assert message.text is not None
 
     match message.text:
 
-        case Answers.cancel_btn:
+        case answers.cancel_btn:
             await state.set_state(StartFSM.start)
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
@@ -52,25 +49,22 @@ async def join_by_password(                             \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
 
 @router.message(JoiningFSM.kick, F.text)
-async def kick_t(                                       \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        MiscDB: Type[baseDB.MiscDB],                    \
-        User: Type[baseDB.User],                        \
-        Pack: Type[baseDB.Pack]                         \
+async def kick_t( \
+        message: types.Message, \
+        state: FSMContext, \
+        user_id: str, \
+        user_lang: str, \
+        MiscDB: Type[baseDB.MiscDB], \
+        User: Type[baseDB.User], \
+        Pack: Type[baseDB.Pack] \
         ) -> Any:
     
-    class Answers:
-        cancel_btn = texts_buttons["cancel"][user_lang][0]
+    answers = Answers(user_lang).get_cancel_btn()
     assert message.text is not None
 
     match message.text:
 
-        case Answers.cancel_btn:
+        case answers.cancel_btn:
             
             await state.set_state(StartFSM.start)
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \

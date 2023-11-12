@@ -6,8 +6,9 @@ from aiogram import Bot, Dispatcher, F
 
 from templates import Exceptions, throttling, const
 from templates.handlers import *
+from templates.types import texts, texts_buttons
 
-async def run():
+async def run() -> None:
     
     # configuring aiogram bot
 
@@ -15,11 +16,6 @@ async def run():
 
     if TOKEN == None:
         raise Exceptions.TokenDoesNotDefined()
-
-    with open("texts.json", "r", encoding="utf-8") as raw:
-        texts = json.load(raw)
-    with open("texts_buttons.json", "r", encoding="utf-8") as raw:
-        texts_buttons = json.load(raw)
 
     bot = Bot(TOKEN)
 

@@ -1,5 +1,44 @@
+from __future__ import annotations
 from typing import Dict, List
+import json
+
 
 Texts = Dict[str, Dict[str, str]]
 
 TextsButtons = Dict[str, Dict[str, List[str]]]
+
+with open("texts.json", "r", encoding="utf-8") as raw:
+    texts: Texts = json.load(raw)
+with open("texts_buttons.json", "r", encoding="utf-8") as raw:
+    texts_buttons: TextsButtons = json.load(raw)
+    
+class Answers:
+    
+    def __init__(self, user_lang: str) -> None:
+        self.user_lang = user_lang
+        
+    def get_cancel_btn(self) -> Answers:
+        self.cancel_btn = texts_buttons["cancel"][self.user_lang][0]
+        return self
+    def get_back_btns(self) -> Answers:
+        self.back_btn_en, self.back_btn_ua = texts["back"].values()
+        return self
+    def get_confirming(self) -> Answers:
+        self.confirming = texts["confirming"][self.user_lang]
+        return self
+    def get_menu_btns(self) -> Answers:
+        self.back_btn = texts_buttons["managing_2"][self.user_lang][-1]
+        self.add_btn = texts_buttons["managing_2"][self.user_lang][0]
+        self.del_stick_btn = texts_buttons["managing_2"][self.user_lang][1]
+        self.del_pack_btn = texts_buttons["managing_2"][self.user_lang][-4]
+        self.show_btn = texts_buttons["managing_2"][self.user_lang][-2]
+        self.invite_btn = texts_buttons["managing_2"][self.user_lang][4]
+        self.kick_btn = texts_buttons["managing_2"][self.user_lang][5]
+        return self
+    def get_start_btns(self) -> Answers:
+        self.join_btn = texts_buttons["start"][self.user_lang][0]
+        self.create_btn = texts_buttons["start"][self.user_lang][1]
+        self.man_btn = texts_buttons["start"][self.user_lang][2]
+        self.ch_lan_en = texts_buttons["change_lang"]['en'][0]
+        self.ch_lan_ua = texts_buttons["change_lang"]['ua'][0]
+        return self

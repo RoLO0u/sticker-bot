@@ -9,7 +9,7 @@ from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM
 from templates.markups import start_button, managing_button_2, managing_button_inline, single_button
 from templates.funcs import delete_non_exist, have_stickers
 from templates.const import WATERMARK
-from templates.types import Texts, TextsButtons
+from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
@@ -17,20 +17,17 @@ def callback_query_filter(callback_query: types.CallbackQuery, User: Type[baseDB
     return callback_query.data in User(str(callback_query.from_user.id)).get_packs_id()
 
 @router.message(ManagingFSM.choosing_pack, F.text)
-async def choosing_pack_t(                              \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_lang: str                                  \
+async def choosing_pack_t( \
+        message: types.Message, \
+        state: FSMContext, \
+        user_lang: str \
         ) -> Any:
     
-    class Answers:
-        back_btn_en, back_btn_ua = texts["back"].values()
+    answers = Answers(user_lang).get_back_btns()
 
     match message.text:
 
-        case Answers.back_btn_en | Answers.back_btn_ua:
+        case answers.back_btn_en | answers.back_btn_ua:
 
             await state.set_state(StartFSM.start)
 
@@ -43,31 +40,22 @@ async def choosing_pack_t(                              \
             await message.answer(texts["managing_exception_1"][user_lang])
 
 @router.message(ManagingFSM.menu, F.text)
-async def menu(                                         \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        bot: Bot,                                       \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        User: Type[baseDB.User]                     \
+async def menu( \
+        message: types.Message, \
+        state: FSMContext, \
+        bot: Bot, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
         ) -> Any:
 
     # TODO create inline sticker pick like in @Stickers bot
 
-    class Answers:
-        back_btn = texts_buttons["managing_2"][user_lang][-1]
-        add_btn = texts_buttons["managing_2"][user_lang][0]
-        del_stick_btn = texts_buttons["managing_2"][user_lang][1]
-        del_pack_btn = texts_buttons["managing_2"][user_lang][-4]
-        show_btn = texts_buttons["managing_2"][user_lang][-2]
-        invite_btn = texts_buttons["managing_2"][user_lang][4]
-        kick_btn = texts_buttons["managing_2"][user_lang][5]
+    answers = Answers(user_lang).get_menu_btns()
 
     match message.text:
         
-        case Answers.back_btn:
+        case answers.back_btn:
             
             await state.set_state(ManagingFSM.choosing_pack)
             await message.answer(texts["managing0"][user_lang], \
@@ -87,22 +75,22 @@ async def menu(                                         \
 
         # TODO somehow unite next 3 cases (very similar looks)
 
-        case Answers.add_btn:
+        case answers.add_btn:
             await state.set_state(ManagingFSM.collecting_emoji_add)
             await message.answer(texts["managing_add_1"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
-        case Answers.del_stick_btn:
+        case answers.del_stick_btn:
             await state.set_state(ManagingFSM.collecting_sticker)
             await message.answer(texts["managing_del_1"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
         
-        case Answers.del_pack_btn:
+        case answers.del_pack_btn:
             await state.set_state(ManagingFSM.are_you_sure)
             await message.answer(texts["managing_del2_1"][user_lang], parse_mode="markdown", \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
-        case Answers.show_btn:
+        case answers.show_btn:
             pack_name = User(user_id).get_additional_info()["name"]
             assert pack_name is not None
             if await have_stickers(pack_name, bot.get_sticker_set):
@@ -111,13 +99,13 @@ async def menu(                                         \
             else:
                 await message.answer(texts["managing_show_e"][user_lang])
         
-        case Answers.invite_btn:
+        case answers.invite_btn:
             token = User(user_id).get_chosen()
             assert not isinstance(token["packid"], list) and not isinstance(token["password"], list)
             token = token["packid"]+token["password"]
             await message.answer(texts["how_to_invite"][user_lang].format(token), parse_mode="markdown")
 
-        case Answers.kick_btn:
+        case answers.kick_btn:
             await state.set_state(JoiningFSM.kick)
             await message.answer(texts["kick"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
@@ -132,11 +120,9 @@ async def menu(                                         \
     ManagingFSM.choosing_pack, \
     callback_query_filter)
 async def choosing_pack(\
-        callback_query: types.CallbackQuery,            \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        User: Type[baseDB.User]                         \
+        callback_query: types.CallbackQuery, \
+        state: FSMContext, \
+        User: Type[baseDB.User] \
         ) -> Any:
 
     user_id = str(callback_query.from_user.id)

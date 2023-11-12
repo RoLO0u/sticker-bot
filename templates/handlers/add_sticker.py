@@ -8,27 +8,24 @@ from templates.FSM_groups import StartFSM, ManagingFSM
 from templates.markups import managing_button_2, start_button, pack_link_button, single_button
 from templates.funcs import is_emoji, get_create_add_info, pack_exists
 from templates.const import WATERMARK
-from templates.types import Texts, TextsButtons
+from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
 @router.message(ManagingFSM.collecting_emoji_add, F.text)
-async def collecting_emoji_add(                         \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        User: Type[baseDB.User]                         \
+async def collecting_emoji_add( \
+        message: types.Message,\
+        state: FSMContext, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
         ) -> Any:
-    
-    class Answers:
-        cancel_btn = texts_buttons["cancel"][user_lang][0]
+        
+    answers = Answers(user_lang).get_cancel_btn()
 
     match message.text:
 
-        case Answers.cancel_btn:
+        case answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
@@ -47,22 +44,19 @@ async def collecting_emoji_add(                         \
                 await message.answer(texts["emoji_only_e"][user_lang])
 
 @router.message(ManagingFSM.collecting_photo_add, F.text)
-async def collecting_photo_add_t(                       \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        User: Type[baseDB.User]                         \
+async def collecting_photo_add_t( \
+        message: types.Message, \
+        state: FSMContext, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
         ) -> Any:
     
-    class Answers:
-        cancel_btn = texts_buttons["cancel"][user_lang][0]
+    answers = Answers(user_lang).get_cancel_btn()
 
     match message.text:
 
-        case Answers.cancel_btn:
+        case answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
             User(user_id).change_emoji(None)
             await message.answer(texts["managing2"][user_lang], \
@@ -72,15 +66,13 @@ async def collecting_photo_add_t(                       \
             await message.answer(texts["image_only_e"][user_lang])
 
 @router.message(ManagingFSM.collecting_photo_add, F.photo)
-async def collecting_photo_add(                         \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        bot: Bot,                                       \
-        user_id: str,                                   \
-        user_lang: str,                                  \
-        User: Type[baseDB.User]                         \
+async def collecting_photo_add( \
+        message: types.Message, \
+        state: FSMContext, \
+        bot: Bot, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
         ) -> Any:
 
     pack_name, pack_name_plus, _, photo, emoji = \

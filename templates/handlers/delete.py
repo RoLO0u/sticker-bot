@@ -8,20 +8,18 @@ from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM
 from templates.markups import start_button, managing_button_2
 from templates.const import WATERMARK
-from templates.types import Texts, TextsButtons
+from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
 @router.message(ManagingFSM.collecting_sticker, F.sticker)
-async def delete_sticker_from_pack(                     \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        bot: Bot,                                       \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        User: Type[baseDB.User]                         \
+async def delete_sticker_from_pack( \
+        message: types.Message, \
+        state: FSMContext, \
+        bot: Bot, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
         ) -> Any:
 
     await state.set_state(StartFSM.start)
@@ -49,20 +47,17 @@ async def delete_sticker_from_pack(                     \
         await message.answer(texts["managing_del_e"][user_lang])
 
 @router.message(ManagingFSM.collecting_sticker, F.text)
-async def delete_sticker_from_pack_t(                   \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_lang: str                                  \
+async def delete_sticker_from_pack_t( \
+        message: types.Message, \
+        state: FSMContext, \
+        user_lang: str \
         ) -> Any:
 
-    class Answers:
-        cancel_btn = texts_buttons["cancel"][user_lang][0]
-
+    answers = Answers(user_lang).get_cancel_btn()
+    
     match message.text:
 
-        case Answers.cancel_btn:
+        case answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
@@ -71,29 +66,25 @@ async def delete_sticker_from_pack_t(                   \
             await message.answer(texts["sticker_only_e"][user_lang])
 
 @router.message(ManagingFSM.are_you_sure, F.text)
-async def confirming_pack_deleting(                     \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        bot: Bot,                                       \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        User: Type[baseDB.User]                         \
+async def confirming_pack_deleting( \
+        message: types.Message, \
+        state: FSMContext, \
+        bot: Bot, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
         ) -> Any:
     
-    class Answers:
-        cancel_btn = texts_buttons["cancel"][user_lang][0]
-        confirming = texts["confirming"][user_lang]
+    answers = Answers(user_lang).get_cancel_btn().get_confirming()
 
     match message.text:
 
-        case Answers.cancel_btn:
+        case answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
 
-        case Answers.confirming:
+        case answers.confirming:
 
             await state.set_state(StartFSM.start)
 

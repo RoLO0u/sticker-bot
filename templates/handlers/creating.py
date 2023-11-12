@@ -9,32 +9,29 @@ from templates.FSM_groups import CreatingFSM, StartFSM
 from templates.markups import start_button, pack_link_button, single_button
 from templates.funcs import random_string, is_emoji, get_create_add_info
 from templates.const import WATERMARK
-from templates.types import Texts, TextsButtons
+from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
 
 @router.message(CreatingFSM.creating_name, F.text)
-async def creating_name(                                \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        MiscDB: Type[baseDB.MiscDB],                    \
-        User: Type[baseDB.User]                         \
+async def creating_name( \
+        message: types.Message, \
+        state: FSMContext, \
+        user_id: str, \
+        user_lang: str, \
+        MiscDB: Type[baseDB.MiscDB], \
+        User: Type[baseDB.User] \
         ) -> Any:
-
-    class Answers:
-        cancel_btn = texts_buttons["cancel"][user_lang][0]
+        
+    answers = Answers(user_lang).get_cancel_btn()
         
     text = message.text
     assert text is not None # text will never be none because router has filter
 
     match text:
 
-        case Answers.cancel_btn:
+        case answers.cancel_btn:
 
             await state.set_state(StartFSM.start)
 
@@ -62,22 +59,19 @@ async def creating_name(                                \
 
 
 @router.message(CreatingFSM.collecting_emoji, F.text)
-async def collecting_emoji(                             \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        User: Type[baseDB.User]                         \
+async def collecting_emoji( \
+        message: types.Message, \
+        state: FSMContext, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
         ) -> Any:
 
-    class Answers:
-        create_btn = texts_buttons["cancel"][user_lang][0]
-
+    answers = Answers(user_lang).get_cancel_btn()
+    
     match message.text:
 
-        case Answers.create_btn:
+        case answers.cancel_btn:
 
             await state.set_state(StartFSM.start)
             user = User(user_id)
@@ -103,22 +97,19 @@ async def collecting_emoji(                             \
 
 
 @router.message(CreatingFSM.collecting_photo, F.text)
-async def collecting_photo_t(                           \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        User: Type[baseDB.User]                         \
+async def collecting_photo_t( \
+        message: types.Message, \
+        state: FSMContext, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
         ) -> Any:
 
-    class Answers:
-        cancel_btn = texts_buttons["cancel"][user_lang][0]
-
+    answers = Answers(user_lang).get_cancel_btn()
+    
     match message.text:
 
-        case Answers.cancel_btn:
+        case answers.cancel_btn:
 
             await state.set_state(StartFSM.start)
             user = User(user_id)
@@ -135,16 +126,14 @@ async def collecting_photo_t(                           \
 
 
 @router.message(CreatingFSM.collecting_photo, F.photo)
-async def collecting_photo(                             \
-        message: types.Message,                         \
-        state: FSMContext,                              \
-        texts: Texts,                                   \
-        texts_buttons: TextsButtons,                    \
-        bot: Bot,                                       \
-        user_id: str,                                   \
-        user_lang: str,                                 \
-        User: Type[baseDB.User],                        \
-        Pack: Type[baseDB.Pack]                         \
+async def collecting_photo( \
+        message: types.Message, \
+        state: FSMContext, \
+        bot: Bot, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User], \
+        Pack: Type[baseDB.Pack] \
         ) -> Any:
 
     # TODO: make multiple emojis to sticker possible
