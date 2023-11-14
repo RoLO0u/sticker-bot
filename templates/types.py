@@ -27,13 +27,16 @@ class Answers:
         self.confirming = texts["confirming"][self.user_lang]
         return self
     def get_menu_btns(self) -> Answers:
-        self.back_btn = texts_buttons["managing_2"][self.user_lang][-1]
         self.add_btn = texts_buttons["managing_2"][self.user_lang][0]
         self.del_stick_btn = texts_buttons["managing_2"][self.user_lang][1]
-        self.del_pack_btn = texts_buttons["managing_2"][self.user_lang][-4]
-        self.show_btn = texts_buttons["managing_2"][self.user_lang][-2]
+        self.edit_emoji_btn = texts_buttons["managing_2"][self.user_lang][2]
+        self.replace_btn = texts_buttons["managing_2"][self.user_lang][3]
         self.invite_btn = texts_buttons["managing_2"][self.user_lang][4]
         self.kick_btn = texts_buttons["managing_2"][self.user_lang][5]
+        self.del_pack_btn = texts_buttons["managing_2"][self.user_lang][6]
+        self.set_pack_icon = texts_buttons["managing_2"][self.user_lang][7]
+        self.show_btn = texts_buttons["managing_2"][self.user_lang][8]
+        self.back_btn = texts_buttons["managing_2"][self.user_lang][9]
         return self
     def get_start_btns(self) -> Answers:
         self.join_btn = texts_buttons["start"][self.user_lang][0]
