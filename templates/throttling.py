@@ -1,6 +1,6 @@
 import logging
 
-from time import monotonic
+from time import time as timeSeconds
 from typing import Any, Awaitable, Callable, Dict, Coroutine, List
 
 from aiogram.types import Message, TelegramObject
@@ -14,9 +14,6 @@ from templates.database.fsm.postgres import PostgreStorage
 from templates.Exceptions import EmptyUsernameException
 
 class AntiFloodMiddleware(BaseMiddleware):
-
-    def __init__(self) -> None:
-        super().__init__()
             
     async def __call__(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: Message, data: Dict[str, Any]) -> Coroutine[Any, Any, Any] | None:
         
@@ -24,7 +21,7 @@ class AntiFloodMiddleware(BaseMiddleware):
         
         User: baseDB.User = data["User"]
         user_id = str(event.from_user.id)
-        time = monotonic()
+        time = timeSeconds()
 
         my_storage = data.get("storage")
         assert isinstance(my_storage, MongoStorage) or isinstance(my_storage, PostgreStorage)
@@ -55,9 +52,6 @@ class AntiFloodMiddleware(BaseMiddleware):
         return await handler(event, data)
     
 class ErrorsMiddleware(BaseMiddleware):
-    
-    def __init__(self) -> None:
-        super().__init__()
         
     async def call(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: ErrorEvent, data: Dict[str, Any]) -> Coroutine[Any, Any, Any] | None:
         
@@ -66,7 +60,7 @@ class ErrorsMiddleware(BaseMiddleware):
     
         User: baseDB.User = data["User"]
         user_id = str(event.update.message.from_user.id)
-        time = monotonic()
+        time = timeSeconds()
 
         my_storage = data.get("storage")
         assert isinstance(my_storage, MongoStorage) or isinstance(my_storage, PostgreStorage)

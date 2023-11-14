@@ -38,6 +38,7 @@ class PostgreStorage(BaseStorage):
         self._cur = self._conn.cursor()
         self.create_tables()
         self._index = index
+
         
     def create_tables(self):
         self._cur.execute(parse_sql("create_tables_fsm.sql"))

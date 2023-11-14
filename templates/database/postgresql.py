@@ -184,7 +184,7 @@ class MiscDB(baseDB.MiscDB):
     def create_tables(_cur: Optional[cursor] = None) -> None:
         assert _cur is not None
         _cur.execute(parse_sql("create_tables.sql"))
-    
+            
     @staticmethod
     @default
     def get_all_packs(_cur: Optional[cursor] = None) -> List[dict]:
