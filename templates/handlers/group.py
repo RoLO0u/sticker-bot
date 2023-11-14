@@ -56,7 +56,6 @@ async def kick_t( \
         state: FSMContext, \
         user_id: str, \
         user_lang: str, \
-        MiscDB: Type[baseDB.MiscDB], \
         User: Type[baseDB.User], \
         Pack: Type[baseDB.Pack] \
         ) -> Any:
@@ -78,13 +77,22 @@ async def kick_t( \
             assert user_to_kick is not None
             pack_id = User(user_id).get_chosen()["packid"]
             assert not isinstance(pack_id, list)
-
-            if Pack(pack_id).include(user_kick := user_to_kick["userid"], ) and user_kick != user_id:
-
-                await state.set_state(StartFSM.start)
-                User(user_kick).remove_user_from_pack(pack_id)
-                await message.answer(texts["kicked"][user_lang], \
-                    reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
-
-            else:
+            pack = Pack(pack_id)
+            
+            # user doesn't exists in this pack
+            if not pack.include(id_to_kick := user_to_kick["userid"], ):
                 await message.answer(texts["joining_e2"][user_lang])
+                return
+            # user wants to kick himself
+            elif id_to_kick == user_id:
+                await message.answer(texts["joining_e4"][user_lang])
+                return
+            # user wants to kick admin
+            elif pack.pack["adm"] == id_to_kick:
+                await message.answer(texts["joining_e5"][user_lang])
+                return
+            
+            await state.set_state(StartFSM.start)
+            User(id_to_kick).remove_user_from_pack(pack.name)
+            await message.answer(texts["kicked"][user_lang], \
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
