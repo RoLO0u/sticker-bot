@@ -18,7 +18,7 @@ def start_button(start_buttons: list, change_lang_buttons: Dict[str, List[str]])
     
 def single_button(caption: str) -> ReplyKeyboardMarkup:
     keyboard = [[KeyboardButton(text=caption)]]
-    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True) 
 
 def managing_button_inline(packs: List[Dict[str, str]]) -> InlineKeyboardMarkup:
     """:param packs: packs => [{"name": "title"}, {"name1": "title1"}]"""
@@ -36,6 +36,13 @@ def managing_button_2(captions: list|tuple) -> ReplyKeyboardMarkup:
     keyboard.append([KeyboardButton(text=captions[-1])])
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
+def managing_del_conf(captions: List[str]):
+    keyboard = [
+        [KeyboardButton(text=captions[0])],
+        [KeyboardButton(text=captions[1])],
+    ]
+    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+    
 def pack_link_button(caption: str, url: str) -> InlineKeyboardMarkup:
     keyboard = [[InlineKeyboardButton(text=caption, url=url)]]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)

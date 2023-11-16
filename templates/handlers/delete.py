@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM
-from templates.markups import start_button, managing_button_2
+from templates.markups import start_button, managing_button_2, managing_del_conf
 from templates.const import WATERMARK
 from templates.types import Answers, texts, texts_buttons
 
@@ -22,35 +22,73 @@ async def delete_sticker_from_pack( \
         User: Type[baseDB.User] \
         ) -> Any:
 
-    await state.set_state(StartFSM.start)
 
     # router already has filter on sticker
-    sticker_id = message.sticker.file_id # type: ignore
-    unique_id = message.sticker.file_unique_id # type: ignore
+    assert message.sticker is not None
+    sticker_id = message.sticker.file_id
+    unique_id = message.sticker.file_unique_id
 
-    # TODO: make warning message if it's last sticker
-
-    name = User(user_id).get_additional_info()["name"]
+    user = User(user_id)
+    name = user.get_additional_info()["name"]
     assert name is not None
     sticker_set = await bot.get_sticker_set(name+WATERMARK)
     stickers_un_id = [sticker.file_unique_id for sticker in sticker_set.stickers]
 
     # checking if sticker in user stickerpack
-    if unique_id in stickers_un_id:
-
-        await bot.delete_sticker_from_set(sticker_id)
-
-        await message.answer(texts["deleted"][user_lang], \
-            reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
-    
-    else:
+    if not unique_id in stickers_un_id:
         await message.answer(texts["managing_del_e"][user_lang])
+        return
+    if len(stickers_un_id) <= 1:
+        await state.set_state(ManagingFSM.delete_sticker)
+        user.change("additional_info.sticker", sticker_id)
+        await message.answer(texts["managing_del_conf"][user_lang],
+            reply_markup=managing_del_conf(texts_buttons["managing_del_conf"][user_lang]))
+        return
+    
+    await state.set_state(StartFSM.start)
+    await bot.delete_sticker_from_set(sticker_id)
+    await message.answer(texts["deleted"][user_lang], \
+        reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))    
+
+@router.message(ManagingFSM.delete_sticker, F.text)
+async def confirm_delete_sticker( \
+        message: types.Message, \
+        state: FSMContext, \
+        bot: Bot, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
+        ) -> Any:
+    
+    answers = Answers(user_lang).get_cancel_btn() \
+        .get_delete_sticker_confirming()
+
+    match message.text:
+        
+        case answers.delete_sticker_confirming:
+            user = User(user_id)
+            additional_info = user.get_additional_info()
+            sticker_id = additional_info["sticker"]
+            set_name = additional_info["name"]
+            assert sticker_id and set_name
+            await state.set_state(StartFSM.start)
+            await bot.delete_sticker_set(set_name+WATERMARK)
+            await message.answer(texts["deleted"][user_lang], \
+                reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
+        
+        case answers.cancel_btn:
+            await state.set_state(ManagingFSM.menu)
+            await message.answer(texts["managing2"][user_lang], \
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
+
+        case _:
+            await message.answer(texts["unknown_exception_2"][user_lang])   
 
 @router.message(ManagingFSM.collecting_sticker, F.text)
 async def delete_sticker_from_pack_t( \
         message: types.Message, \
         state: FSMContext, \
-        user_lang: str \
+        user_lang: str 
         ) -> Any:
 
     answers = Answers(user_lang).get_cancel_btn()
@@ -92,11 +130,12 @@ async def confirming_pack_deleting( \
             set_name = user.get_additional_info()["name"]
             assert set_name is not None
 
-            sticker_set = await bot.get_sticker_set(set_name+WATERMARK)
+            # sticker_set = await bot.get_sticker_set(set_name+WATERMARK)
 
-            for sticker in sticker_set.stickers:
-                await bot.delete_sticker_from_set(sticker.file_id)
+            # for sticker in sticker_set.stickers:
+            #     await bot.delete_sticker_from_set(sticker.file_id)
 
+            await bot.delete_sticker_set(set_name+WATERMARK)
             user.delete_pack()
 
             await message.answer(texts["pack_deleted"][user_lang], \

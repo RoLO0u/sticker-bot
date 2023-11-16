@@ -46,7 +46,6 @@ async def delete_non_exist(get_sticker_set, User: Type[baseDB.User], user_id: st
         if not await pack_exists(get_sticker_set, pname+WATERMARK):
             to_pop.append(pname)
     for pname in to_pop:
-        # TODO don't forget to edit when members support added
         user.delete_pack(pname)
 
 async def get_create_add_info(user_id: str, User: Type[baseDB.User], get_file, photo, download_file) -> Tuple[str, str, Optional[str], InputFile, Optional[str]]:

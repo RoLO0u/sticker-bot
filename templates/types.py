@@ -26,6 +26,9 @@ class Answers:
     def get_confirming(self) -> Answers:
         self.confirming = texts["confirming"][self.user_lang]
         return self
+    def get_delete_sticker_confirming(self) -> Answers:
+        self.delete_sticker_confirming = texts_buttons["managing_del_conf"][self.user_lang][0]
+        return self
     def get_menu_btns(self) -> Answers:
         self.add_btn = texts_buttons["managing_2"][self.user_lang][0]
         self.del_stick_btn = texts_buttons["managing_2"][self.user_lang][1]

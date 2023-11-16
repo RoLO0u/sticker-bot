@@ -136,7 +136,6 @@ async def collecting_photo( \
         Pack: Type[baseDB.Pack] \
         ) -> Any:
 
-    # TODO: make multiple emojis to sticker possible
     # TODO: make webm and tgs image format possible
 
     pack_name, pack_name_plus, title, photo, emoji = \
