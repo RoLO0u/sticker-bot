@@ -3,9 +3,7 @@ This module has mongo storage for finite-state machine
     based on `motor <https://github.com/mongodb/motor>`_ driver
 """
 
-from typing import Union, Dict, Optional, List, Tuple, Literal
-from aiogram import Bot
-from aiogram.fsm.state import State
+from typing import Union, Dict, Optional, List, Tuple
 from aiogram.fsm.storage.base import (
     DEFAULT_DESTINY,
     BaseEventIsolation,
@@ -156,7 +154,6 @@ class MongoStorage(BaseStorage):
         return True
 
     async def set_state(self, *,
-                        bot: Bot,
                         key: StorageKey,
                         state: StateType = None):
         chat, user = self.check_address(chat=key.chat_id, user=key.user_id)
@@ -172,7 +169,6 @@ class MongoStorage(BaseStorage):
             )
 
     async def get_state(self,
-        bot: Bot,
         key: StorageKey,) -> Optional[str]:
         chat, user = self.check_address(chat=key.chat_id, user=key.user_id)
         db = await self.get_db()

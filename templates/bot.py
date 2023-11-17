@@ -1,15 +1,34 @@
-import json
 import logging
 import os
 
 from aiogram import Bot, Dispatcher, F
 
 from templates import Exceptions, throttling, const
+from templates.database import baseDB
 from templates.handlers import *
 from templates.types import texts, texts_buttons
 
-async def run() -> None:
+def get_db():
     
+    db_type = os.getenv("DB")
+    
+    if db_type == "mongodb":
+        from templates.database.fsm.mongo import MongoStorage
+        from templates.database import mongodb
+        URI = os.getenv("MONGO_URI")
+        return mongodb, MongoStorage(uri=URI)
+        
+    elif db_type == "postgresql":
+        from templates.database.fsm.postgres import PostgreStorage
+        from templates.database import postgresql
+        postgresql.MiscDB.create_tables()
+        return postgresql, PostgreStorage(**postgresql.kwargs) # type: ignore
+        
+    else:
+        raise Exceptions.InvalidEnvException("DB variable is not valid (either mongodb or postgresql)")
+
+async def run() -> None:
+
     # configuring aiogram bot
 
     TOKEN = os.getenv("BOT_TOKEN")
@@ -20,26 +39,8 @@ async def run() -> None:
     bot = Bot(TOKEN)
 
     # configuring storage
-    
-    db_type = os.getenv("DB")
-    
-    if db_type == "mongodb":
-        from templates.database.fsm.mongo import MongoStorage
-        from templates.database import mongodb
         
-        URI = os.getenv("MONGO_URI")
-        storage = MongoStorage(uri=URI)
-        mainDB = mongodb
-        
-    elif db_type == "postgresql":
-        from templates.database.fsm.postgres import PostgreStorage
-        from templates.database import postgresql
-        postgresql.MiscDB.create_tables()
-        storage = PostgreStorage(**postgresql.kwargs) # type: ignore
-        mainDB = postgresql
-        
-    else:
-        raise Exceptions.InvalidEnvException("DB variable is not valid (either mongodb or postgresql)")
+    mainDB, storage = get_db()
 
     dp = Dispatcher(storage=storage, name="main")
     
