@@ -5,7 +5,7 @@ from aiogram import types, Router, Bot, F
 from aiogram.fsm.context import FSMContext
 
 from templates.database import baseDB
-from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM
+from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM, ChangeStickerFSM
 from templates.markups import start_button, managing_button_2, managing_button_inline, single_button
 from templates.funcs import delete_non_exist, have_stickers
 from templates.const import WATERMARK
@@ -108,6 +108,11 @@ async def menu( \
         case answers.kick_btn:
             await state.set_state(JoiningFSM.kick)
             await message.answer(texts["kick"][user_lang], \
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
+            
+        case answers.edit_emoji_btn:
+            await state.set_state(ChangeStickerFSM.change_sticker_emoji)
+            await message.answer(texts["managing_emoji_1"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         # TODO this is temporary case                

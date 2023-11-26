@@ -22,7 +22,6 @@ async def delete_sticker_from_pack( \
         User: Type[baseDB.User] \
         ) -> Any:
 
-
     # router already has filter on sticker
     assert message.sticker is not None
     sticker_id = message.sticker.file_id

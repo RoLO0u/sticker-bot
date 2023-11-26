@@ -5,7 +5,9 @@ from aiogram import Bot, Dispatcher, F
 
 from templates import Exceptions, throttling, const
 from templates.database import baseDB
-from templates.handlers import *
+from templates.handlers import \
+    add_sticker, change_sticker, commands, creating, \
+    delete, group, inline, managing, start, errors
 from templates.types import texts, texts_buttons
 
 def get_db():
@@ -61,7 +63,9 @@ async def run() -> None:
 
     dp.message.filter(F.chat.type=="private")
 
-    for handler in (commands, start, managing, creating, inline, add_sticker, delete, group, errors):
+    for handler in add_sticker, change_sticker, commands, creating, \
+        delete, group, inline, managing, start, errors:
+        
         dp.include_router(handler.router)
 
     dp.message.middleware(throttling.AntiFloodMiddleware())

@@ -137,7 +137,7 @@ async def collecting_photo( \
         ) -> Any:
 
     # TODO: make webm and tgs image format possible
-
+    
     pack_name, pack_name_plus, title, photo, emoji = \
         await get_create_add_info(user_id, User, bot.get_file, message.photo, bot.download_file)
     assert title is not None

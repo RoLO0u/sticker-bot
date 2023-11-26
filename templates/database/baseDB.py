@@ -104,7 +104,7 @@ class User(Object):
         """Gets chosen pack from users additional info
 
         Returns:
-            Dict[str, Union[list, str]]: Pack user had chose
+            Dict[str, Union[list, str]]: Pack instance user had chose
         """
         pass
     

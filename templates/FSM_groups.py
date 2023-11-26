@@ -13,6 +13,10 @@ class ManagingFSM(StatesGroup):
     delete_sticker = State() # to make sure to delete sticker
     are_you_sure = State() # to delete pack
 
+class ChangeStickerFSM(StatesGroup):
+    change_sticker_emoji = State()
+    get_emoji_to_change = State()
+
 class CreatingFSM(StatesGroup):
     creating_name = State()
     collecting_emoji = State()

@@ -7,5 +7,6 @@ from templates.handlers import (
     managing, 
     start, 
     group,
-    errors
+    change_sticker,
+    errors,
     )
