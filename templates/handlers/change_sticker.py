@@ -23,7 +23,7 @@ async def choosing_sticker( \
     
     user = User(user_id)
     pack_name = user.get_additional_info()["name"]
-    assert (message.sticker is not None) and (pack_name is not None)
+    assert (message.sticker) and (pack_name)
     
     if message.sticker.set_name != pack_name+WATERMARK:
         await message.answer(texts["managing_emoji_e1"][user_lang])
@@ -60,7 +60,7 @@ async def get_emoji( \
         User: Type[baseDB.User], \
         bot: Bot \
         ) -> Any:
-    assert message.text is not None
+    assert message.text
     answers = Answers(user_lang).get_cancel_btn()
     
     match message.text:
@@ -71,7 +71,7 @@ async def get_emoji( \
         case _ if is_emoji(message.text):
             await state.set_state(StartFSM.start)
             sticker_id = User(user_id).get_additional_info()["sticker"]
-            assert sticker_id is not None
+            assert sticker_id
             await bot.set_sticker_emoji_list(sticker_id, list(message.text))
             await message.answer(texts["managed_emoji"][user_lang], \
                 reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))

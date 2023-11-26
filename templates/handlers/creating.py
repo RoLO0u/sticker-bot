@@ -27,7 +27,7 @@ async def creating_name( \
     answers = Answers(user_lang).get_cancel_btn()
         
     text = message.text
-    assert text is not None # text will never be none because router has filter
+    assert text # text will never be none because router has filter
 
     match text:
 
@@ -54,7 +54,7 @@ async def creating_name( \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case _:
-            await message.answer(texts["creating1_e1"][user_lang], \
+            await message.answer(texts["naming_e1"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
 
@@ -140,8 +140,8 @@ async def collecting_photo( \
     
     pack_name, pack_name_plus, title, photo, emoji = \
         await get_create_add_info(user_id, User, bot.get_file, message.photo, bot.download_file)
-    assert title is not None
-    assert emoji is not None
+    assert title
+    assert emoji
     
     try:
         if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \

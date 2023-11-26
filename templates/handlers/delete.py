@@ -23,13 +23,13 @@ async def delete_sticker_from_pack( \
         ) -> Any:
 
     # router already has filter on sticker
-    assert message.sticker is not None
+    assert message.sticker
     sticker_id = message.sticker.file_id
     unique_id = message.sticker.file_unique_id
 
     user = User(user_id)
     name = user.get_additional_info()["name"]
-    assert name is not None
+    assert name
     sticker_set = await bot.get_sticker_set(name+WATERMARK)
     stickers_un_id = [sticker.file_unique_id for sticker in sticker_set.stickers]
 
@@ -127,7 +127,7 @@ async def confirming_pack_deleting( \
 
             user = User(user_id)
             set_name = user.get_additional_info()["name"]
-            assert set_name is not None
+            assert set_name
 
             # sticker_set = await bot.get_sticker_set(set_name+WATERMARK)
 

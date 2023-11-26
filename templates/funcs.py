@@ -53,7 +53,7 @@ async def get_create_add_info(user_id: str, User: Type[baseDB.User], get_file, p
     user = User(user_id)
     additional_info = user.get_additional_info()
     pack_name = additional_info["name"]
-    assert pack_name is not None
+    assert pack_name
     pack_name_plus = pack_name + WATERMARK
     title = additional_info["title"]
     raw_file = await get_file(photo[len(photo)-1].file_id)

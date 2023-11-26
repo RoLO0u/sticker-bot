@@ -92,7 +92,7 @@ async def menu( \
 
         case answers.show_btn:
             pack_name = User(user_id).get_additional_info()["name"]
-            assert pack_name is not None
+            assert pack_name
             if await have_stickers(pack_name, bot.get_sticker_set):
                 sticker = await bot.get_sticker_set(pack_name+WATERMARK)
                 await message.answer_sticker(sticker=sticker.stickers[0].file_id)
@@ -114,8 +114,13 @@ async def menu( \
             await state.set_state(ChangeStickerFSM.change_sticker_emoji)
             await message.answer(texts["managing_emoji_1"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
+            
+        case answers.set_pack_title:
+            await state.set_state(ManagingFSM.set_title)
+            await message.answer(texts["managing_title_1"][user_lang], \
+                reply_markup=single_button(texts["cancel_button"][user_lang]))
 
-        # TODO this is temporary case                
+        # TODO this is temporary case
         case _:
             msg = {"en": "Sorry, we don't have this function now. Use @Stickers to solve problem you have", \
                 "ua": "Вибачте, ми не маєм цієї функції наразі. Скористуйтесь @Stickers, щоб вирішити вашу проблему"}
@@ -131,12 +136,39 @@ async def choosing_pack(\
         ) -> Any:
 
     user_id = str(callback_query.from_user.id)
-    assert callback_query.from_user.username is not None
+    assert callback_query.from_user.username
     user_lang = User.register(user_id, callback_query.from_user.username)
 
     await state.set_state(ManagingFSM.menu)
     User(user_id).change_name(callback_query.data)
 
-    assert callback_query.message is not None
+    assert callback_query.message
     await callback_query.message.answer(texts["managing2"][user_lang], \
         reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
+    
+@router.message(ManagingFSM.set_title, F.text)
+async def set_title( \
+        message: types.Message, \
+        state: FSMContext, \
+        bot: Bot, \
+        user_id: str, \
+        user_lang: str, \
+        User: Type[baseDB.User] \
+        ) -> Any:
+    
+    answers = Answers(user_lang).get_cancel_btn()
+    assert message.text
+    match message.text:
+        case answers.cancel_btn:
+            await state.set_state(StartFSM.start)
+            await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
+                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
+        case _ if len(message.text) < 64:
+            pack_id = User(user_id).get_additional_info()["name"]
+            assert pack_id
+            if await bot.set_sticker_set_title(pack_id+WATERMARK, message.text):
+                await state.set_state(StartFSM.start)
+                await message.answer(texts["managed_title"][user_lang], \
+                    reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
+        case _:
+            await message.answer(texts["naming_e1"][user_lang])

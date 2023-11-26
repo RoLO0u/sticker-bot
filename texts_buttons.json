@@ -1,7 +1,7 @@
 {
     "start": {"en": ["👥Join", "✏️Create", "🛠Manage"], "ua": ["👥Приєднатись", "✏️Створити", "🛠Керувати"]},
-    "managing_2": {"en": ["➕Add sticker", "🗑Delete sticker", "📝Edit emoji", "🔁Replace sticker", "👥Invite member", "👉🚪Kick member", "❌Delete pack", "🖼Set pack icon", "👀Show pack", "↩️Back"],
-        "ua": ["➕Додати наліпку", "🗑Видалити наліпку", "📝Змініти емодзі", "🔁Замінити наліпку", "👥Добавити учасника", "👉🚪Кікнути учасника", "❌Видалити пакунок", "🖼Установити іконку пакунка", "👀Показати пакунок", "↩️Назад"]},
+    "managing_2": {"en": ["➕Add sticker", "🗑Delete sticker", "📝Edit emoji", "🔁Replace sticker", "👥Invite member", "👉🚪Kick member", "❌Delete pack", "📝Set pack title", "👀Show pack", "↩️Back"],
+        "ua": ["➕Додати наліпку", "🗑Видалити наліпку", "📝Змініти емодзі", "🔁Замінити наліпку", "👥Добавити учасника", "👉🚪Кікнути учасника", "❌Видалити пакунок", "📝Установити заголовок пакунка", "👀Показати пакунок", "↩️Назад"]},
     "change_lang": {"en": ["Change language to 🇬🇧 (English)"], "ua": ["Змінити мову на 🇺🇦 (Українську)"]},
     "cancel": {"en": ["❌ Cancel"], "ua": ["❌ Відмінити"]},
     "managing_del_conf": {"en": ["⚠️Delete sticker", "❌ Cancel"], "ua": ["⚠️Видалити наліпку", "❌ Відмінити"]},

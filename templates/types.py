@@ -37,7 +37,7 @@ class Answers:
         self.invite_btn = texts_buttons["managing_2"][self.user_lang][4]
         self.kick_btn = texts_buttons["managing_2"][self.user_lang][5]
         self.del_pack_btn = texts_buttons["managing_2"][self.user_lang][6]
-        self.set_pack_icon = texts_buttons["managing_2"][self.user_lang][7]
+        self.set_pack_title = texts_buttons["managing_2"][self.user_lang][7]
         self.show_btn = texts_buttons["managing_2"][self.user_lang][8]
         self.back_btn = texts_buttons["managing_2"][self.user_lang][9]
         return self

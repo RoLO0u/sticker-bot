@@ -20,7 +20,7 @@ async def join_by_password( \
         ) -> Any:
 
     answers = Answers(user_lang).get_cancel_btn()
-    assert message.text is not None
+    assert message.text
 
     match message.text:
 
@@ -59,7 +59,7 @@ async def kick_t( \
         ) -> Any:
     
     answers = Answers(user_lang).get_cancel_btn()
-    assert message.text is not None
+    assert message.text
 
     match message.text:
 
@@ -72,7 +72,7 @@ async def kick_t( \
         case _:
             
             user_to_kick = User.get_by_username(message.text)
-            assert user_to_kick is not None
+            assert user_to_kick
             pack_id = User(user_id).get_chosen()["packid"]
             assert not isinstance(pack_id, list)
             pack = Pack(pack_id)

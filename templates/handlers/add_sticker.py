@@ -90,7 +90,7 @@ async def collecting_photo_add( \
 
     try:
         
-        assert emoji is not None
+        assert emoji
 
         if await bot.add_sticker_to_set(int(user_id), pack_name_plus, sticker=types.InputSticker(sticker=photo, emoji_list=list(emoji))):
             

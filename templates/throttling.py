@@ -17,7 +17,7 @@ class AntiFloodMiddleware(BaseMiddleware):
             
     async def __call__(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: Message, data: Dict[str, Any]) -> Coroutine[Any, Any, Any] | None:
         
-        assert event.from_user is not None
+        assert event.from_user
         
         User: baseDB.User = data["User"]
         user_id = str(event.from_user.id)
@@ -55,8 +55,8 @@ class ErrorsMiddleware(BaseMiddleware):
         
     async def call(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: ErrorEvent, data: Dict[str, Any]) -> Coroutine[Any, Any, Any] | None:
         
-        assert event.update.message is not None
-        assert event.update.message.from_user is not None
+        assert event.update.message
+        assert event.update.message.from_user
     
         User: baseDB.User = data["User"]
         user_id = str(event.update.message.from_user.id)

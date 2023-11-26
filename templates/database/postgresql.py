@@ -37,19 +37,19 @@ class Pack(baseDB.Pack):
     @classmethod
     @default
     def get(cls, name: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
-        assert _cur is not None
+        assert _cur
         _cur.execute(parse_sql("get_pack.sql"), (name,))
         result = _cur.fetchone()
-        assert result is not None
+        assert result
         return convert_pack_sql(result)
     
     @classmethod
     @default
     def get_by_pass(cls, password: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
-        assert _cur is not None
+        assert _cur
         _cur.execute(parse_sql("get_pack_by_pass.sql"), (password,))
         result = _cur.fetchone()
-        assert result is not None
+        assert result
         return convert_pack_sql(result)
     
     def add_user(self, user_id: str) -> None:
@@ -66,7 +66,7 @@ class Pack(baseDB.Pack):
     def change(self, parameter: str,
             change_to: str | list | None, 
             _cur: Optional[cursor] = None) -> None:
-        assert _cur is not None
+        assert _cur
         _cur.execute(
             SQL(parse_sql("change_pack.sql")).format(Identifier(parameter)), 
             (change_to, self.name))
@@ -74,7 +74,7 @@ class Pack(baseDB.Pack):
     @staticmethod
     @default
     def get_pass(password: str, _cur: Optional[cursor] = None) -> Optional[Dict]:
-        assert _cur is not None
+        assert _cur
         by_id = Pack.get(password[:10])        
         by_pass = Pack.get_by_pass(password[10:])
         if (by_id == by_pass):
@@ -85,7 +85,7 @@ class User(baseDB.User):
     @classmethod
     @default
     def get(cls, user_id: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
-        assert _cur is not None
+        assert _cur
         _cur.execute(parse_sql("get_user.sql"), (user_id,))
         result = _cur.fetchone()
         if result is None:
@@ -94,7 +94,7 @@ class User(baseDB.User):
         
     @default
     def create(self, name: str, title: str, _cur: Optional[cursor] = None) -> None:
-        assert _cur is not None
+        assert _cur
         self.user["packs"] += [name]
         _cur.execute(parse_sql("create_pack.sql"),
             (name, title, self.id, [self.id], "making", random_string(), # creating pack
@@ -104,7 +104,7 @@ class User(baseDB.User):
     def change(self, parameter: str,
             change_to: str | None | list, 
             _cur: Optional[cursor] = None) -> None:
-        assert _cur is not None
+        assert _cur
         # we can't change json directly in postgresql
         if len(parameter) > 15 and parameter[:15] == "additional_info":
             parameter, subparameter = parameter[:15], parameter[16:]
@@ -117,12 +117,12 @@ class User(baseDB.User):
     @staticmethod
     @default
     def register(user_id: str, username: str, _cur: Optional[cursor] = None) -> str:
-        assert _cur is not None
+        assert _cur
         if not User.is_exist(user_id):
             _cur.execute(parse_sql("create_user.sql"), (user_id, username))
         _cur.execute(parse_sql("get_user.sql"), (user_id,))
         user_info = _cur.fetchone()
-        assert user_info is not None
+        assert user_info
         if user_info[2] != username:
             User(user_id).change_username(username)
         return user_info[3]
@@ -130,7 +130,7 @@ class User(baseDB.User):
     @staticmethod
     @default
     def get_by_username(username: str, _cur: Optional[cursor] = None) -> Optional[dict]:
-        assert _cur is not None
+        assert _cur
         _cur.execute(parse_sql("get_user_by_name.sql"), (username,))
         if user := _cur.fetchone():
             return convert_user_sql(user)
@@ -138,13 +138,13 @@ class User(baseDB.User):
     @staticmethod
     @default
     def is_exist(user_id: str, _cur: Optional[cursor] = None) -> bool:
-        assert _cur is not None
+        assert _cur
         _cur.execute(parse_sql("get_user.sql"), (user_id,))
         return bool(_cur.fetchone())
     
     def get_chosen(self) -> Dict[str, Union[list, str]]:
         chosen_pack = self.get_additional_info()["name"]
-        assert chosen_pack is not None
+        assert chosen_pack
         return Pack.get(chosen_pack)
     
     def get_packs(self) -> List[Dict[str, str]]:
@@ -152,10 +152,10 @@ class User(baseDB.User):
     
     @default
     def delete_pack(self, pack_name: Optional[str] = None, _cur: Optional[cursor] = None) -> None:
-        assert _cur is not None
+        assert _cur
         if pack_name is None:
             pack_name = self.get_additional_info()["name"]
-            assert pack_name is not None
+            assert pack_name
         pack = Pack(pack_name)
         for pack_member in pack.pack["members"]:
             user = User(pack_member)
@@ -166,7 +166,7 @@ class User(baseDB.User):
 
     @default
     def remove_user_from_pack(self, pack_id: str, _cur: Optional[cursor] = None) -> None:
-        assert _cur is not None
+        assert _cur
         members = Pack.get(pack_id)["members"]
         if isinstance(members, list):
             members.remove(self.id)
@@ -182,12 +182,12 @@ class MiscDB(baseDB.MiscDB):
     @staticmethod
     @default
     def create_tables(_cur: Optional[cursor] = None) -> None:
-        assert _cur is not None
+        assert _cur
         _cur.execute(parse_sql("create_tables.sql"))
             
     @staticmethod
     @default
     def get_all_packs(_cur: Optional[cursor] = None) -> List[dict]:
-        assert _cur is not None
+        assert _cur
         _cur.execute(parse_sql("get_all_packs.sql"))
         return [convert_pack_sql(pack) for pack in _cur.fetchall()]

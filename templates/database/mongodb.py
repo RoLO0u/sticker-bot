@@ -82,7 +82,7 @@ class User(baseDB.User):
             users.insert_one({"userid": user_id, "packs": [], "username": username, "language": "en", \
                 "additional_info": {"emoji": None, "name": None, "title": None}})
         user_info = users.find_one({"userid": user_id})
-        assert user_info is not None
+        assert user_info
         if user_info["username"] != username:
             User(user_id).change_username(username)
         return user_info["language"]
@@ -98,7 +98,7 @@ class User(baseDB.User):
 
     def get_chosen(self) -> Dict[str, Union[list, str]]:
         chosen_pack = self.get_additional_info()["name"]
-        assert chosen_pack is not None
+        assert chosen_pack
         return Pack.get(chosen_pack)
     
     def get_packs(self) -> List[Dict[str, str]]:
@@ -107,7 +107,7 @@ class User(baseDB.User):
     def delete_pack(self, pack_name: Optional[str] = None) -> None:
         if pack_name is None:
             pack_name = self.get_additional_info()["name"]
-            assert pack_name is not None
+            assert pack_name
         pack = Pack(pack_name)
         for pack_member in pack.pack["members"]:
             member_packs: list = User(pack_member).user["packs"]
