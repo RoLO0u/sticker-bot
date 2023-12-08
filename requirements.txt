@@ -20,6 +20,7 @@ psycopg2==2.9.9
 pydantic==2.3.0
 pydantic_core==2.6.3
 pymongo==4.6.0
+python-dotenv==1.0.0
 pytz==2023.3.post1
 typing_extensions==4.7.1
 yarl==1.9.2
