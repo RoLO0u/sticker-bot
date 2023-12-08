@@ -10,6 +10,9 @@ from templates.handlers import \
     delete, group, inline, managing, start, errors
 from templates.types import texts, texts_buttons
 
+from templates.run import Environment
+Environment().load_env()
+
 def get_db():
     
     db_type = os.getenv("DB")

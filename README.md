@@ -2,43 +2,88 @@
 
 ![GitHub](https://img.shields.io/github/license/RoLO0u/sticker-bot?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/RoLO0u/sticker-bot?style=for-the-badge) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/RoLO0u/sticker-bot?style=for-the-badge) ![Python Version](https://img.shields.io/badge/Python-3.10-informational?style=for-the-badge&logo=python) ![GitHub watchers](https://img.shields.io/github/watchers/RoLO0u/sticker-bot?style=for-the-badge)
 
-## Installation
+# Installation
 
-Bot simply can be installed by running code on machine using required variables
+Bot simply can be installed by running code on machine using required variables in .env file
 
-Or using virtual environment variables AND docker
+## Installation guide step by step
 
-## Required variables
+1. Requirements
 
-### Database configuration
+* [Python >3.10.x](https://www.python.org/)
+* [pip](https://pip.pypa.io/en/stable/installation/)
+* [postgresql](https://www.postgresql.org/download/) or [mongodb](https://www.mongodb.com/)
+* [git](https://git-scm.com/downloads)
+
+2. Clone project
+
+```console
+git clone https://github.com/RoLO0u/sticker-bot.git
+```
+
+3. Install python requirements
+
+```console
+pip install -r requirements.txt
+```
+
+> :warning: **when having problems installing psycopg2**: try running (on debian)
+> ```terminal
+> sudo apt-get install libpq-dev
+> ```
+> [source](https://stackoverflow.com/questions/65821330/how-to-solve-error-failed-building-wheel-for-psycopg2)
+
+
+4. Set environment variables
+
+Environment variables can be seen in *Required variables* part or in *.env.example* file
+
+5. Run programm
+
+To run programm use simple command
+
+```console
+python3 main.py
+```
+
+Or use virtual environment variables AND docker
+
+# Required variables
+
+## Database configuration
 
 * DB - db name, which will be used for bot to store users info.
 > In current version either "mongodb" or "postgresql"
 
-#### If you're using mongodb
+### If you're using mongodb
 
 * MONGO_URI ─ uri to your mongo database
 
-#### If you're using postgresql
+> :warning: **mongodb isn't being tested**: try on your own risk
 
-* PGDATABASE
-* PGHOST
-* PGPASSWORD
-* PGPORT
-* PGUSER
+### If you're using postgresql
 
-### Telegram bot configuration
+* PGDATABASE - database information will be stored in. e.g. aiogram, to create use 
+```sql
+CREATE DATABASE aiogram; -- or another database name
+```
+* PGHOST - your address to the postgresql. On local machines should be 127.0.0.1
+* PGPORT - port to your postgresql server. Most likely 5432
+* PGUSER - user who will be used to execute commands with (e.g. postgres).
+* PGPASSWORD - password to user
+
+## Telegram bot configuration
 
 * BOT_TOKEN ─ token bot will use to interact with telegram API
 > Use [@BotFather](https://t.me/BotFather) to get bot token
 * BOT_NAME ─ bot surname 
 > e.g. BOT_NAME="paces_bot", where t.me/paces_bot ─ link to bot
 
-## API
+# API
 
 This bot uses aiogram, therefore [official telegram api](https://core.telegram.org/bots/api)
 
-## Using emoji library
+# Using emoji library
 
 > Finding emoji in message <br>
 > [library emoji](https://pypi.org/project/emoji/)
@@ -54,57 +99,7 @@ This bot uses aiogram, therefore [official telegram api](https://core.telegram.o
 
 Emojies are constantly adding to the telegram, so you need to update version of the emoji library
 
-## TODO
-
-### make match case better
-
-<details>
-
-<summary>why not simple</summary>
-
-Code example:
-
-```python
-l = [1, 2, 3]
-i = int(input("Some user input: "))
-
-match i:
-
-    case l[0]:
-        "body 1"
-    
-    case l[0]:
-        "body 2"
-    
-    case l[0]:
-        "body 3"
-```
-
-Output:
-
-```bash
-$ py test.py
-  File "%PROJECT_PATH%\test.py", line 6
-    case l[0]:
-          ^
-SyntaxError: expected ':'
-```
-
-Also:
-
-```bash
-$ py main.py
-Traceback (most recent call last):
-  File "%PROJECT_PATH%\main.py", line 1, in <module>
-    import templates.bot
-  File "%PROJECT_PATH%\templates\bot.py", line 57
-    case join_btn_en | join_btn_ua:
-         ^^^^^^^^^^^
-SyntaxError: name capture 'join_btn_en' makes remaining patterns unreachable
-```
-</details>
-
-## Resources
+# Resources
 
 * [aiogram 3 documentation](https://docs.aiogram.dev/en/dev-3.x/)
 
