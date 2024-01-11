@@ -27,9 +27,15 @@ git clone https://github.com/RoLO0u/sticker-bot.git
 pip install -r requirements.txt
 ```
 
-> :warning: **when having problems installing psycopg2**: try running (on debian)
+> :warning: **when having problems installing psycopg2**: try running
+>
+> on debian:
 > ```terminal
 > sudo apt-get install libpq-dev
+> ```
+> on arch:
+> ```terminal
+> sudo pacman -Sy postgresql-libs
 > ```
 > [source](https://stackoverflow.com/questions/65821330/how-to-solve-error-failed-building-wheel-for-psycopg2)
 
