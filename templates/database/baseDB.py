@@ -8,11 +8,11 @@ class Object(ABC):
     @classmethod
     @abstractmethod
     def get(cls, name: str) -> Dict[str, Any]:
-        return dict()
+        ...
     
     @abstractmethod
     def change(self, parameter: str, change_to: Optional[Any]) -> None:
-        pass
+        ...
     
 class Pack(Object):
     
@@ -33,14 +33,7 @@ class Pack(Object):
     
     @abstractmethod
     def add_user(self, user_id: str) -> None:
-        self.pack['members'].append(user_id)
-
-        user = User(user_id) # type: ignore
-        user_packs = user.get_packs_id()
-        user_packs.append(self.name)
-
-        user.change("packs", user_packs)
-        self.change("members", self.pack["members"])
+        ...
         
     def get_title(self) -> str:
         title = self.pack["title"]
@@ -51,7 +44,7 @@ class Pack(Object):
     @staticmethod
     @abstractmethod
     def get_pass(password) -> Union[None, dict]:
-        pass
+        ...
     
 class User(Object):
     
@@ -67,7 +60,7 @@ class User(Object):
             name (str): name (packid) for the pack
             title (str): title (caption) for the pack, which will be seen by user
         """
-        pass
+        ...
     
     def change_lang(self, change_to: str) -> None:
         self.change("language", change_to)
@@ -87,17 +80,17 @@ class User(Object):
     @staticmethod
     @abstractmethod
     def register(user_id: str, username: str) -> str:
-        pass
+        ...
     
     @staticmethod
     @abstractmethod
     def get_by_username(username: str) -> Union[None, dict]:
-        pass
+        ...
     
     @staticmethod
     @abstractmethod
     def is_exist(user_id: str) -> bool:
-        pass
+        ...
 
     @abstractmethod
     def get_chosen(self) -> Dict[str, Union[list, str]]:
@@ -106,11 +99,11 @@ class User(Object):
         Returns:
             Dict[str, Union[list, str]]: Pack instance user had chose
         """
-        pass
+        ...
     
     @abstractmethod
     def get_packs(self) -> List[Dict[str, str]]:
-        pass
+        ...
 
     def get_packs_id(self) -> List[str]:
         return self.user["packs"]
@@ -123,18 +116,18 @@ class User(Object):
 
     @abstractmethod
     def delete_pack(self, pack_name: Optional[str] = None) -> None:
-        pass
+        ...
         
     @abstractmethod
     def remove_user_from_pack(self, pack_id: str) -> None:
-        pass
+        ...
 
 class MiscDB(ABC):
 
     @staticmethod
     @abstractmethod
     def get_all_packs() -> List[dict]:
-        pass
+        ...
 
     @classmethod
     def get_packs_name(cls) -> List[str]:

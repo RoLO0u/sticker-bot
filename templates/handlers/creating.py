@@ -23,9 +23,9 @@ async def creating_name( \
         MiscDB: Type[baseDB.MiscDB], \
         User: Type[baseDB.User] \
         ) -> Any:
-        
+
     answers = Answers(user_lang).get_cancel_btn()
-        
+    
     text = message.text
     assert text # text will never be none because router has filter
 
@@ -43,7 +43,7 @@ async def creating_name( \
             name = random_string()
             while name in MiscDB.get_packs_name():
                 name = random_string()
-            
+
             user = User(user_id)
             User(user_id).create(name, text)
             user.change_title(text)
@@ -68,7 +68,7 @@ async def collecting_emoji( \
         ) -> Any:
 
     answers = Answers(user_lang).get_cancel_btn()
-    
+
     match message.text:
 
         case answers.cancel_btn:
@@ -80,7 +80,7 @@ async def collecting_emoji( \
 
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
-        
+
         case _:
 
             if is_emoji(message.text): # type: ignore
@@ -106,7 +106,7 @@ async def collecting_photo_t( \
         ) -> Any:
 
     answers = Answers(user_lang).get_cancel_btn()
-    
+
     match message.text:
 
         case answers.cancel_btn:
@@ -119,7 +119,7 @@ async def collecting_photo_t( \
 
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
-        
+
         case _:
             await message.answer(texts["image_only_e"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
@@ -137,12 +137,12 @@ async def collecting_photo( \
         ) -> Any:
 
     # TODO: make webm and tgs image format possible
-    
+
     pack_name, pack_name_plus, title, photo, emoji = \
         await get_create_add_info(user_id, User, bot.get_file, message.photo, bot.download_file)
     assert title
     assert emoji
-    
+
     try:
         if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
             title=title, stickers=[types.InputSticker(sticker=photo, emoji_list=list(emoji))], sticker_format="static"):
@@ -170,5 +170,5 @@ async def collecting_photo( \
 
         # temporary
         await message.answer(f"""Please send this message to @feddunn\n{type(e).__name__}""")
-        
+
         raise e

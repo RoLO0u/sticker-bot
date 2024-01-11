@@ -56,7 +56,7 @@ class MongoStorage(BaseStorage):
 
         self._index = index
 
-    async def get_client(self) -> AsyncIOMotorClient: # type: ignore
+    async def get_client(self) -> AsyncIOMotorClient:
         if isinstance(self._mongo, AsyncIOMotorClient):
             return self._mongo
 
@@ -112,7 +112,7 @@ class MongoStorage(BaseStorage):
 
         if self._index:
             await self.apply_index(self._db)
-        return self._db
+        return self._db # type: ignore
     
     @classmethod
     def check_address(cls, *,
@@ -148,7 +148,7 @@ class MongoStorage(BaseStorage):
 
     async def close(self):
         if self._mongo:
-            self._mongo.close()
+            self._mongo.close() # type: ignore
 
     async def wait_closed(self):
         return True
@@ -249,5 +249,5 @@ class MongoStorage(BaseStorage):
         :return: list of tuples where first element is chat id and second is user id
         """
         db = await self.get_db()
-        items = await db[STATE].find().to_list(length=None)
+        items = await db[STATE].find().to_list(length=None) # type: ignore
         return [(int(item['chat']), int(item['user'])) for item in items]
