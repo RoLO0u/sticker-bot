@@ -73,8 +73,6 @@ async def menu( \
             else:
                 await message.answer(texts["managing_e"][user_lang])
 
-        # TODO somehow unite next 3 cases (very similar looks)
-
         case answers.add_btn:
             await state.set_state(ManagingFSM.collecting_emoji_add)
             await message.answer(texts["managing_add_1"][user_lang], \
