@@ -140,7 +140,7 @@ async def choosing_pack(\
     await state.set_state(ManagingFSM.menu)
     User(user_id).change_name(callback_query.data)
 
-    assert callback_query.message
+    assert isinstance(callback_query.message, types.Message)
     await callback_query.message.answer(texts["managing2"][user_lang], \
         reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
     
