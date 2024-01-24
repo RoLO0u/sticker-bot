@@ -55,7 +55,15 @@ class ErrorsMiddleware(BaseMiddleware):
         
     async def call(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: ErrorEvent, data: Dict[str, Any]) -> Coroutine[Any, Any, Any] | None:
         
-        assert event.update.message
+        # When message is spam was handled some time ago
+        # telegram will throw an error for trying to delete
+        # old message. Assertion below also throws error because
+        # event.update.message is None, not types.Message
+        # TODO: test and create edge case for old spams
+        if event.update.message is None:
+            logging.error(f"event.update.message has type of None\nevent is:\n{event}")
+            return
+        # assert event.update.message
         assert event.update.message.from_user
     
         User: baseDB.User = data["User"]

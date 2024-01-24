@@ -64,15 +64,20 @@ async def run() -> None:
     else:
         raise Exceptions.InvalidEnvException
 
+    # Filters and middlewares only work for text messages
+    # Setting up middleware for every message type:
+    # inline, photo, sticker, etc. breaks middleware
+    # because text message provides Message event type
+    # but Sticker provides Update event type
+    # https://docs.aiogram.dev/en/latest/dispatcher/middlewares.html
     dp.message.filter(F.chat.type=="private")
-
+    dp.message.middleware(throttling.AntiFloodMiddleware())
+    
     for handler in add_sticker, change_sticker, commands, creating, \
         delete, group, inline, managing, start, errors:
         
         dp.include_router(handler.router)
-
-    dp.message.middleware(throttling.AntiFloodMiddleware())
-
+    
     try:
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:
