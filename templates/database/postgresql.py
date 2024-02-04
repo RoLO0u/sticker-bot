@@ -7,7 +7,7 @@ import json
 from templates.database import baseDB
 from templates.Exceptions import NotFoundException
 from templates.funcs import random_string, convert_pack_sql, convert_user_sql
-from templates.database.fsm.postgres import PostgreStorage, parse_sql
+from templates.database.fsm.postgres import PostgreStorage, read_sql
 
 kwargs = {"database": os.getenv("PGDATABASE"), \
         "host": os.getenv("PGHOST"), \
@@ -38,7 +38,7 @@ class Pack(baseDB.Pack):
     @default
     def get(cls, name: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
         assert _cur
-        _cur.execute(parse_sql("get_pack.sql"), (name,))
+        _cur.execute(read_sql("get_pack.sql"), (name,))
         result = _cur.fetchone()
         assert result
         return convert_pack_sql(result)
@@ -47,7 +47,7 @@ class Pack(baseDB.Pack):
     @default
     def get_by_pass(cls, password: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
         assert _cur
-        _cur.execute(parse_sql("get_pack_by_pass.sql"), (password,))
+        _cur.execute(read_sql("get_pack_by_pass.sql"), (password,))
         result = _cur.fetchone()
         assert result
         return convert_pack_sql(result)
@@ -68,7 +68,7 @@ class Pack(baseDB.Pack):
             _cur: Optional[cursor] = None) -> None:
         assert _cur
         _cur.execute(
-            SQL(parse_sql("change_pack.sql")).format(Identifier(parameter)), 
+            SQL(read_sql("change_pack.sql")).format(Identifier(parameter)), 
             (change_to, self.name))
     
     @staticmethod
@@ -86,7 +86,7 @@ class User(baseDB.User):
     @default
     def get(cls, user_id: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
         assert _cur
-        _cur.execute(parse_sql("get_user.sql"), (user_id,))
+        _cur.execute(read_sql("get_user.sql"), (user_id,))
         result = _cur.fetchone()
         if result is None:
             raise NotFoundException(object=cls.__name__)
@@ -96,7 +96,7 @@ class User(baseDB.User):
     def create(self, name: str, title: str, _cur: Optional[cursor] = None) -> None:
         assert _cur
         self.user["packs"] += [name]
-        _cur.execute(parse_sql("create_pack.sql"),
+        _cur.execute(read_sql("create_pack.sql"),
             (name, title, self.id, [self.id], "making", random_string(), # creating pack
              self.user["packs"], self.id)) # updating user packs list
         
@@ -111,7 +111,7 @@ class User(baseDB.User):
             self.user["additional_info"][subparameter] = change_to
             change_to = json.dumps(self.user["additional_info"])
         _cur.execute(
-            SQL(parse_sql("change_user.sql")).format(Identifier(parameter)), 
+            SQL(read_sql("change_user.sql")).format(Identifier(parameter)), 
             (change_to, self.id))
         
     @staticmethod
@@ -119,8 +119,8 @@ class User(baseDB.User):
     def register(user_id: str, username: str, _cur: Optional[cursor] = None) -> str:
         assert _cur
         if not User.is_exist(user_id):
-            _cur.execute(parse_sql("create_user.sql"), (user_id, username))
-        _cur.execute(parse_sql("get_user.sql"), (user_id,))
+            _cur.execute(read_sql("create_user.sql"), (user_id, username))
+        _cur.execute(read_sql("get_user.sql"), (user_id,))
         user_info = _cur.fetchone()
         assert user_info
         if user_info[2] != username:
@@ -131,7 +131,7 @@ class User(baseDB.User):
     @default
     def get_by_username(username: str, _cur: Optional[cursor] = None) -> Optional[dict]:
         assert _cur
-        _cur.execute(parse_sql("get_user_by_name.sql"), (username,))
+        _cur.execute(read_sql("get_user_by_name.sql"), (username,))
         if user := _cur.fetchone():
             return convert_user_sql(user)
     
@@ -139,7 +139,7 @@ class User(baseDB.User):
     @default
     def is_exist(user_id: str, _cur: Optional[cursor] = None) -> bool:
         assert _cur
-        _cur.execute(parse_sql("get_user.sql"), (user_id,))
+        _cur.execute(read_sql("get_user.sql"), (user_id,))
         return bool(_cur.fetchone())
     
     def get_chosen(self) -> Dict[str, Union[list, str]]:
@@ -162,7 +162,7 @@ class User(baseDB.User):
             member_packs: list = user.user["packs"]
             member_packs.remove(pack.name)
             user.change("packs", member_packs)
-        _cur.execute(parse_sql("delete_pack.sql"), (pack.name,))
+        _cur.execute(read_sql("delete_pack.sql"), (pack.name,))
 
     @default
     def remove_user_from_pack(self, pack_id: str, _cur: Optional[cursor] = None) -> None:
@@ -183,11 +183,11 @@ class MiscDB(baseDB.MiscDB):
     @default
     def create_tables(_cur: Optional[cursor] = None) -> None:
         assert _cur
-        _cur.execute(parse_sql("create_tables.sql"))
+        _cur.execute(read_sql("create_tables.sql"))
             
     @staticmethod
     @default
     def get_all_packs(_cur: Optional[cursor] = None) -> List[dict]:
         assert _cur
-        _cur.execute(parse_sql("get_all_packs.sql"))
+        _cur.execute(read_sql("get_all_packs.sql"))
         return [convert_pack_sql(pack) for pack in _cur.fetchall()]
