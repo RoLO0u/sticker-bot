@@ -61,10 +61,12 @@ class ErrorsMiddleware(BaseMiddleware):
         # event.update.message is None, not types.Message
         # TODO: test and create edge case for old spams
         if event.update.message is None:
-            logging.error(f"event.update.message has type of None\nevent is:\n{event}")
+            logging.error(f"event.update.message is None\nevent is:\n{event}")
             return
-        # assert event.update.message
-        assert event.update.message.from_user
+
+        if event.update.message.from_user is None:
+            logging.error(f"event.update.message.from_user is None\nevent is:\n{event}")
+            return
     
         User: baseDB.User = data["User"]
         user_id = str(event.update.message.from_user.id)
