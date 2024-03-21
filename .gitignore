@@ -15,6 +15,7 @@ venv/*
 
 secrets.txt
 env.sh
+TODO.md
 
 # Docker secrets
 

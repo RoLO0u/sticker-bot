@@ -19,8 +19,8 @@ DATA = 'aiogram_data'
 BUCKET = 'aiogram_bucket'
 COLLECTIONS = (STATE, DATA, BUCKET)
 
-def read_sql(file_name: str) -> str:
-    with open(f"templates/database/sql_queries/{file_name}", "r", encoding="utf-8") as raw_file:
+def read_sql(file_path: str) -> str:
+    with open(f"templates/database/sql_queries/{file_path}", "r", encoding="utf-8") as raw_file:
         return raw_file.read()
 
 class PostgreStorage(BaseStorage):
@@ -41,7 +41,7 @@ class PostgreStorage(BaseStorage):
 
         
     def create_tables(self):
-        self._cur.execute(read_sql("create_tables_fsm.sql"))
+        self._cur.execute(read_sql("create/tables_fsm.sql"))
         self._conn.commit()
         
     @staticmethod
@@ -73,22 +73,22 @@ class PostgreStorage(BaseStorage):
     async def set_state(self, key: StorageKey, state: StateType = None) -> None:
         state = self.resolve_state(state)
         user_id = str(key.user_id)
-        self._cur.execute(read_sql("set_state.sql"), (user_id,state,user_id,user_id,state))
+        self._cur.execute(read_sql("change/state.sql"), (user_id,state,user_id,user_id,state))
         self._conn.commit()
         
     async def get_state(self, key: StorageKey) -> Optional[str]:
-        self._cur.execute(read_sql("get_state.sql"), (str(key.user_id),))
+        self._cur.execute(read_sql("get/state.sql"), (str(key.user_id),))
         result = self._cur.fetchone()
         self._conn.commit()
         return result[0] if result else None
     
     async def set_data(self, user: str, data: Dict[str, Any]) -> None:
         dataJSON = json.dumps(data, ensure_ascii=False)
-        self._cur.execute(read_sql("set_data.sql"), (user,dataJSON,user,user,dataJSON))
+        self._cur.execute(read_sql("change/data.sql"), (user,dataJSON,user,user,dataJSON))
         self._conn.commit()
         
     async def get_data(self, user: str) -> Dict[str, Any]:
-        self._cur.execute(read_sql("get_data.sql"), (user,))
+        self._cur.execute(read_sql("get/data.sql"), (user,))
         result = self._cur.fetchone()
         self._conn.commit()
         if result is None:
