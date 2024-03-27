@@ -38,6 +38,11 @@ pip install -r requirements.txt
 > sudo pacman -Sy postgresql-libs
 > ```
 > [source](https://stackoverflow.com/questions/65821330/how-to-solve-error-failed-building-wheel-for-psycopg2)
+> on Amazon Linux:
+> ```terminal
+> sudo yum -y install gcc python-setuptools python-devel postgresql-devel
+> ```
+> [source](https://stackoverflow.com/questions/42658406/error-installing-psycopg2-on-amazon-linux)
 
 
 4. Set environment variables
