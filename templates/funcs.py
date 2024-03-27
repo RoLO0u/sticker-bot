@@ -4,13 +4,25 @@ import string
 from typing import Tuple, Optional, Type, Dict, Any
 from emoji import EMOJI_DATA
 from templates.database import baseDB
-from templates.const import WATERMARK
+from templates.const import WATERMARK, MAX_EMOJI_UTF_CHARS as MAX_COUNT
 
 from aiogram.types import StickerSet
 from aiogram.exceptions import TelegramBadRequest
 
-def is_emoji(chars: str) -> bool:
-    return all([char in EMOJI_DATA for char in chars])
+
+
+def is_emoji(chars: str) -> list:
+    max_len = len(chars)
+    emoji_list = []
+    for item in range(max_len):
+        for count in range(item+1, max_len+1):
+            if chars[item:count] not in EMOJI_DATA:
+                if count > 12 or count+item > max_len:
+                    return emoji_list
+            else:
+                emoji_list.append(chars[item:count])
+                break
+    return emoji_list
 
 async def pack_exists(get_sticker_set, packid: str) -> bool:
     try:
@@ -66,5 +78,7 @@ def convert_user_sql(data: Tuple[Any, ...]) -> Dict[str, Any]:
             "language": data[3],
             "name": data[4],
             "title": data[5],
-            "emoji": data[6]
+            "emoji": data[6],
+            "stickers": data[7],
+            "emojis": data[8]
             }

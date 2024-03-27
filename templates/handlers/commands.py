@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Type
 
 from aiogram import types, Router
 from aiogram.filters import Command
@@ -6,6 +6,7 @@ from aiogram.utils.markdown import hide_link
 from aiogram.fsm.context import FSMContext
 
 from templates import markups
+from templates.database import baseDB
 from templates.FSM_groups import StartFSM
 from templates.types import texts, texts_buttons
 
@@ -15,10 +16,15 @@ router = Router()
 async def start( \
         message: types.Message, \
         state: FSMContext, \
-        user_lang: str \
+        user_lang: str, \
+        User: Type[baseDB.User], \
+        user_id: str, \
         ) -> Any:
     
     await state.set_state(StartFSM.start)
+
+    User(user_id).change("stickers", [])
+    User(user_id).change("emojis", [])
 
     await message.answer(texts["start"][user_lang], parse_mode="HTML", \
         reply_markup=markups.start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))

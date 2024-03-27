@@ -45,12 +45,7 @@ async def run() -> None:
 
     # configuring storage
 
-    print("getting db")
-        
     mainDB, storage = get_db()
-
-    print("done getti")
-
     dp = Dispatcher(storage=storage, name="main")
     
     dp["User"] = mainDB.User

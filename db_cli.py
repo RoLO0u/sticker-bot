@@ -21,7 +21,11 @@ files = {
     "edit_additional_info.sql": 
         "delete additional info and create name, title and emoji to the db (1.1.1->1.1.2a+). WARNING! All additional_info data will be lost",
     "test.sql":
-        "sql file for testing purposes"
+        "sql file for testing purposes",
+    "add_stickers.sql":
+        "add stickers list in public.users PostgreSQL database",
+    "add_emojis.sql":
+        "add emojis list in public.users PostgreSQL database, is parallel to stickers"
 }
 
 def main() -> None:

@@ -19,6 +19,8 @@ class ChangeStickerFSM(StatesGroup):
     get_emoji_to_change = State()
 
 class CreatingFSM(StatesGroup):
+    choosing_option = State()
+    copying_pack = State()
     creating_name = State()
     collecting_emoji = State()
     collecting_photo = State()

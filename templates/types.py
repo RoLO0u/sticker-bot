@@ -48,3 +48,8 @@ class Answers:
         self.ch_lan_en = texts_buttons["change_lang"]['en'][0]
         self.ch_lan_ua = texts_buttons["change_lang"]['ua'][0]
         return self
+    def get_start_opts_btns(self) -> Answers:
+        self.from_scratch = texts_buttons["start_opts"][self.user_lang][0]
+        self.copy = texts_buttons["start_opts"][self.user_lang][1]
+        self.cancel_btn = texts_buttons["cancel"][self.user_lang][0]
+        return self

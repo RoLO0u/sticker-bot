@@ -36,6 +36,13 @@ def managing_button_2(captions: list|tuple) -> ReplyKeyboardMarkup:
     keyboard.append([KeyboardButton(text=captions[-1])])
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
+def create_options(captions: List[str]):
+    keyboard = [
+        [KeyboardButton(text=captions[0])],
+        [KeyboardButton(text=captions[1])],
+    ]
+    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+
 def managing_del_conf(captions: List[str]):
     keyboard = [
         [KeyboardButton(text=captions[0])],

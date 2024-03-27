@@ -80,7 +80,7 @@ class User(baseDB.User):
     def register(user_id: str, username: str) -> str:
         if not User.is_exist(user_id):
             users.insert_one({"userid": user_id, "packs": [], "username": username, "language": "en", \
-                "emoji": None, "name": None, "title": None})
+                "emoji": None, "name": None, "title": None, "stickers": [], "emojis": []})
         user_info = users.find_one({"userid": user_id})
         assert user_info
         if user_info["username"] != username:

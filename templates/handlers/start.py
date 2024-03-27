@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM, CreatingFSM, JoiningFSM
-from templates.markups import start_button, managing_button_inline, single_button
+from templates.markups import start_button, managing_button_inline, single_button, create_options
 from templates.funcs import delete_non_exist
 from templates.types import Answers, texts, texts_buttons
 
@@ -38,10 +38,10 @@ async def start_menu( \
 
         case answers.create_btn:
             
-            await state.set_state(CreatingFSM.creating_name)
+            await state.set_state(CreatingFSM.choosing_option)
 
-            await message.answer(texts["creating1"][user_lang], \
-                reply_markup=single_button(texts["cancel_button"][user_lang]))
+            await message.answer(texts["start_opts"][user_lang], \
+                reply_markup=create_options(texts_buttons["start_opts"][user_lang]))
 
         case answers.man_btn:
 
