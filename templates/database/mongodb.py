@@ -80,7 +80,7 @@ class User(baseDB.User):
     def register(user_id: str, username: str) -> str:
         if not User.is_exist(user_id):
             users.insert_one({"userid": user_id, "packs": [], "username": username, "language": "en", \
-                "additional_info": {"emoji": None, "name": None, "title": None}})
+                "emoji": None, "name": None, "title": None})
         user_info = users.find_one({"userid": user_id})
         assert user_info
         if user_info["username"] != username:
@@ -97,7 +97,7 @@ class User(baseDB.User):
         return bool(users.count_documents(filter={"userid": user_id}))
 
     def get_chosen(self) -> Dict[str, Union[list, str]]:
-        chosen_pack = self.get_additional_info()["name"]
+        chosen_pack = self.user["name"]
         assert chosen_pack
         return Pack.get(chosen_pack)
     
@@ -106,7 +106,7 @@ class User(baseDB.User):
 
     def delete_pack(self, pack_name: Optional[str] = None) -> None:
         if pack_name is None:
-            pack_name = self.get_additional_info()["name"]
+            pack_name = self.user["name"]
             assert pack_name
         pack = Pack(pack_name)
         for pack_member in pack.pack["members"]:

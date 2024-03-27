@@ -28,7 +28,7 @@ async def delete_sticker_from_pack( \
     unique_id = message.sticker.file_unique_id
 
     user = User(user_id)
-    name = user.get_additional_info()["name"]
+    name = user["name"]
     assert name
     sticker_set = await bot.get_sticker_set(name+WATERMARK)
     stickers_un_id = [sticker.file_unique_id for sticker in sticker_set.stickers]
@@ -39,7 +39,7 @@ async def delete_sticker_from_pack( \
         return
     if len(stickers_un_id) <= 1:
         await state.set_state(ManagingFSM.delete_sticker)
-        user.change("additional_info.sticker", sticker_id)
+        user.change("sticker", sticker_id)
         await message.answer(texts["managing_del_conf"][user_lang],
             reply_markup=managing_del_conf(texts_buttons["managing_del_conf"][user_lang]))
         return
@@ -66,9 +66,8 @@ async def confirm_delete_sticker( \
         
         case answers.delete_sticker_confirming:
             user = User(user_id)
-            additional_info = user.get_additional_info()
-            sticker_id = additional_info["sticker"]
-            set_name = additional_info["name"]
+            sticker_id = user["sticker"]
+            set_name = user["name"]
             assert sticker_id and set_name
             await state.set_state(StartFSM.start)
             await bot.delete_sticker_set(set_name+WATERMARK)
@@ -126,7 +125,7 @@ async def confirming_pack_deleting( \
             await state.set_state(StartFSM.start)
 
             user = User(user_id)
-            set_name = user.get_additional_info()["name"]
+            set_name = user["name"]
             assert set_name
 
             # sticker_set = await bot.get_sticker_set(set_name+WATERMARK)

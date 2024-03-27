@@ -85,6 +85,12 @@ CREATE DATABASE aiogram; -- or another database name
 * BOT_NAME ─ bot surname 
 > e.g. BOT_NAME="paces_bot", where t.me/paces_bot ─ link to bot
 
+# Migration, database testing, updating
+
+Run db_cli.py script to execute sql from "sql_queries" folder.
+
+When using choose file by entering its number or quit by entering "q"
+
 # API
 
 This bot uses aiogram, therefore [official telegram api](https://core.telegram.org/bots/api)

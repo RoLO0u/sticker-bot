@@ -1,4 +1,4 @@
 INSERT INTO public.users
-    (userid, packs, username, language, additional_info)
+    (userid, packs, username, language, name, title, emoji)
 	VALUES
-    (%s, ARRAY []::VARCHAR [], %s, 'en', '{"emoji": null, "name": null, "title": null}');
+    (%s, ARRAY []::VARCHAR [], %s, 'en', NULL, NULL, NULL);

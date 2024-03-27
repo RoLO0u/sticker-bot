@@ -51,6 +51,9 @@ class User(Object):
     def __init__(self, user_id: str) -> None:
         self.id = user_id
         self.user = self.get(user_id)
+
+    def __getitem__(self, item):
+        return self.user[item]
     
     @abstractmethod
     def create(self, name: str, title: str) -> None:
@@ -66,13 +69,13 @@ class User(Object):
         self.change("language", change_to)
     
     def change_emoji(self, change_to: Optional[str]) -> None:
-        self.change("additional_info.emoji", change_to)
+        self.change("emoji", change_to)
 
     def change_name(self, change_to: Optional[str]) -> None:
-        self.change("additional_info.name", change_to)
+        self.change("name", change_to)
 
     def change_title(self, change_to: Optional[str]) -> None:
-        self.change("additional_info.title", change_to)
+        self.change("title", change_to)
         
     def change_username(self, change_to: Optional[str]) -> None:
         self.change("username", change_to)
@@ -110,9 +113,6 @@ class User(Object):
     
     def get_user_lang(self) -> str:
         return self.user["language"]
-    
-    def get_additional_info(self) -> Dict[str, Union[None, str]]:
-        return self.user["additional_info"]
 
     @abstractmethod
     def delete_pack(self, pack_name: Optional[str] = None) -> None:

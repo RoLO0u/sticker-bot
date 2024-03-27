@@ -50,15 +50,14 @@ async def delete_non_exist(get_sticker_set, User: Type[baseDB.User], user_id: st
 
 async def get_create_add_info(user_id: str, User: Type[baseDB.User], get_file, photo, download_file) -> Tuple[str, str, Optional[str], InputFile, Optional[str]]:
 
-    user = User(user_id)
-    additional_info = user.get_additional_info()
-    pack_name = additional_info["name"]
+    user = User(user_id).user
+    pack_name = user["name"]
     assert pack_name
     pack_name_plus = pack_name + WATERMARK
-    title = additional_info["title"]
+    title = user["title"]
     raw_file = await get_file(photo[len(photo)-1].file_id)
     photo = resize_image(await download_file(raw_file.file_path))
-    emoji = additional_info["emoji"]
+    emoji = user["emoji"]
 
     return pack_name, pack_name_plus, title, photo, emoji
 
@@ -86,5 +85,7 @@ def convert_user_sql(data: Tuple[Any, ...]) -> Dict[str, Any]:
             "packs": data[1],
             "username": data[2],
             "language": data[3],
-            "additional_info": data[4]
+            "name": data[4],
+            "title": data[5],
+            "emoji": data[6]
             }

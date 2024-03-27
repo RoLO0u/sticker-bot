@@ -106,10 +106,10 @@ class User(baseDB.User):
             _cur: Optional[cursor] = None) -> None:
         assert _cur
         # we can't change json directly in postgresql
-        if len(parameter) > 15 and parameter[:15] == "additional_info":
-            parameter, subparameter = parameter[:15], parameter[16:]
-            self.user["additional_info"][subparameter] = change_to
-            change_to = json.dumps(self.user["additional_info"])
+        # if len(parameter) > 15 and parameter[:15] == "additional_info":
+        #     parameter, subparameter = parameter[:15], parameter[16:]
+        #     self.user["additional_info"][subparameter] = change_to
+        #     change_to = json.dumps(self.user["additional_info"])
         _cur.execute(
             SQL(read_sql("change/user.sql")).format(Identifier(parameter)), 
             (change_to, self.id))
@@ -143,7 +143,7 @@ class User(baseDB.User):
         return bool(_cur.fetchone())
     
     def get_chosen(self) -> Dict[str, Union[list, str]]:
-        chosen_pack = self.get_additional_info()["name"]
+        chosen_pack = self.user["name"]
         assert chosen_pack
         return Pack.get(chosen_pack)
     
@@ -154,7 +154,7 @@ class User(baseDB.User):
     def delete_pack(self, pack_name: Optional[str] = None, _cur: Optional[cursor] = None) -> None:
         assert _cur
         if pack_name is None:
-            pack_name = self.get_additional_info()["name"]
+            pack_name = self["name"]
             assert pack_name
         pack = Pack(pack_name)
         for pack_member in pack.pack["members"]:

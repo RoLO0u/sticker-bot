@@ -1,2 +1,2 @@
-SELECT userid, packs, username, language, additional_info FROM public.users
+SELECT userid, packs, username, language, name, title, emoji FROM public.users
     WHERE username = %s;

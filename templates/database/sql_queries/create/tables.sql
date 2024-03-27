@@ -3,7 +3,9 @@ CREATE TABLE IF NOT EXISTS public.users (
     "packs" varchar(10) [],
     "username" varchar(64),
     "language" varchar(4) NOT NULL,
-    "additional_info" json,
+    "name" character varying(255),
+    "title" character varying(64),
+    "emoji" character varying(255),
 	PRIMARY KEY ("userid")
 );
 

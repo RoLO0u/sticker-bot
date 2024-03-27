@@ -89,7 +89,7 @@ async def menu( \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
         case answers.show_btn:
-            pack_name = User(user_id).get_additional_info()["name"]
+            pack_name = User(user_id)["name"]
             assert pack_name
             if await have_stickers(pack_name, bot.get_sticker_set):
                 sticker = await bot.get_sticker_set(pack_name+WATERMARK)
@@ -162,7 +162,7 @@ async def set_title( \
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
         case _ if len(message.text) < 64:
-            pack_id = User(user_id).get_additional_info()["name"]
+            pack_id = User(user_id)["name"]
             assert pack_id
             if await bot.set_sticker_set_title(pack_id+WATERMARK, message.text):
                 await state.set_state(StartFSM.start)

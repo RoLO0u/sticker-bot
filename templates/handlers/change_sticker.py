@@ -22,14 +22,14 @@ async def choosing_sticker( \
         ) -> Any:
     
     user = User(user_id)
-    pack_name = user.get_additional_info()["name"]
+    pack_name = user.user["name"]
     assert (message.sticker) and (pack_name)
     
     if message.sticker.set_name != pack_name+WATERMARK:
         await message.answer(texts["managing_emoji_e1"][user_lang])
         return
     
-    user.change("additional_info.sticker", message.sticker.file_id)
+    user.change("sticker", message.sticker.file_id)
 
     await state.set_state(ChangeStickerFSM.get_emoji_to_change)
     await message.answer(texts["managing_emoji_2"][user_lang].format(message.sticker.emoji))
@@ -70,7 +70,7 @@ async def get_emoji( \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
         case _ if is_emoji(message.text):
             await state.set_state(StartFSM.start)
-            sticker_id = User(user_id).get_additional_info()["sticker"]
+            sticker_id = User(user_id)["sticker"]
             assert sticker_id
             await bot.set_sticker_emoji_list(sticker_id, list(message.text))
             await message.answer(texts["managed_emoji"][user_lang], \

@@ -44,8 +44,12 @@ async def run() -> None:
     bot = Bot(TOKEN)
 
     # configuring storage
+
+    print("getting db")
         
     mainDB, storage = get_db()
+
+    print("done getti")
 
     dp = Dispatcher(storage=storage, name="main")
     
