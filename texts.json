@@ -45,7 +45,7 @@
 "deleted": {"en": "Sticker succesfully deleted from pack!✅\nTelegram will fully delete it in an hour",
     "ua": "Наліпку успішно видалено з пакунку!✅\nТелеграм повністю видалить наліпку протягом години"},
 "back": {"en": "↩️ Return", "ua": "↩️ Повернутись"},
-"managing_emoji_1": {"en": "Send me sticker which emoji(s) you want to change🖼", "ua": "Надішли наліпку, емодзі якої ви хочете змініти🖼"},
+"managing_emoji_1": {"en": "Send me sticker which emoji(s) you want to change🖼", "ua": "Надішли наліпку, емодзі якої ви хочете змінити🖼"},
 "managing_emoji_2": {"en": "This sticker has {} emoji(s). What do you want to change it for?🧐", "ua": "Ця наліпка має {} емодзі. На що ви хочете їх замінити?🧐"},
 "managing_emoji_e1": {"en": "❌ This sticker doesn't belong to this pack", "ua": "❌ Цієї наліпки немає в цьому пакунку"},
 "managed_emoji": {"en": "Emoji(s) to this sticker was/were succesfully changed✅", "ua": "Емодзі до цього пакунку був/були успішно змінені✅"},
