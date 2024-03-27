@@ -25,7 +25,9 @@ files = {
     "add_stickers.sql":
         "add stickers list in public.users PostgreSQL database",
     "add_emojis.sql":
-        "add emojis list in public.users PostgreSQL database, is parallel to stickers"
+        "add emojis list in public.users PostgreSQL database, is parallel to stickers",
+    "add_sticker.sql":
+        "add sticker varchar"
 }
 
 def main() -> None:

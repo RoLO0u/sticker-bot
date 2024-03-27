@@ -72,7 +72,7 @@ async def get_emoji( \
             await state.set_state(StartFSM.start)
             sticker_id = User(user_id)["sticker"]
             assert sticker_id
-            await bot.set_sticker_emoji_list(sticker_id, list(message.text))
+            await bot.set_sticker_emoji_list(sticker_id, is_emoji(message.text))
             await message.answer(texts["managed_emoji"][user_lang], \
                 reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
         case _:
