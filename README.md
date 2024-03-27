@@ -51,10 +51,27 @@ Environment variables can be seen in *Required variables* part or in *.env.examp
 
 5. Run programm
 
-To run programm use simple command
+To run programm use simple command depending on your configuration:
+
+```console
+python main.py
+```
 
 ```console
 python3 main.py
+```
+
+```console
+python3.11 main.py
+```
+
+```console
+py main.py
+```
+
+If you want to save logs in ```main.log```, you can use ```--log-file``` arg
+```console
+python main.py --log-file
 ```
 
 Or use virtual environment variables AND docker
