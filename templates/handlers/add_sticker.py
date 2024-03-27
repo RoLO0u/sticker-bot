@@ -98,7 +98,7 @@ async def collecting_photo_add( \
         
         assert emoji
 
-        if await bot.add_sticker_to_set(int(user_id), pack_name_plus, sticker=types.InputSticker(sticker=file, emoji_list=list(emoji))):
+        if await bot.add_sticker_to_set(int(user_id), pack_name_plus, sticker=types.InputSticker(sticker=file, emoji_list=is_emoji(emoji))):
             
             await state.set_state(StartFSM.start)
             user = User(user_id)
