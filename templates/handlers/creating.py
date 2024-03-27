@@ -8,6 +8,7 @@ from templates.database import baseDB
 from templates.FSM_groups import CreatingFSM, StartFSM
 from templates.markups import start_button, pack_link_button, single_button
 from templates.funcs import random_string, is_emoji, get_create_add_info
+from templates.media import create_InputFile
 from templates.const import WATERMARK
 from templates.types import Answers, texts, texts_buttons
 
@@ -125,7 +126,7 @@ async def collecting_photo_t( \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
 
-@router.message(CreatingFSM.collecting_photo, F.photo)
+@router.message(CreatingFSM.collecting_photo, F.photo | F.sticker)
 async def collecting_photo( \
         message: types.Message, \
         state: FSMContext, \
@@ -138,14 +139,19 @@ async def collecting_photo( \
 
     # TODO: make webm and tgs image format possible
 
-    pack_name, pack_name_plus, title, photo, emoji = \
-        await get_create_add_info(user_id, User, bot.get_file, message.photo, bot.download_file)
+    if message.sticker:
+        file = message.sticker.file_id
+    elif message.photo:
+        file = await create_InputFile(bot.get_file, message.photo, bot.download_file)
+
+    pack_name, pack_name_plus, title, emoji = \
+        await get_create_add_info(user_id, User)
     assert title
     assert emoji
 
     try:
         if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
-            title=title, stickers=[types.InputSticker(sticker=photo, emoji_list=list(emoji))], sticker_format="static"):
+            title=title, stickers=[types.InputSticker(sticker=file, emoji_list=list(emoji))], sticker_format="static"):
 
             await state.set_state(StartFSM.start)
             user = User(user_id)

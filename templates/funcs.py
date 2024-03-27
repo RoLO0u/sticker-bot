@@ -1,35 +1,16 @@
 import random
 import string
 
-from typing import BinaryIO, Tuple, Optional, Type, Dict, Any
+from typing import Tuple, Optional, Type, Dict, Any
 from emoji import EMOJI_DATA
-from PIL import Image
-from io import BytesIO
-
 from templates.database import baseDB
 from templates.const import WATERMARK
 
-from aiogram.types import BufferedInputFile, InputFile, StickerSet
+from aiogram.types import StickerSet
 from aiogram.exceptions import TelegramBadRequest
 
 def is_emoji(chars: str) -> bool:
     return all([char in EMOJI_DATA for char in chars])
-
-def resize_image(imageIO: BinaryIO) -> InputFile:
-    image = Image.open(imageIO)
-    base = 512
-    min_size = min(image.size)
-    max_size = max(image.size)
-    percent = base / max_size
-    resize_to = (base, int(min_size * percent)) if max_size == image.size[0] else (int(min_size * percent), base)
-    image = image.resize(resize_to, Image.Resampling.LANCZOS)
-    bio = BytesIO()
-    bio.name = 'last_image.png'
-    image.save(bio, 'PNG')
-    bio.seek(0)
-    raw = bio.read1()
-    image = BufferedInputFile(file=raw, filename="last_image.png")
-    return image
 
 async def pack_exists(get_sticker_set, packid: str) -> bool:
     try:
@@ -47,19 +28,17 @@ async def delete_non_exist(get_sticker_set, User: Type[baseDB.User], user_id: st
             to_pop.append(pname)
     for pname in to_pop:
         user.delete_pack(pname)
-
-async def get_create_add_info(user_id: str, User: Type[baseDB.User], get_file, photo, download_file) -> Tuple[str, str, Optional[str], InputFile, Optional[str]]:
+   
+async def get_create_add_info(user_id: str, User: Type[baseDB.User]) -> Tuple[str, str, Optional[str], Optional[str]]:
 
     user = User(user_id).user
     pack_name = user["name"]
     assert pack_name
     pack_name_plus = pack_name + WATERMARK
     title = user["title"]
-    raw_file = await get_file(photo[len(photo)-1].file_id)
-    photo = resize_image(await download_file(raw_file.file_path))
     emoji = user["emoji"]
 
-    return pack_name, pack_name_plus, title, photo, emoji
+    return pack_name, pack_name_plus, title, emoji
 
 async def have_stickers(packid: str, get_sticker_set) -> bool:
     sticker_set: StickerSet = await get_sticker_set(packid+WATERMARK)

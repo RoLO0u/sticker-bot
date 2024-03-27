@@ -1,4 +1,3 @@
-import psycopg2
 import logging
 from templates.run import Environment
 import os
@@ -26,7 +25,7 @@ files = {
 }
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, format=None)
+    logging.basicConfig(level=logging.INFO, format="")
     logging.info("This is a CLI made to migrate, update, test newer sticker-bot versions or PostgreSQL")
     logging.info("Choose one of the files below:")
     for enumer, (header, desc) in enumerate(files.items()):
@@ -43,7 +42,8 @@ def main() -> None:
                 logging.info(f"No '{default}' option")
     #list(files.keys())
     logging.info(f"You chose '{file}'. Connecting to PostgreSQL database...")
-    conn = PostgreStorage.connect(**kwargs)
+    assert all(kwargs.values())
+    conn = PostgreStorage.connect(**kwargs) # type: ignore
     logging.info("Done. Executing file")
     with conn.cursor() as cur:
         cur.execute(read_sql(file))

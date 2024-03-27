@@ -56,7 +56,7 @@ class MongoStorage(BaseStorage):
 
         self._index = index
 
-    async def get_client(self) -> AsyncIOMotorClient:
+    async def get_client(self) -> AsyncIOMotorClient: # type: ignore
         if isinstance(self._mongo, AsyncIOMotorClient):
             return self._mongo
 
