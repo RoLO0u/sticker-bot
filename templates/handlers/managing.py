@@ -151,7 +151,8 @@ async def set_title( \
         bot: Bot, \
         user_id: str, \
         user_lang: str, \
-        User: Type[baseDB.User] \
+        User: Type[baseDB.User], \
+        Pack: Type[baseDB.Pack]
         ) -> Any:
     
     answers = Answers(user_lang).get_cancel_btn()
@@ -165,6 +166,7 @@ async def set_title( \
             pack_id = User(user_id)["name"]
             assert pack_id
             if await bot.set_sticker_set_title(pack_id+WATERMARK, message.text):
+                Pack(pack_id).change("title", message.text)
                 await state.set_state(StartFSM.start)
                 await message.answer(texts["managed_title"][user_lang], \
                     reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
