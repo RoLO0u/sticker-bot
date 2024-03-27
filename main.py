@@ -1,10 +1,14 @@
+import sys
 import asyncio
 import templates.bot
 import logging
 
-async def main():
+async def main():    
+    
+    if "--log-file" in sys.argv:
+        logging.basicConfig(filename="main.log", encoding="utf-8", level=logging.WARNING)
+    else: logging.basicConfig(level=logging.INFO)
 
-    logging.basicConfig(level=logging.INFO)
     logging.warning("""CHECK ACTUALITY OF "emoji" LIBRARY""")
     logging.info("https://pypi.org/project/emoji/")
 
