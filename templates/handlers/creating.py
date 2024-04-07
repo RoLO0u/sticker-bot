@@ -98,7 +98,7 @@ async def creating_name( \
             too_much = ran > 50
             ran = 50 if too_much else ran
             for i in range(ran):
-                stickers.append(types.InputSticker(sticker=user["stickers"][i], emoji_list=is_emoji(user["emojis"][i]))) #list(user["emojis"][i])
+                stickers.append(types.InputSticker(sticker=user["stickers"][i], format="static", emoji_list=is_emoji(user["emojis"][i]))) #list(user["emojis"][i])
 
             try:
                 if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
@@ -108,7 +108,7 @@ async def creating_name( \
                         ran = len(user["stickers"])
                         for i in range(50, ran):
                             await bot.add_sticker_to_set(int(user_id), pack_name_plus, \
-                                sticker=types.InputSticker(sticker=user["stickers"][i], emoji_list=[user["emojis"][i]]))
+                                sticker=types.InputSticker(sticker=user["stickers"][i], format="static", emoji_list=[user["emojis"][i]]))
 
                     await state.set_state(StartFSM.start)
                     user = User(user_id)
@@ -235,7 +235,7 @@ async def collecting_photo( \
 
     try:
         if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
-            title=title, stickers=[types.InputSticker(sticker=file, emoji_list=is_emoji(emoji))], sticker_format="static"):
+            title=title, stickers=[types.InputSticker(sticker=file, format="static", emoji_list=is_emoji(emoji))], sticker_format="static"):
 
             await state.set_state(StartFSM.start)
             user = User(user_id)
