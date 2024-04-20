@@ -38,6 +38,7 @@ pip install -r requirements.txt
 > sudo pacman -Sy postgresql-libs
 > ```
 > [source](https://stackoverflow.com/questions/65821330/how-to-solve-error-failed-building-wheel-for-psycopg2)
+> 
 > on Amazon Linux:
 > ```terminal
 > sudo yum -y install gcc python-setuptools python-devel postgresql-devel
@@ -48,6 +49,8 @@ pip install -r requirements.txt
 4. Set environment variables
 
 Environment variables can be seen in *Required variables* part or in *.env.example* file
+
+aiogram doesn't have support for telgram bot API 7.2 yet. Use [experimental fork](https://github.com/aiogram/aiogram/tree/feature/bot-api-7.2) or wait for new aiogram version
 
 5. Run programm
 
@@ -111,7 +114,7 @@ CREATE DATABASE aiogram; -- or another database name
 
 Run db_cli.py script to execute sql from "sql_queries" folder.
 
-When using choose file by entering its number or quit by entering "q"
+When using choose script to execute by entering its number or quit by entering "q"
 
 # API
 
