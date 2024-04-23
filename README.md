@@ -50,8 +50,6 @@ pip install -r requirements.txt
 
 Environment variables can be seen in *Required variables* part or in *.env.example* file
 
-aiogram doesn't have support for telgram bot API 7.2 yet. Use [experimental fork](https://github.com/aiogram/aiogram/tree/feature/bot-api-7.2) or wait for new aiogram version
-
 5. Run programm
 
 To run programm use simple command depending on your configuration:
