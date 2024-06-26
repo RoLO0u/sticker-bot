@@ -40,6 +40,7 @@ def create_options(captions: List[str]):
     keyboard = [
         [KeyboardButton(text=captions[0])],
         [KeyboardButton(text=captions[1])],
+        [KeyboardButton(text=captions[2])],
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 

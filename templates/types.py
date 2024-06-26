@@ -51,5 +51,5 @@ class Answers:
     def get_start_opts_btns(self) -> Answers:
         self.from_scratch = texts_buttons["start_opts"][self.user_lang][0]
         self.copy = texts_buttons["start_opts"][self.user_lang][1]
-        self.cancel_btn = texts_buttons["cancel"][self.user_lang][0]
+        self.cancel_btn = texts_buttons["start_opts"][self.user_lang][2]
         return self
