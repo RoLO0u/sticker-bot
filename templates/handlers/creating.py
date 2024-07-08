@@ -18,10 +18,7 @@ router = Router()
 async def choosing_option( \
         message: types.Message, \
         state: FSMContext, \
-        user_id: str, \
         user_lang: str, \
-        MiscDB: Type[baseDB.MiscDB], \
-        User: Type[baseDB.User] \
         ) -> None:
     
     answers = Answers(user_lang).get_start_opts_btns()
