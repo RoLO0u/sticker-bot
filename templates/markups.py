@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 
 import random
 
-from templates.const import CAPTCHA_CAPTIONS
+from templates import const
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -56,9 +56,9 @@ def pack_link_button(caption: str, url: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 def captcha_inline() -> InlineKeyboardMarkup:
-    random_capts = [(key, CAPTCHA_CAPTIONS[key]) for key in list(CAPTCHA_CAPTIONS.keys())]
+    random_capts = [(caption[0], caption[1]) for caption in list(const.OPTIONS)]
     random.shuffle(random_capts)
-    random_capts = dict(random_capts)
-    listed_markup = [InlineKeyboardButton(text=capt, callback_data=random_capts[capt]) for capt in random_capts]
-    listed_markup = [listed_markup[:3], listed_markup[3:]]
-    return InlineKeyboardMarkup(inline_keyboard=listed_markup)
+    listed_markup = [InlineKeyboardButton(text=capt[0], callback_data=f"spam{capt[1]}") for capt in random_capts]
+    listed_markup = [listed_markup[:3], listed_markup[3:6], listed_markup[6:]]
+    markup = InlineKeyboardMarkup(row_width=3, inline_keyboard=listed_markup)
+    return markup

@@ -3,7 +3,7 @@ import logging
 from time import time as timeSeconds
 from typing import Any, Awaitable, Callable, Dict, Coroutine, List
 
-from aiogram.types import Message, TelegramObject
+from aiogram.types import Message, TelegramObject, BufferedInputFile
 from aiogram.types.error_event import ErrorEvent
 from aiogram.dispatcher.middlewares.base import BaseMiddleware
 
@@ -12,6 +12,8 @@ from templates.database import baseDB
 from templates.database.fsm.mongo import MongoStorage
 from templates.database.fsm.postgres import PostgreStorage
 from templates.Exceptions import EmptyUsernameException
+from templates.images import create_captcha
+from templates import const
 
 class AntiFloodMiddleware(BaseMiddleware):
             
@@ -26,7 +28,7 @@ class AntiFloodMiddleware(BaseMiddleware):
         my_storage = data.get("storage")
         assert isinstance(my_storage, MongoStorage) or isinstance(my_storage, PostgreStorage)
 
-        user_storage: Dict[str, List[float | bool]] = await my_storage.get_data(user=user_id)
+        user_storage: Dict[str, List[float | bool | int]] = await my_storage.get_data(user=user_id)
 
         username = event.from_user.username
         if username is None:
@@ -36,13 +38,15 @@ class AntiFloodMiddleware(BaseMiddleware):
         data["user_lang"] = User.register(user_id, username)
 
         if not user_storage or not user_storage.get("data"):
-            user_storage["data"] = [time, False]
+            user_storage["data"] = [time, False, 0]
         elif user_storage["data"][1]:
             return
         elif user_storage["data"][0] + .5 > time: # new message sent less than in 0.5 sec
-            user_storage["data"] = [time, True]
+            image, answer, angle = create_captcha()
+            user_storage["data"] = [time, True, angle]
             await my_storage.set_data(user=user_id, data=user_storage)
-            await event.answer("Spam catched. Complete captha to continue", reply_markup=captcha_inline())
+            await event.answer_photo(BufferedInputFile(image, filename="captcha"),
+                const.SPAM_CATCHED, reply_markup=captcha_inline())
             return
         else:
             user_storage["data"][0] = time
