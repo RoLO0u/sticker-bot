@@ -4,8 +4,8 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
 from templates.database import baseDB
-from templates.FSM_groups import StartFSM, JoiningFSM
-from templates.markups import start_button
+from templates.FSM_groups import StartFSM, JoiningFSM, ManagingFSM
+from templates.markups import start_button, managing_button_2
 from templates.types import Answers, texts, texts_buttons
 
 router = Router()
@@ -64,13 +64,11 @@ async def kick_t( \
     match message.text:
 
         case answers.cancel_btn:
+            await state.set_state(ManagingFSM.menu)
+            await message.answer(texts["managing2"][user_lang], \
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
             
-            await state.set_state(StartFSM.start)
-            await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
-        
         case _:
-            
             user_to_kick = User.get_by_username(message.text)
             assert user_to_kick
             pack_id = User(user_id).get_chosen()["packid"]
@@ -90,7 +88,7 @@ async def kick_t( \
                 await message.answer(texts["joining_e5"][user_lang])
                 return
             
-            await state.set_state(StartFSM.start)
+            await state.set_state(ManagingFSM.menu)
             User(id_to_kick).remove_user_from_pack(pack.name)
             await message.answer(texts["kicked"][user_lang], \
-                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))

@@ -159,16 +159,16 @@ async def set_title( \
     assert message.text
     match message.text:
         case answers.cancel_btn:
-            await state.set_state(StartFSM.start)
-            await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
+            await state.set_state(ManagingFSM.menu)
+            await message.answer(texts["managing2"][user_lang], \
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _ if len(message.text) < 64:
             pack_id = User(user_id)["name"]
             assert pack_id
             if await bot.set_sticker_set_title(pack_id+WATERMARK, message.text):
                 Pack(pack_id).change("title", message.text)
-                await state.set_state(StartFSM.start)
+                await state.set_state(ManagingFSM.menu)
                 await message.answer(texts["managed_title"][user_lang], \
-                    reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
+                    reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _:
             await message.answer(texts["naming_e1"][user_lang])

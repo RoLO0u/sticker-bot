@@ -44,10 +44,10 @@ async def delete_sticker_from_pack( \
             reply_markup=managing_del_conf(texts_buttons["managing_del_conf"][user_lang]))
         return
     
-    await state.set_state(StartFSM.start)
+    await state.set_state(ManagingFSM.menu)
     await bot.delete_sticker_from_set(sticker_id)
     await message.answer(texts["deleted"][user_lang], \
-        reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))    
+        reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))    
 
 @router.message(ManagingFSM.delete_sticker, F.text)
 async def confirm_delete_sticker( \
@@ -92,12 +92,10 @@ async def delete_sticker_from_pack_t( \
     answers = Answers(user_lang).get_cancel_btn()
     
     match message.text:
-
         case answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
-
         case _:
             await message.answer(texts["sticker_only_e"][user_lang])
 

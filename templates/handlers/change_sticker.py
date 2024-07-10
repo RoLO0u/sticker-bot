@@ -3,8 +3,8 @@ from typing import Any, Type
 from aiogram import Router, F, types, Bot
 from aiogram.fsm.context import FSMContext
 
-from templates.FSM_groups import ChangeStickerFSM, StartFSM
-from templates.markups import start_button, single_button
+from templates.FSM_groups import ChangeStickerFSM, ManagingFSM
+from templates.markups import single_button, managing_button_2
 from templates.types import Answers, texts, texts_buttons
 from templates.const import WATERMARK
 from templates.database import baseDB
@@ -44,9 +44,9 @@ async def choosing_sticker_t( \
 
     match message.text:
         case answers.cancel_btn:
-            await state.set_state(StartFSM.start)
-            await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
+            await state.set_state(ManagingFSM.menu)
+            await message.answer(texts["managing2"][user_lang], \
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _:
             await message.answer(texts["sticker_only_e"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
@@ -65,15 +65,15 @@ async def get_emoji( \
     
     match message.text:
         case answers.cancel_btn:
-            await state.set_state(StartFSM.start)
-            await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
-                reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
+            await state.set_state(ManagingFSM.menu)
+            await message.answer(texts["managing2"][user_lang], \
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _ if is_emoji(message.text):
-            await state.set_state(StartFSM.start)
+            await state.set_state(ManagingFSM.menu)
             sticker_id = User(user_id)["sticker"]
             assert sticker_id
             await bot.set_sticker_emoji_list(sticker_id, is_emoji(message.text))
             await message.answer(texts["managed_emoji"][user_lang], \
-                reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _:
             await message.answer(texts["emoji_only_e"][user_lang])
