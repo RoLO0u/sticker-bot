@@ -9,8 +9,6 @@ from templates.const import WATERMARK, MAX_EMOJI_UTF_CHARS as MAX_COUNT
 from aiogram.types import StickerSet
 from aiogram.exceptions import TelegramBadRequest
 
-
-
 def is_emoji(chars: str) -> list:
     max_len = len(chars)
     emoji_list = []
