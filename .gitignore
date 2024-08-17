@@ -10,6 +10,7 @@ photos/*
 **/__pycache__/
 venv/*
 .vscode/
+main.log
 
 # for testing
 
