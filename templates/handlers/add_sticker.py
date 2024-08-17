@@ -95,7 +95,6 @@ async def collecting_photo_add( \
             
             await state.set_state(ManagingFSM.menu)
             user = User(user_id)
-            user.change_name(None)
             user.change_emoji(None)
             
             await message.answer(texts["added1"][user_lang], \
