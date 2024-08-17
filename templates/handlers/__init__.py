@@ -1,9 +1,9 @@
 from templates.handlers import (
-    add_sticker, 
-    delete, 
     commands, 
-    creating, 
     inline, 
+    delete, 
+    add_sticker, 
+    creating, 
     managing, 
     start, 
     group,
