@@ -42,7 +42,7 @@ class AntiFloodMiddleware(BaseMiddleware):
         elif user_storage["data"][1]:
             return
         elif user_storage["data"][0] + .5 > time: # new message sent less than in 0.5 sec
-            image, answer, angle = create_captcha()
+            image, angle = create_captcha()
             user_storage["data"] = [time, True, angle]
             await my_storage.set_data(user=user_id, data=user_storage)
             await event.answer_photo(BufferedInputFile(image, filename="captcha"),
@@ -93,7 +93,7 @@ class ErrorsMiddleware(BaseMiddleware):
             user_storage["exception_data"] = [time, False]
         elif user_storage["exception_data"][1]:
             return
-        elif user_storage["exception_data"][0] + .5 > time: # new message sent less than in 0.5 sec
+        elif user_storage["exception_data"][0] + const.DELAY > time: # new message sent less than in DELAY sec
             user_storage["exception_data"] = [time, True]
             await my_storage.set_data(user=user_id, data=user_storage)
             await event.update.message.answer("Spam catched. Complete captha to continue", reply_markup=captcha_inline())

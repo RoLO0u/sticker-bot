@@ -20,19 +20,16 @@ IMAGES_ROUTE = "templates/img/"
 
 WIDTH, HEIGHT= 800, 400
 
-WHITE = 0xFF
+BACKGROUND = 0xFF # white by default
 
 X_OFFSET, Y_OFFSET = 100, 100
 
 ROTATE_OFFSET = 5 # degrees
 
+DELAY = .5
+
 OPTIONS = (
-    ("➡️", 0), 
-    ("↘️", 45),
-    ("⬇️", 90),
-    ("↙️", 135),
-    ("⬅️", 180),
-    ("↖️", 225),
-    ("⬆️", 270),
-    ("↗️", 315)
+    ("↖", 225), ("⬆️️", 270), ("↗️", 315),
+    ("⬅️", 180), ("❌", None), ("➡️", 0),
+    ("↙️", 135), ("⬇️", 90), ("↘", 45), 
 )
