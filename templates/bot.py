@@ -1,17 +1,12 @@
-import logging
 import os
 
 from aiogram import Bot, Dispatcher, F
 
 from templates import Exceptions, throttling, const
-from templates.database import baseDB
 from templates.handlers import \
     add_sticker, change_sticker, commands, creating, \
     delete, group, inline, managing, start, errors
 from templates.types import texts, texts_buttons
-
-from templates.run import Environment
-Environment().load_env()
 
 def get_db():
     
@@ -39,7 +34,7 @@ async def run() -> None:
     TOKEN = os.getenv("BOT_TOKEN")
 
     if TOKEN == None:
-        raise Exceptions.TokenDoesNotDefined()
+        raise Exceptions.TokenIsNotDefined()
 
     bot = Bot(TOKEN)
 
@@ -57,12 +52,9 @@ async def run() -> None:
     dp["texts_buttons"] = texts_buttons
     dp["bot"] = bot
     dp["bot_info"] = await bot.me()
-        
-    if dp["bot_info"].username == const.WATERMARK[4:]:
-        logging.info("Bot name and token are valid")
-    else:
-        raise Exceptions.InvalidEnvException
 
+    const.WATERMARK._update(dp["bot_info"].username)
+        
     # Filters and middlewares only work for text messages
     # Setting up middleware for every message type:
     # inline, photo, sticker, etc. breaks middleware
@@ -73,7 +65,7 @@ async def run() -> None:
     dp.message.middleware(throttling.AntiFloodMiddleware())
     
     for handler in add_sticker, change_sticker, commands, creating, \
-        delete, group, inline, managing, start, errors:
+            delete, group, inline, managing, start, errors:
         
         dp.include_router(handler.router)
     

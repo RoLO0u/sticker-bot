@@ -9,7 +9,7 @@ Babel==2.13.1
 certifi==2023.7.22
 charset-normalizer==3.3.2
 dnspython==2.4.2
-emoji==2.10.0
+emoji==2.14.0
 frozenlist==1.4.0
 idna==3.4
 magic-filter==1.0.12

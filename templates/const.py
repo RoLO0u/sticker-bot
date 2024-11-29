@@ -1,9 +1,23 @@
 from os import getenv
 
-from templates.run import Environment
-Environment().load_env()
+from Exceptions import WatermarkIsNotDefined
 
-WATERMARK = f"_by_{getenv('BOT_NAME')}"
+WATERMARK_TEMPLATE = "_by_"
+
+class Watermark:
+    def __init__(self) -> None:
+        self.state = WATERMARK_TEMPLATE
+    def __str__(self) -> str:
+        if self.state == WATERMARK_TEMPLATE:
+            raise WatermarkIsNotDefined
+        return self.state
+    def _update(self, username: str) -> None:
+        self.state = f"{WATERMARK_TEMPLATE}{username}"
+        
+
+WATERMARK = Watermark()
+
+DEBUG = getenv("DEBUG")
 
 MAX_EMOJI_UTF_CHARS = 10 + 1
 

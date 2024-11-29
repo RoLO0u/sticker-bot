@@ -85,7 +85,7 @@ async def creating_name( \
                 return
             
             pack_name, pack_name_plus, title, _ = \
-            await get_create_add_info(user_id, User)
+                await get_create_add_info(user_id, User)
             assert title
 
             # [types.InputSticker(sticker=file_id, emoji_list=emoji) for (file_id, emoji) in (user["stickers"], user["emoji"])]
@@ -117,7 +117,7 @@ async def creating_name( \
                     Pack(pack_name).change_status("maked") # TODO migrate 'maked' to 'made' (cringe)
 
                     await message.answer(texts["created1"][user_lang], \
-                        reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
+                        reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
                     await message.answer(texts["created2"][user_lang], \
                         reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
 
@@ -242,7 +242,7 @@ async def collecting_photo( \
             Pack(pack_name).change_status("maked") # TODO migrate 'maked' to 'made' (cringe)
 
             await message.answer(texts["created1"][user_lang], \
-                reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
+                reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
             await message.answer(texts["created2"][user_lang], \
                 reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
 

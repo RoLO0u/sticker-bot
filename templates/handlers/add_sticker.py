@@ -98,7 +98,7 @@ async def collecting_photo_add( \
             user.change_emoji(None)
             
             await message.answer(texts["added1"][user_lang], \
-                reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + WATERMARK))
+                reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
             await message.answer(texts["created2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
 

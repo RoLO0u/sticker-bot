@@ -34,7 +34,7 @@ async def delete_non_exist(get_sticker_set, User: Type[baseDB.User], user_id: st
     user = User(user_id)
     to_pop = []
     for pname in user.get_packs_id():
-        if not await pack_exists(get_sticker_set, pname+WATERMARK):
+        if not await pack_exists(get_sticker_set, pname+str(WATERMARK)):
             to_pop.append(pname)
     for pname in to_pop:
         user.delete_pack(pname)
@@ -51,7 +51,7 @@ async def get_create_add_info(user_id: str, User: Type[baseDB.User]) -> Tuple[st
     return pack_name, pack_name_plus, title, emoji
 
 async def have_stickers(packid: str, get_sticker_set) -> bool:
-    sticker_set: StickerSet = await get_sticker_set(packid+WATERMARK)
+    sticker_set: StickerSet = await get_sticker_set(packid+str(WATERMARK))
     return not not sticker_set.stickers # It for some reason faster than bool(obj) in 2 times
     # https://stackoverflow.com/questions/25594231/why-is-not-faster-than-bool-in-python-or-speed-of-python-functions-vs-s
 
