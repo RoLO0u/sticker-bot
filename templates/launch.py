@@ -47,4 +47,4 @@ def on_launch(bot: Bot, dp: Dispatcher) -> None:
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.load_cert_chain(const.WEBHOOK_SSL_CERT, const.WEBHOOK_SSL_PRIV)
 
-        web.run_app(app, host=const.WEB_SERVER_HOST, port=const.WEB_SERVER_PORT)
+        web.run_app(app, host=const.WEB_SERVER_HOST, port=const.WEB_SERVER_PORT, ssl_context=context)
