@@ -1,12 +1,15 @@
 import os
 
 from aiogram import Bot, Dispatcher, F
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 
 from templates import Exceptions, throttling, const
 from templates.handlers import \
     add_sticker, change_sticker, commands, creating, \
     delete, group, inline, managing, start, errors
 from templates.types import texts, texts_buttons
+from templates.launch import on_launch
 
 def get_db():
     
@@ -32,11 +35,10 @@ async def run() -> None:
     # configuring aiogram bot
 
     TOKEN = os.getenv("BOT_TOKEN")
-
     if TOKEN == None:
         raise Exceptions.TokenIsNotDefined()
 
-    bot = Bot(TOKEN)
+    bot = Bot(TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
     # configuring storage
 
@@ -69,7 +71,4 @@ async def run() -> None:
         
         dp.include_router(handler.router)
     
-    try:
-        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
-    finally:
-        await bot.session.close()
+    await on_launch(bot, dp)

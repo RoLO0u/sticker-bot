@@ -2,6 +2,20 @@ from os import getenv
 
 from Exceptions import WatermarkIsNotDefined
 
+# webhook
+
+WEB_SERVER_HOST = "127.0.0.1"
+WEB_SERVER_PORT = 8087
+
+WEBHOOK_PATH = "/telegram-sticker-bot"
+WEBHOOK_SECRET = getenv("WEBHOOK_SECRET")
+BASE_WEBHOOK_URL = getenv("BASE_WEBHOOK_URL")
+
+WEBHOOK_SSL_CERT = getenv("WEBHOOK_SSL_CERT")
+WEBHOOK_SSL_PRIV = getenv("WEBHOOK_SSL_PRIV")
+
+# Watermark
+
 WATERMARK_TEMPLATE = "_by_"
 
 class Watermark:
@@ -17,9 +31,13 @@ class Watermark:
 
 WATERMARK = Watermark()
 
+# Other const
+
 DEBUG = getenv("DEBUG")
 
 MAX_EMOJI_UTF_CHARS = 10 + 1
+
+# Spam related
 
 SPAM_CATCHED = "Spam catched. Choose direction in which the emoji is facing"
 CAPTCHA_COMPLETED = "You can access bot now.\nOptional: Type /start to restart bot"
