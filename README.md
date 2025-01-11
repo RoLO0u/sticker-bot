@@ -6,6 +6,8 @@
 
 Bot simply can be installed by running code on machine using required variables in .env file
 
+> If you're using webhooks, you should set up reverse proxy. You can start with [aiogram documentation](https://docs.aiogram.dev/en/v3.17.0/dispatcher/webhook.html#examples) or [read tutorial on webhooks](https://t.me/aiogram_hent/77) (the tutorial is in ukrainian🇺🇦). Both use nginx and tutorial uses certbot.
+
 ## Installation guide step by step
 
 1. Requirements
@@ -105,8 +107,23 @@ CREATE DATABASE aiogram; -- or another database name
 
 * BOT_TOKEN ─ token bot will use to interact with telegram API
 > Use [@BotFather](https://t.me/BotFather) to get bot token
-* BOT_NAME ─ bot surname 
-> e.g. BOT_NAME="paces_bot", where t.me/paces_bot ─ link to bot
+
+## Long polling
+
+* Just setting DEBUG to `True` allows the bot to use long polling
+> Additionally, this mode shows `INFO` level of logs
+
+## Webhook
+
+* Setting DEBUG to `False` tells the bot to use webhooks
+> Additionally, this mode shows `WARNING` level of logs
+* WEBHOOK_SECRET ─ a string of random characters
+* BASE_WEBHOOK_URL ─ an URL to which telegram will send updates to
+> If you're using self-signed certificate you should add certificate file to `set_webhook` method in `launch.py` file
+* WEBHOOK_SSL_CERT ─ path to your public sertificate
+* WEBHOOK_SSL_PRIV ─ path to your private/secret sertificate
+
+> If you're encountering issues, read [aiogram documentation](https://docs.aiogram.dev/en/v3.17.0/dispatcher/webhook.html#examples) or [official telegram documentation](https://core.telegram.org/bots/webhooks)
 
 # Migration, database testing, updating
 
@@ -132,7 +149,7 @@ This bot uses aiogram, therefore [official telegram api](https://core.telegram.o
 > print("😘👍" in EMOJI_DATA) # -> False
 > ```
 
-Emojies are constantly adding to the telegram, so you need to update version of the emoji library
+Emojies are constantly being added to the telegram, so you need to update version of the emoji library
 
 # Resources
 
