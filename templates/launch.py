@@ -43,6 +43,8 @@ def on_launch(bot: Bot, dp: Dispatcher) -> None:
         )
         webhook_request_handler.register(app, path=const.WEBHOOK_PATH)
 
+        setup_application(app, dp, bot=bot)
+
         assert const.WEBHOOK_SSL_CERT
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.load_cert_chain(const.WEBHOOK_SSL_CERT, const.WEBHOOK_SSL_PRIV)
