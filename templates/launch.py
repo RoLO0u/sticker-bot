@@ -9,6 +9,9 @@ from aiogram.types import FSInputFile
 from templates import const
 
 async def set_webhook(bot: Bot) -> None:
+    bot_info = await bot.me()
+    assert bot_info.username
+    const.WATERMARK._update(bot_info.username)
     assert const.WEBHOOK_SSL_CERT
     await bot.set_webhook(
         f"{const.BASE_WEBHOOK_URL}{const.WEBHOOK_PATH}",
