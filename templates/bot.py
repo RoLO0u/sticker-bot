@@ -30,7 +30,7 @@ def get_db():
     else:
         raise Exceptions.InvalidEnvException("DB variable is not valid (either mongodb or postgresql)")
 
-async def run() -> None:
+def run() -> None:
 
     # configuring aiogram bot
 
@@ -53,9 +53,6 @@ async def run() -> None:
     dp["texts"] = texts
     dp["texts_buttons"] = texts_buttons
     dp["bot"] = bot
-    dp["bot_info"] = await bot.me()
-
-    const.WATERMARK._update(dp["bot_info"].username)
         
     # Filters and middlewares only work for text messages
     # Setting up middleware for every message type:
@@ -71,4 +68,4 @@ async def run() -> None:
         
         dp.include_router(handler.router)
     
-    await on_launch(bot, dp)
+    on_launch(bot, dp)

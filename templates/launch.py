@@ -1,5 +1,6 @@
 from aiohttp import web
 import ssl
+import asyncio
 
 from aiogram import Bot, Dispatcher
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
@@ -15,13 +16,19 @@ async def set_webhook(bot: Bot) -> None:
         certificate=FSInputFile(const.WEBHOOK_SSL_CERT)
     )
 
-async def on_launch(bot: Bot, dp: Dispatcher) -> None:
+async def run_polling(dp: Dispatcher, bot: Bot):
+    bot_info = await bot.me()
+    assert bot_info.username
+    const.WATERMARK._update(bot_info.username)
+    try:
+        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+    finally:
+        await bot.session.close()
+
+def on_launch(bot: Bot, dp: Dispatcher) -> None:
 
     if const.DEBUG == "True":
-        try:
-            await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
-        finally:
-            await bot.session.close()
+        asyncio.run(run_polling(dp, bot))
     elif const.DEBUG == "False":
         dp.startup.register(set_webhook)
 

@@ -1,11 +1,11 @@
 from typing import Any, Type
 
-from aiogram import types, Router
+from aiogram import types, Router, Bot
 from aiogram.filters import Command
 from aiogram.utils.markdown import hide_link
 from aiogram.fsm.context import FSMContext
 
-from templates import markups
+from templates import markups, const
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM
 from templates.types import texts, texts_buttons
@@ -32,8 +32,13 @@ async def start( \
 @router.message(Command("help"))
 async def help( \
         message: types.Message, \
-        user_lang: str \
+        user_lang: str, \
+        bot: Bot
         ) -> Any:
+
+    bot_info = await bot.me()
+    assert bot_info.username
+    const.WATERMARK._update(bot_info.username)
 
     await message.answer(f"{hide_link('https://i.imgur.com/ZRv0bDC.png')}"
         f"{texts['help_1'][user_lang]}", parse_mode="HTML")

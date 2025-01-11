@@ -7,7 +7,7 @@ from templates.run import Environment
 from templates.const import DEBUG
 from templates import Exceptions
 
-async def main() -> None:
+def main() -> None:
 
     Environment().load_env()
 
@@ -24,10 +24,10 @@ async def main() -> None:
 
     logging.warning("""EMOJI LIBRARY NEEDS TO BE UPDATED AS EMOJI DO""")
 
-    await templates.bot.run()
+    templates.bot.run()
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        main()
     except KeyboardInterrupt:
         logging.critical("Bye!")
