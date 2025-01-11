@@ -4,7 +4,6 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-from aiogram.types import FSInputFile
 
 from templates import const
 
@@ -16,7 +15,6 @@ async def set_webhook(bot: Bot) -> None:
     await bot.set_webhook(
         f"{const.BASE_WEBHOOK_URL}{const.WEBHOOK_PATH}",
         secret_token=const.WEBHOOK_SECRET,
-        certificate=FSInputFile(const.WEBHOOK_SSL_CERT)
     )
 
 async def run_polling(dp: Dispatcher, bot: Bot):
