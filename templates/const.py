@@ -1,6 +1,9 @@
 from os import getenv
 
 from templates.Exceptions import WatermarkIsNotDefined
+from templates.run import Environment
+
+Environment().load_env()
 
 # webhook
 
