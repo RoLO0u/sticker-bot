@@ -8,7 +8,7 @@ Environment().load_env()
 # webhook
 
 WEB_SERVER_HOST = "127.0.0.1"
-WEB_SERVER_PORT = 8087
+WEB_SERVER_PORT = 8443
 
 WEBHOOK_PATH = "/telegram-sticker-bot"
 WEBHOOK_SECRET = getenv("WEBHOOK_SECRET")
