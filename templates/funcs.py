@@ -44,7 +44,7 @@ async def get_create_add_info(user_id: str, User: Type[baseDB.User]) -> Tuple[st
     user = User(user_id).user
     pack_name = user["name"]
     assert pack_name
-    pack_name_plus = pack_name + WATERMARK
+    pack_name_plus = pack_name + str(WATERMARK)
     title = user["title"]
     emoji = user["emoji"]
 

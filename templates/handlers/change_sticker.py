@@ -25,7 +25,7 @@ async def choosing_sticker( \
     pack_name = user.user["name"]
     assert (message.sticker) and (pack_name)
     
-    if message.sticker.set_name != pack_name+WATERMARK:
+    if message.sticker.set_name != pack_name+str(WATERMARK):
         await message.answer(texts["managing_emoji_e1"][user_lang])
         return
     

@@ -92,7 +92,7 @@ async def menu( \
             pack_name = User(user_id)["name"]
             assert pack_name
             if await have_stickers(pack_name, bot.get_sticker_set):
-                sticker = await bot.get_sticker_set(pack_name+WATERMARK)
+                sticker = await bot.get_sticker_set(pack_name+str(WATERMARK))
                 await message.answer_sticker(sticker=sticker.stickers[0].file_id)
             else:
                 await message.answer(texts["managing_show_e"][user_lang])
@@ -165,7 +165,7 @@ async def set_title( \
         case _ if len(message.text) < 64:
             pack_id = User(user_id)["name"]
             assert pack_id
-            if await bot.set_sticker_set_title(pack_id+WATERMARK, message.text):
+            if await bot.set_sticker_set_title(pack_id+str(WATERMARK), message.text):
                 Pack(pack_id).change("title", message.text)
                 await state.set_state(ManagingFSM.menu)
                 await message.answer(texts["managed_title"][user_lang], \

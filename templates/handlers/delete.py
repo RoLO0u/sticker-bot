@@ -30,7 +30,7 @@ async def delete_sticker_from_pack( \
     user = User(user_id)
     name = user["name"]
     assert name
-    sticker_set = await bot.get_sticker_set(name+WATERMARK)
+    sticker_set = await bot.get_sticker_set(name+str(WATERMARK))
     stickers_un_id = [sticker.file_unique_id for sticker in sticker_set.stickers]
 
     # checking if sticker in user stickerpack
@@ -70,7 +70,7 @@ async def confirm_delete_sticker( \
             set_name = user["name"]
             assert sticker_id and set_name
             await state.set_state(StartFSM.start)
-            await bot.delete_sticker_set(set_name+WATERMARK)
+            await bot.delete_sticker_set(set_name+str(WATERMARK))
             await message.answer(texts["deleted"][user_lang], \
                 reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
         
@@ -126,12 +126,12 @@ async def confirming_pack_deleting( \
             set_name = user["name"]
             assert set_name
 
-            # sticker_set = await bot.get_sticker_set(set_name+WATERMARK)
+            # sticker_set = await bot.get_sticker_set(set_name+str(WATERMARK))
 
             # for sticker in sticker_set.stickers:
             #     await bot.delete_sticker_from_set(sticker.file_id)
 
-            await bot.delete_sticker_set(set_name+WATERMARK)
+            await bot.delete_sticker_set(set_name+str(WATERMARK))
             user.delete_pack()
 
             await message.answer(texts["pack_deleted"][user_lang], \
