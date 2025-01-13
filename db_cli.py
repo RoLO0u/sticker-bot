@@ -27,7 +27,9 @@ files = {
     "add_emojis.sql":
         "add emojis list in public.users PostgreSQL database, is parallel to stickers",
     "add_sticker.sql":
-        "add sticker varchar"
+        "add sticker varchar",
+    "update_database.sql":
+        "Update database version (from 2.39 to 2.40)"
 }
 
 def main() -> None:
@@ -46,11 +48,12 @@ def main() -> None:
                 os._exit(0)
             case default:
                 logging.info(f"No '{default}' option")
-    #list(files.keys())
     logging.info(f"You chose '{file}'. Connecting to PostgreSQL database...")
     assert all(kwargs.values())
     conn = PostgreStorage.connect(**kwargs) # type: ignore
-    logging.info("Done. Executing file")
+    if input("Done connecting. Are you sure you want to execute this script? (Y/n): ") != "Y":
+        return
+    logging.info("Executing file")
     with conn.cursor() as cur:
         cur.execute(read_sql(file))
         logging.info("Done. Commiting changes")
