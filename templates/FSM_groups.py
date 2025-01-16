@@ -7,11 +7,11 @@ class StartFSM(StatesGroup):
 class ManagingFSM(StatesGroup):
     choosing_pack = State()
     menu = State()
-    collecting_emoji_add = State() # to add
-    collecting_photo_add = State() # to add
-    collecting_sticker = State() # to delete sticker
-    delete_sticker = State() # to make sure to delete sticker
-    are_you_sure = State() # to delete pack
+    collecting_emoji_add = State()
+    collecting_photo_add = State()
+    collecting_sticker = State()
+    delete_sticker = State()
+    are_you_sure = State()
     set_title = State()
 
 class ChangeStickerFSM(StatesGroup):

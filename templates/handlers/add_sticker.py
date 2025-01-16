@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Type
 from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
@@ -20,7 +20,7 @@ async def collecting_emoji_add( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
         
     answers = Answers(user_lang).get_cancel_btn()
     assert message.text
@@ -46,7 +46,7 @@ async def collecting_photo_add_t( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
     
     answers = Answers(user_lang).get_cancel_btn()
 
@@ -67,7 +67,7 @@ async def collecting_photo_add( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
 
     if message.sticker:
         file = message.sticker.file_id

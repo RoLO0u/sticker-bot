@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Type
 
 from aiogram import Router, F, types, Bot
 from aiogram.fsm.context import FSMContext
@@ -19,7 +19,7 @@ async def choosing_sticker( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
     
     user = User(user_id)
     pack_name = user.user["name"]
@@ -39,7 +39,7 @@ async def choosing_sticker_t( \
         message: types.Message, \
         state: FSMContext, \
         user_lang: str,
-        ) -> Any:    
+        ) -> None:    
     answers = Answers(user_lang).get_cancel_btn()
 
     match message.text:
@@ -59,7 +59,7 @@ async def get_emoji( \
         user_lang: str, \
         User: Type[baseDB.User], \
         bot: Bot \
-        ) -> Any:
+        ) -> None:
     assert message.text
     answers = Answers(user_lang).get_cancel_btn()
     

@@ -21,7 +21,7 @@ async def choosing_pack_t( \
         message: types.Message, \
         state: FSMContext, \
         user_lang: str \
-        ) -> Any:
+        ) -> None:
     
     answers = Answers(user_lang).get_back_btns()
 
@@ -47,7 +47,7 @@ async def menu( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
 
     # TODO create inline sticker pick like in @Stickers bot
 
@@ -131,7 +131,7 @@ async def choosing_pack(\
         callback_query: types.CallbackQuery, \
         state: FSMContext, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
 
     user_id = str(callback_query.from_user.id)
     assert callback_query.from_user.username
@@ -153,7 +153,7 @@ async def set_title( \
         user_lang: str, \
         User: Type[baseDB.User], \
         Pack: Type[baseDB.Pack]
-        ) -> Any:
+        ) -> None:
     
     answers = Answers(user_lang).get_cancel_btn()
     assert message.text

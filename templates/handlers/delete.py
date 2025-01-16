@@ -20,7 +20,7 @@ async def delete_sticker_from_pack( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
 
     # router already has filter on sticker
     assert message.sticker
@@ -57,7 +57,7 @@ async def confirm_delete_sticker( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
     
     answers = Answers(user_lang).get_cancel_btn() \
         .get_delete_sticker_confirming()
@@ -87,7 +87,7 @@ async def delete_sticker_from_pack_t( \
         message: types.Message, \
         state: FSMContext, \
         user_lang: str 
-        ) -> Any:
+        ) -> None:
 
     answers = Answers(user_lang).get_cancel_btn()
     
@@ -107,7 +107,7 @@ async def confirming_pack_deleting( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
     
     answers = Answers(user_lang).get_cancel_btn().get_confirming()
 

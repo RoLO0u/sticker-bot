@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Type
 
 from aiogram import types, Router, Bot, F
 
@@ -88,8 +88,6 @@ async def creating_name( \
                 await get_create_add_info(user_id, User)
             assert title
 
-            # [types.InputSticker(sticker=file_id, emoji_list=emoji) for (file_id, emoji) in (user["stickers"], user["emoji"])]
-
             stickers = []
             ran = len(user["stickers"])
             too_much = ran > 50
@@ -125,7 +123,6 @@ async def creating_name( \
                     await message.answer(texts["unknown_exception_1"][user_lang]+'2')
 
             # TODO explore what exception happens when telegram doesn't want to user create pack
-            # TODO maybe create something to save logs
 
             except Exception as e:
                 await message.answer(texts["known_e_1"][user_lang]+str(e).split()[-1])
@@ -250,7 +247,6 @@ async def collecting_photo( \
             await message.answer(texts["unknown_exception_1"][user_lang]+'2')
 
     # TODO explore what exception happens when telegram doesn't want to user create pack
-    # TODO maybe create something to save logs
 
     except Exception as e:
         await message.answer(texts["known_e_1"][user_lang]+str(e).split()[-1])

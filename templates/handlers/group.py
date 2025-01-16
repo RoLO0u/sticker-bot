@@ -17,7 +17,7 @@ async def join_by_password( \
         user_id: str, \
         user_lang: str, \
         Pack: Type[baseDB.Pack] \
-        ) -> Any:
+        ) -> None:
 
     answers = Answers(user_lang).get_cancel_btn()
     assert message.text
@@ -56,7 +56,7 @@ async def kick_t( \
         user_lang: str, \
         User: Type[baseDB.User], \
         Pack: Type[baseDB.Pack] \
-        ) -> Any:
+        ) -> None:
     
     answers = Answers(user_lang).get_cancel_btn()
     assert message.text

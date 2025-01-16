@@ -9,4 +9,5 @@ from templates.handlers import (
     group,
     change_sticker,
     errors,
+    images,
     )

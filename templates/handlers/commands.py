@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Type
 
 from aiogram import types, Router, Bot
 from aiogram.filters import Command
@@ -19,7 +19,7 @@ async def start( \
         user_lang: str, \
         User: Type[baseDB.User], \
         user_id: str, \
-        ) -> Any:
+        ) -> None:
     
     await state.set_state(StartFSM.start)
 
@@ -34,7 +34,7 @@ async def help( \
         message: types.Message, \
         user_lang: str, \
         bot: Bot
-        ) -> Any:
+        ) -> None:
 
     bot_info = await bot.me()
     assert bot_info.username

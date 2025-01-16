@@ -10,7 +10,7 @@ from templates import const
 router = Router()
 
 @router.callback_query(F.data.startswith("spam"))
-async def callback_query_handler(callback_query: CallbackQuery, storage: MongoStorage) -> Any:
+async def callback_query_handler(callback_query: CallbackQuery, storage: MongoStorage) -> None:
 
     assert callback_query.data and isinstance(callback_query.message, types.Message)
 

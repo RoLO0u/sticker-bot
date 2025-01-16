@@ -20,7 +20,7 @@ async def start_menu( \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
-        ) -> Any:
+        ) -> None:
     
     # TODO check packs availibility
 
