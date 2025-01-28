@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from templates.database import baseDB
 from templates.FSM_groups import CreatingFSM, StartFSM
 from templates.markups import start_button, pack_link_button, single_button
-from templates.funcs import random_string, is_emoji, get_create_add_info
+from templates.funcs import random_string, is_emojis, get_create_add_info
 from templates.media import create_InputFile
 from templates.const import WATERMARK
 from templates.types import Answers, texts, texts_buttons
@@ -93,7 +93,7 @@ async def creating_name( \
             too_much = ran > 50
             ran = 50 if too_much else ran
             for i in range(ran):
-                stickers.append(types.InputSticker(sticker=user["stickers"][i], format="static", emoji_list=is_emoji(user["emojis"][i]))) #list(user["emojis"][i])
+                stickers.append(types.InputSticker(sticker=user["stickers"][i], format="static", emoji_list=is_emojis(user["emojis"][i]))) #list(user["emojis"][i])
 
             try:
                 if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
@@ -162,7 +162,7 @@ async def collecting_emoji( \
 
         case _:
 
-            if is_emoji(message.text): # type: ignore
+            if is_emojis(message.text): # type: ignore
 
                 User(user_id).change_emoji(message.text)
                 await state.set_state(CreatingFSM.collecting_photo)
@@ -229,7 +229,7 @@ async def collecting_photo( \
 
     try:
         if await bot.create_new_sticker_set(user_id=int(user_id), name=pack_name_plus, \
-            title=title, stickers=[types.InputSticker(sticker=file, format="static", emoji_list=is_emoji(emoji))], sticker_format="static"):
+            title=title, stickers=[types.InputSticker(sticker=file, format="static", emoji_list=is_emojis(emoji))], sticker_format="static"):
 
             await state.set_state(StartFSM.start)
             user = User(user_id)

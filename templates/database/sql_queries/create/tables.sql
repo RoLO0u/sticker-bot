@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     "emoji" character varying(255),
     "stickers" character varying(255) [],
     "emojis" character varying(255) [],
+    "images" character varying(255) [],
 	PRIMARY KEY ("userid")
 );
 

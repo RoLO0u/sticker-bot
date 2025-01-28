@@ -8,7 +8,7 @@ from templates.markups import single_button, managing_button_2
 from templates.types import Answers, texts, texts_buttons
 from templates.const import WATERMARK
 from templates.database import baseDB
-from templates.funcs import is_emoji
+from templates.funcs import is_emojis
 
 router = Router()
 
@@ -68,11 +68,11 @@ async def get_emoji( \
             await state.set_state(ManagingFSM.menu)
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
-        case _ if is_emoji(message.text):
+        case _ if is_emojis(message.text):
             await state.set_state(ManagingFSM.menu)
             sticker_id = User(user_id)["sticker"]
             assert sticker_id
-            await bot.set_sticker_emoji_list(sticker_id, is_emoji(message.text))
+            await bot.set_sticker_emoji_list(sticker_id, is_emojis(message.text))
             await message.answer(texts["managed_emoji"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _:

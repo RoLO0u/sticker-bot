@@ -41,6 +41,8 @@ class AntiFloodMiddleware(BaseMiddleware):
             user_storage["data"] = [time, False, 0]
         elif user_storage["data"][1]:
             return
+        elif event.photo:
+            pass
         elif user_storage["data"][0] + .5 > time: # new message sent less than in 0.5 sec
             image, angle = create_captcha()
             user_storage["data"] = [time, True, angle]

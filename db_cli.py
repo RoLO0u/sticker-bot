@@ -29,7 +29,9 @@ files = {
     "add_sticker.sql":
         "add sticker varchar",
     "update_database.sql":
-        "Update database version (from 2.39 to 2.40)"
+        "Update database version (from 2.39 to 2.40)",
+    "add_images.sql":
+        "add images column to the `users` table (1.1.4->1.1.5)"
 }
 
 def main() -> None:

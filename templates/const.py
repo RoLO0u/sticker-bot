@@ -1,4 +1,8 @@
 from os import getenv
+from copy import deepcopy
+from typing import Any
+
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from templates.Exceptions import WatermarkIsNotDefined
 from templates.run import Environment
@@ -39,6 +43,21 @@ WATERMARK = Watermark()
 DEBUG = getenv("DEBUG")
 
 MAX_EMOJI_UTF_CHARS = 10 + 1
+
+
+class CommonEmoji:
+    def __init__(self) -> None:
+        self.common_emojis = [["🥰", "👍", "🤯", "☺️"], ["🧐", "😡", "😱", "👎"], ["👋", "🫵", "🤑", "😈"]]
+        self.keyboard = [[], [], []]
+        for i, row in enumerate(self.common_emojis):
+            for cell in row:
+                self.keyboard[i].append(InlineKeyboardButton(text=cell, callback_data=cell))
+        self.markup = InlineKeyboardMarkup(inline_keyboard=self.keyboard)
+
+COMMON_EMOJI = CommonEmoji()
+"""Common emojis used for stickers
+
+Use `markup` attribute to acces markup"""
 
 # Spam related
 

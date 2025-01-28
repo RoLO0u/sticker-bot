@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM
 from templates.markups import managing_button_2, start_button, pack_link_button, single_button
-from templates.funcs import is_emoji, get_create_add_info, pack_exists
+from templates.funcs import is_emojis, get_create_add_info, pack_exists
 from templates.media import create_InputFile
 from templates.const import WATERMARK
 from templates.types import Answers, texts, texts_buttons
@@ -31,7 +31,7 @@ async def collecting_emoji_add( \
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _:
-            if is_emoji(message.text):
+            if is_emojis(message.text):
                 await state.set_state(ManagingFSM.collecting_photo_add)
                 User(user_id).change_emoji(message.text)
                 await message.answer(texts["managing_add_2"][user_lang], \
@@ -91,7 +91,7 @@ async def collecting_photo_add( \
         
         assert emoji
 
-        if await bot.add_sticker_to_set(int(user_id), pack_name_plus, sticker=types.InputSticker(sticker=file, format="static", emoji_list=is_emoji(emoji))):
+        if await bot.add_sticker_to_set(int(user_id), pack_name_plus, sticker=types.InputSticker(sticker=file, format="static", emoji_list=is_emojis(emoji))):
             
             await state.set_state(ManagingFSM.menu)
             user = User(user_id)

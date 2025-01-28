@@ -4,10 +4,10 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from templates import Exceptions, throttling, const
+from templates import Exceptions, throttling
 from templates.handlers import \
     add_sticker, change_sticker, commands, creating, \
-    delete, group, inline, managing, start, errors
+    delete, group, inline, managing, start, errors, images
 from templates.types import texts, texts_buttons
 from templates.launch import on_launch
 
@@ -64,7 +64,7 @@ def run() -> None:
     dp.message.middleware(throttling.AntiFloodMiddleware())
     
     for handler in add_sticker, change_sticker, commands, creating, \
-            delete, group, inline, managing, start, errors:
+            delete, group, inline, managing, images, start, errors:
         
         dp.include_router(handler.router)
     

@@ -97,7 +97,7 @@ class User(Object):
 
     @abstractmethod
     def get_chosen(self) -> Dict[str, Union[list, str]]:
-        """Gets chosen pack from users additional info
+        """Gets chosen pack
 
         Returns:
             Dict[str, Union[list, str]]: Pack instance user had chose

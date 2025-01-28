@@ -28,11 +28,7 @@ async def choosing_pack_t( \
     match message.text:
 
         case answers.back_btn_en | answers.back_btn_ua:
-
             await state.set_state(StartFSM.start)
-
-            texts["backed"][user_lang]
-
             await message.answer(texts["backed"][user_lang],\
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
             
