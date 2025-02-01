@@ -96,7 +96,7 @@ async def creating_name( \
                 return
             
             pack_name, pack_name_plus, title, _ = \
-                await get_create_add_info(user_id, User)
+                await get_create_add_info(user)
             assert title
 
             stickers = []
@@ -231,10 +231,11 @@ async def collecting_photo( \
     if message.sticker:
         file = message.sticker.file_id
     elif message.photo:
-        file = await create_input_file(bot, message.photo)
+        file = await create_input_file(bot, [photo.file_id for photo in message.photo])
 
+    user = User(user_id)
     pack_name, pack_name_plus, title, emoji = \
-        await get_create_add_info(user_id, User)
+        await get_create_add_info(user)
     assert title
     assert emoji
 
@@ -243,7 +244,6 @@ async def collecting_photo( \
             title=title, stickers=[types.InputSticker(sticker=file, format="static", emoji_list=is_emojis(emoji))], sticker_format="static"):
 
             await state.set_state(StartFSM.start)
-            user = User(user_id)
             user.change_name(None)
             user.change_emoji(None)
             user.change_title(None)

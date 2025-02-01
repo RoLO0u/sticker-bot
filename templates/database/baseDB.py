@@ -26,7 +26,7 @@ class Pack(Object):
     def change_stickers(self, change_to: str) -> None:
         self.change("stickers", change_to)
         
-    def include(self, user_id) -> bool:
+    def includes(self, user_id: str) -> bool:
         if user_id in self.pack["members"]:
             return True
         return False
@@ -51,9 +51,13 @@ class User(Object):
     def __init__(self, user_id: str) -> None:
         self.id = user_id
         self.user = self.get(user_id)
+        self.lang = self.user["language"]
 
-    def __getitem__(self, item: str):
+    def __getitem__(self, item: str) -> Any:
         return self.user[item]
+    
+    def __setitem__(self, index: str, value: Any) -> None:
+        self.user[index] = value
     
     @abstractmethod
     def create(self, name: str, title: str) -> None:

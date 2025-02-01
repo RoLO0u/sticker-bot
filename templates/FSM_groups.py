@@ -13,6 +13,8 @@ class ManagingFSM(StatesGroup):
     delete_sticker = State()
     are_you_sure = State()
     set_title = State()
+    emoji_inline = State()
+    add_inline = State()
 
 class ChangeStickerFSM(StatesGroup):
     change_sticker_emoji = State()

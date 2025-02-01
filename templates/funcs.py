@@ -9,7 +9,7 @@ from templates.const import WATERMARK
 from aiogram.types import StickerSet
 from aiogram.exceptions import TelegramBadRequest
 
-def is_emojis(chars: str) -> list:
+def is_emojis(chars: str) -> list[str]:
     return [char for char in chars if is_emoji(char)]
 
 async def pack_exists(get_sticker_set, packid: str) -> bool:
@@ -29,9 +29,8 @@ async def delete_non_exist(get_sticker_set, User: Type[baseDB.User], user_id: st
     for pname in to_pop:
         user.delete_pack(pname)
    
-async def get_create_add_info(user_id: str, User: Type[baseDB.User]) -> Tuple[str, str, Optional[str], Optional[str]]:
+async def get_create_add_info(user: baseDB.User) -> Tuple[str, str, Optional[str], Optional[str]]:
 
-    user = User(user_id).user
     pack_name = user["name"]
     assert pack_name
     pack_name_plus = pack_name + str(WATERMARK)

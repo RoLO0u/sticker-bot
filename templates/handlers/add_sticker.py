@@ -65,46 +65,55 @@ async def collecting_photo_add( \
         state: FSMContext, \
         bot: Bot, \
         user_id: str, \
-        user_lang: str, \
         User: Type[baseDB.User] \
         ) -> None:
 
     if message.sticker:
         file = message.sticker.file_id
     elif message.photo:
-        file = await create_input_file(bot, message.photo)
+        file = await create_input_file(bot, [photo.file_id for photo in message.photo])
+
+    user = User(user_id)
+
+    await add_sticker(user, bot, file, message, state)
+
+async def add_sticker( \
+        user: baseDB.User, \
+        bot: Bot, \
+        file: types.InputFile | str, \
+        message: types.Message, \
+        state: FSMContext, \
+        ) -> None:
 
     pack_name, pack_name_plus, _, emoji = \
-        await get_create_add_info(user_id, User)
+    await get_create_add_info(user)
 
     if not await pack_exists(bot.get_sticker_set, pack_name_plus):
         await state.set_state(StartFSM.start)
-        user = User(user_id)
         user.delete_pack()
         user.change_name(None)
         user.change_emoji(None)
-        await message.answer(texts["managing_add_e"][user_lang], \
-            reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
+        await message.answer(texts["managing_add_e"][user.lang], \
+            reply_markup=start_button(texts_buttons["start"][user.lang], texts_buttons["change_lang"]))
         return
 
     try:
         
         assert emoji
 
-        if await bot.add_sticker_to_set(int(user_id), pack_name_plus, sticker=types.InputSticker(sticker=file, format="static", emoji_list=is_emojis(emoji))):
+        if await bot.add_sticker_to_set(int(user.id), pack_name_plus, sticker=types.InputSticker(sticker=file, format="static", emoji_list=is_emojis(emoji))):
             
             await state.set_state(ManagingFSM.menu)
-            user = User(user_id)
             user.change_emoji(None)
             
-            await message.answer(texts["added1"][user_lang], \
-                reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
-            await message.answer(texts["created2"][user_lang], \
-                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
+            await message.answer(texts["added1"][user.lang], \
+                reply_markup=pack_link_button(texts["created_inline"][user.lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
+            await message.answer(texts["created2"][user.lang], \
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user.lang]))
 
     except Exception as e:
 
-        await message.answer(texts["known_e_1"][user_lang]+str(e).split()[-1])
+        await message.answer(texts["known_e_1"][user.lang]+str(e).split()[-1])
 
         # temporary
         # update: maybe

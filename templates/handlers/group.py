@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Type
 from aiogram import Router, F, types
 
 from aiogram.fsm.context import FSMContext
@@ -76,7 +76,7 @@ async def kick_t( \
             pack = Pack(pack_id)
             
             # user doesn't exists in this pack
-            if not pack.include(id_to_kick := user_to_kick["userid"], ):
+            if not pack.includes(id_to_kick := user_to_kick["userid"], ):
                 await message.answer(texts["joining_e2"][user_lang])
                 return
             # user wants to kick himself
