@@ -52,7 +52,7 @@ async def choosing_emoji_query( \
 
     assert callback_query.data and isinstance(callback_query.message, types.Message)
 
-    emoji = callback_query.data[-1]
+    emoji = callback_query.data[3:]
     user = User(user_id)
     user.change_emoji(emoji)
 
