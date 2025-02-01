@@ -51,7 +51,7 @@ class CommonEmoji:
         self.keyboard = [[], [], []]
         for i, row in enumerate(self.common_emojis):
             for cell in row:
-                self.keyboard[i].append(InlineKeyboardButton(text=cell, callback_data=cell))
+                self.keyboard[i].append(InlineKeyboardButton(text=cell, callback_data="emo"+cell))
         self.markup = InlineKeyboardMarkup(inline_keyboard=self.keyboard)
 
 COMMON_EMOJI = CommonEmoji()

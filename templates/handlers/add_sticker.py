@@ -7,7 +7,7 @@ from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM
 from templates.markups import managing_button_2, start_button, pack_link_button, single_button
 from templates.funcs import is_emojis, get_create_add_info, pack_exists
-from templates.media import create_InputFile
+from templates.media import create_input_file
 from templates.const import WATERMARK
 from templates.types import Answers, texts, texts_buttons
 
@@ -72,7 +72,7 @@ async def collecting_photo_add( \
     if message.sticker:
         file = message.sticker.file_id
     elif message.photo:
-        file = await create_InputFile(bot.get_file, message.photo, bot.download_file)
+        file = await create_input_file(bot, message.photo)
 
     pack_name, pack_name_plus, _, emoji = \
         await get_create_add_info(user_id, User)

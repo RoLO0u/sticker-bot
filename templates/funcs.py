@@ -4,7 +4,7 @@ import string
 from typing import Tuple, Optional, Type, Dict, Any
 from emoji import is_emoji
 from templates.database import baseDB
-from templates.const import WATERMARK, MAX_EMOJI_UTF_CHARS as MAX_COUNT
+from templates.const import WATERMARK
 
 from aiogram.types import StickerSet
 from aiogram.exceptions import TelegramBadRequest
@@ -69,5 +69,6 @@ def convert_user_sql(data: Tuple[Any, ...]) -> Dict[str, Any]:
             "emoji": data[6],
             "stickers": data[7],
             "emojis": data[8],
-            "sticker": data[9]
+            "sticker": data[9],
+            "images": data[10]
             }

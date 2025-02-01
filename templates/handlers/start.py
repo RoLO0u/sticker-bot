@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM, CreatingFSM, JoiningFSM
-from templates.markups import start_button, managing_button_inline, single_button, create_options
+from templates.markups import start_button, packs_inline, single_button, create_options
 from templates.funcs import delete_non_exist
 from templates.types import Answers, texts, texts_buttons
 
@@ -56,7 +56,7 @@ async def start_menu( \
             user = User(user_id)
             if user.get_packs_id():
                 await message.answer(texts["managing"][user_lang], \
-                    reply_markup=managing_button_inline( list(user.get_packs()) ))
+                    reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user_lang][1]))
             
             else:
                 await message.answer(texts["managing_e"][user_lang])

@@ -52,7 +52,7 @@ class User(Object):
         self.id = user_id
         self.user = self.get(user_id)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str):
         return self.user[item]
     
     @abstractmethod

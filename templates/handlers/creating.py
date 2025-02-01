@@ -6,13 +6,24 @@ from aiogram.fsm.context import FSMContext
 
 from templates.database import baseDB
 from templates.FSM_groups import CreatingFSM, StartFSM
-from templates.markups import start_button, pack_link_button, single_button
+from templates.markups import start_button, pack_link_button, single_button, create_options
 from templates.funcs import random_string, is_emojis, get_create_add_info
-from templates.media import create_InputFile
+from templates.media import create_input_file
 from templates.const import WATERMARK
 from templates.types import Answers, texts, texts_buttons
 
 router = Router()
+
+@router.callback_query(F.data == "crp")
+async def creating_pack_inline( \
+        callback_query: types.CallbackQuery, \
+        state: FSMContext, \
+        user_lang: str, \
+        ) -> None:
+    assert isinstance(callback_query.message, types.Message)
+    await state.set_state(CreatingFSM.choosing_option)
+    await callback_query.message.answer(texts["start_opts"][user_lang], \
+        reply_markup=create_options(texts_buttons["start_opts"][user_lang]))
 
 @router.message(CreatingFSM.choosing_option, F.text)
 async def choosing_option( \
@@ -220,7 +231,7 @@ async def collecting_photo( \
     if message.sticker:
         file = message.sticker.file_id
     elif message.photo:
-        file = await create_InputFile(bot.get_file, message.photo, bot.download_file)
+        file = await create_input_file(bot, message.photo)
 
     pack_name, pack_name_plus, title, emoji = \
         await get_create_add_info(user_id, User)

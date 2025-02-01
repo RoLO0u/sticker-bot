@@ -28,6 +28,3 @@ class CreatingFSM(StatesGroup):
 class JoiningFSM(StatesGroup):
     kick = State()
     join_pass = State()
-
-class ImagesFSM(StatesGroup):
-    choosing_emoji = State()

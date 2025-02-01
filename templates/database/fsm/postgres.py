@@ -82,13 +82,13 @@ class PostgreStorage(BaseStorage):
         self._conn.commit()
         return result[0] if result else None
     
-    async def set_data(self, user: str, data: Dict[str, Any]) -> None:
+    async def set_data(self, key: StorageKey, data: Dict[str, Any]) -> None:
         dataJSON = json.dumps(data, ensure_ascii=False)
-        self._cur.execute(read_sql("change/data.sql"), (user,dataJSON,user,user,dataJSON))
+        self._cur.execute(read_sql("change/data.sql"), (str(key.user_id),dataJSON,str(key.user_id),str(key.user_id),dataJSON))
         self._conn.commit()
         
-    async def get_data(self, user: str) -> Dict[str, Any]:
-        self._cur.execute(read_sql("get/data.sql"), (user,))
+    async def get_data(self, key: StorageKey) -> Dict[str, Any]:
+        self._cur.execute(read_sql("get/data.sql"), (str(key.user_id),))
         result = self._cur.fetchone()
         self._conn.commit()
         if result is None:

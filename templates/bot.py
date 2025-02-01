@@ -62,6 +62,7 @@ def run() -> None:
     # https://docs.aiogram.dev/en/latest/dispatcher/middlewares.html
     dp.message.filter(F.chat.type=="private")
     dp.message.middleware(throttling.AntiFloodMiddleware())
+    dp.callback_query.middleware(throttling.AntiFloodMiddleware())
     
     for handler in add_sticker, change_sticker, commands, creating, \
             delete, group, inline, managing, images, start, errors:

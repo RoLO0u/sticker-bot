@@ -1,8 +1,9 @@
 from typing import BinaryIO
 from PIL import Image
 from io import BytesIO
-from aiogram.types import BufferedInputFile
-from aiogram.types import InputFile
+
+from aiogram import Bot
+from aiogram.types import BufferedInputFile, InputFile, PhotoSize
 
 def resize_image(imageIO: BinaryIO) -> InputFile:
     image = Image.open(imageIO)
@@ -20,8 +21,9 @@ def resize_image(imageIO: BinaryIO) -> InputFile:
     image = BufferedInputFile(file=raw, filename="last_image.png")
     return image
 
-async def create_InputFile(get_file, photo, download_file) -> InputFile:
-    raw_file = await get_file(photo[len(photo)-1].file_id)
-    photo = resize_image(await download_file(raw_file.file_path))
-
-    return photo
+async def create_input_file(bot: Bot, photo: list[PhotoSize]) -> InputFile:
+    file_info = await bot.get_file(photo[len(photo)-1].file_id)
+    assert file_info.file_path
+    raw_file = await bot.download_file(file_info.file_path)
+    assert raw_file
+    return resize_image(raw_file)

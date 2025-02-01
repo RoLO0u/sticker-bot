@@ -3,7 +3,7 @@ This module has mongo storage for finite-state machine
     based on `motor <https://github.com/mongodb/motor>`_ driver
 """
 
-from typing import Union, Dict, Optional, List, Tuple
+from typing import Any, Union, Dict, Optional, List, Tuple
 from aiogram.fsm.storage.base import (
     DEFAULT_DESTINY,
     BaseEventIsolation,
@@ -176,9 +176,8 @@ class MongoStorage(BaseStorage):
 
         return result.get('state') if result else self.resolve_state(key.destiny)
 
-    async def set_data(self, *, chat: Union[str, int, None] = None, user: Union[str, int, None] = None,
-                       data: Optional[Dict] = None):
-        chat, user = self.check_address(chat=chat, user=user)
+    async def set_data(self, key: StorageKey, data: Dict[str, Any]):
+        chat, user = self.check_address(chat=key.chat_id, user=key.user_id)
         db = await self.get_db()
         if not data:
             await db[DATA].delete_one(filter={'chat': chat, 'user': user})
@@ -186,21 +185,12 @@ class MongoStorage(BaseStorage):
             await db[DATA].update_one(filter={'chat': chat, 'user': user},
                                       update={'$set': {'data': data}}, upsert=True)
 
-    async def get_data(self, *, chat: Union[str, int, None] = None, user: Union[str, int, None] = None,
-                       default: Optional[dict] = None) -> Dict:
-        chat, user = self.check_address(chat=chat, user=user)
+    async def get_data(self, key: StorageKey) -> Dict:
+        chat, user = self.check_address(chat=key.chat_id, user=key.user_id)
         db = await self.get_db()
         result = await db[DATA].find_one(filter={'chat': chat, 'user': user})
 
-        return result.get('data') if result else default or {}
-
-    async def update_data(self, *, chat: Union[str, int, None] = None, user: Union[str, int, None] = None,
-                          data: Optional[Dict] = None, **kwargs):
-        if data is None:
-            data = {}
-        temp_data = await self.get_data(chat=chat, user=user, default={})
-        temp_data.update(data, **kwargs)
-        await self.set_data(chat=chat, user=user, data=temp_data)
+        return result.get('data') if result else dict()
 
     def has_bucket(self):
         return True

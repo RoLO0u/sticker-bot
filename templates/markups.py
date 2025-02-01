@@ -18,14 +18,15 @@ def single_button(caption: str) -> ReplyKeyboardMarkup:
     keyboard = [[KeyboardButton(text=caption)]]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True) 
 
-def managing_button_inline(packs: List[Dict[str, str]]) -> InlineKeyboardMarkup:
+def packs_inline(packs: List[Dict[str, str]], create_caption: str) -> InlineKeyboardMarkup:
     """:param packs: packs => [{"name": "title"}, {"name1": "title1"}]"""
     unwrapped_packs: List[Tuple] = [list(pack.items())[0] for pack in packs]
     keyboard = [InlineKeyboardButton(text=pack[1], callback_data=pack[0]) for pack in unwrapped_packs]
-    splited_keyboard = []
+    splitted_keyboard = []
     for i in range(0, len(keyboard), 2):
-        splited_keyboard.append(keyboard[i:i+2])
-    return InlineKeyboardMarkup(inline_keyboard=splited_keyboard)
+        splitted_keyboard.append(keyboard[i:i+2])
+    splitted_keyboard.append([InlineKeyboardButton(text=create_caption, callback_data="crp")])
+    return InlineKeyboardMarkup(inline_keyboard=splitted_keyboard)
 
 def managing_button_2(captions: list|tuple) -> ReplyKeyboardMarkup:
     keyboard = list()
