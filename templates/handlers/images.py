@@ -30,6 +30,8 @@ async def getting_image( \
     user = User(user_id)
 
     images: list[str] = user["images"]
+    if images is None:
+        images = []
     images.append(photo.file_id)
 
     user.change("images", images)
