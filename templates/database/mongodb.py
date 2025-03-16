@@ -99,7 +99,7 @@ class User(baseDB.User):
     def get_chosen(self) -> Dict[str, Union[list, str]]:
         chosen_pack = self.user["name"]
         assert chosen_pack
-        return Pack.get(chosen_pack)
+        return Pack._get(chosen_pack)
     
     def get_packs(self) -> List[Dict[str, str]]:
         return [{packid : Pack(packid).get_title()} for packid in self.get_packs_id()]
@@ -116,7 +116,7 @@ class User(baseDB.User):
         packs.delete_one({"packid": pack.name})
         
     def remove_user_from_pack(self, pack_id: str) -> None:
-        members = Pack.get(pack_id)["members"]
+        members = Pack._get(pack_id)["members"]
         if isinstance(members, list):
             members.remove(self.id)
 
