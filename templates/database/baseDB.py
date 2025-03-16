@@ -7,7 +7,7 @@ class Object(ABC):
     
     @classmethod
     @abstractmethod
-    def get(cls, name: str) -> Dict[str, Any]:
+    def _get(cls, name: str) -> Dict[str, Any]:
         ...
     
     @abstractmethod
@@ -18,7 +18,7 @@ class Pack(Object):
     
     def __init__(self, name: str) -> None:
         self.name = name
-        self.pack = self.get(name)
+        self.pack = self._get(name)
         
     def change_status(self, change_to: str) -> None:
         self.change("status", change_to)
@@ -50,7 +50,7 @@ class User(Object):
     
     def __init__(self, user_id: str) -> None:
         self.id = user_id
-        self.user = self.get(user_id)
+        self.user = self._get(user_id)
         self.lang = self.user["language"]
 
     def __getitem__(self, item: str) -> Any:

@@ -70,7 +70,7 @@ async def menu( \
                 await message.answer(texts["managing_e"][user_lang])
 
         case answers.add_btn:
-            await state.set_state(ManagingFSM.collecting_emoji_add)
+            await state.set_state(ManagingFSM.collecting_photo_add)
             await message.answer(texts["managing_add_1"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 

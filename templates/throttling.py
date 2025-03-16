@@ -111,7 +111,7 @@ class ErrorsMiddleware(BaseMiddleware):
                 raise EmptyUsernameException
         
         data["user_id"] = user_id
-        data["user_lang"] = User.get(user_id)['language'] if User.is_exist(user_id) else 'en'
+        data["user_lang"] = User._get(user_id)['language'] if User.is_exist(user_id) else 'en'
 
         if not user_storage or not user_storage.get("exception_data"):
             user_storage["exception_data"] = [time, False]

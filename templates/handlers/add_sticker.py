@@ -17,10 +17,13 @@ router = Router()
 async def collecting_emoji_add( \
         message: types.Message,\
         state: FSMContext, \
+        bot: Bot, \
         user_id: str, \
         user_lang: str, \
         User: Type[baseDB.User] \
         ) -> None:
+
+    user = User(user_id)
         
     answers = Answers(user_lang).get_cancel_btn()
     assert message.text
@@ -31,13 +34,10 @@ async def collecting_emoji_add( \
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _:
-            if is_emojis(message.text):
-                await state.set_state(ManagingFSM.collecting_photo_add)
-                User(user_id).change_emoji(message.text)
-                await message.answer(texts["managing_add_2"][user_lang], \
-                    reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
-            else:
+            if not is_emojis(message.text):
                 await message.answer(texts["emoji_only_e"][user_lang])
+                return
+            await add_sticker(user, bot, message, state)
 
 @router.message(ManagingFSM.collecting_photo_add, F.text)
 async def collecting_photo_add_t( \
@@ -63,27 +63,26 @@ async def collecting_photo_add_t( \
 async def collecting_photo_add( \
         message: types.Message, \
         state: FSMContext, \
-        bot: Bot, \
+        user_lang: str, \
         user_id: str, \
         User: Type[baseDB.User] \
         ) -> None:
+    
+    await state.set_state(ManagingFSM.collecting_emoji_add)
+    assert message.photo
+    User(user_id).change("image", message.photo[-1].file_id)
+    await message.answer(texts["managing_add_2"][user_lang], \
+        reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
 
-    if message.sticker:
-        file = message.sticker.file_id
-    elif message.photo:
-        file = await create_input_file(bot, [photo.file_id for photo in message.photo])
-
-    user = User(user_id)
-
-    await add_sticker(user, bot, file, message, state)
 
 async def add_sticker( \
         user: baseDB.User, \
         bot: Bot, \
-        file: types.InputFile | str, \
         message: types.Message, \
         state: FSMContext, \
         ) -> None:
+
+    file = await create_input_file(bot, user["image"])
 
     pack_name, pack_name_plus, _, emoji = \
     await get_create_add_info(user)

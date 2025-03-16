@@ -69,5 +69,5 @@ def convert_user_sql(data: Tuple[Any, ...]) -> Dict[str, Any]:
             "stickers": data[7],
             "emojis": data[8],
             "sticker": data[9],
-            "images": data[10]
+            "image": data[10]
             }

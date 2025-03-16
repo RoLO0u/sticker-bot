@@ -10,7 +10,6 @@ from templates.types import Answers, texts, texts_buttons
 from templates.FSM_groups import ManagingFSM, StartFSM
 from templates.funcs import is_emojis
 from templates.handlers.add_sticker import add_sticker
-from templates.media import create_input_file
 
 router = Router()
 
@@ -29,12 +28,12 @@ async def getting_image( \
     photo = message.photo[-1]
     user = User(user_id)
 
-    images: list[str] = user["images"]
-    if images is None:
-        images = []
-    images.append(photo.file_id)
+    image: str = user["image"]
+    if image is None:
+        image = ""
+    image = photo.file_id
 
-    user.change("images", images)
+    user.change("image", image)
 
     await state.set_state(ManagingFSM.emoji_inline)
     await message.answer_photo(photo.file_id,
@@ -86,7 +85,7 @@ async def choosing_emoji( \
     user.change_emoji("".join(emoji))
 
     await state.set_state(ManagingFSM.add_inline)
-    await message.edit_caption(caption=texts["choose_pack"][user_lang],
+    await message.answer(texts["choose_pack"][user_lang],
         reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user_lang][1]))
 
 @router.callback_query(ManagingFSM.add_inline, F.data)
@@ -109,11 +108,10 @@ async def choosing_pack_query( \
 
     user.change_name(callback_query.data)
     user["name"] = callback_query.data
-    file = await create_input_file(bot, user["images"])
 
     assert isinstance(callback_query.message, types.Message)
     
-    await add_sticker(user, bot, file, callback_query.message, state)
+    await add_sticker(user, bot, callback_query.message, state)
 
 @router.message(ManagingFSM.add_inline)
 async def choosing_pack( \

@@ -31,7 +31,9 @@ files = {
     "update_database.sql":
         "Update database version (from 2.39 to 2.40)",
     "add_images.sql":
-        "add images column to the `users` table (1.1.4->1.1.5)"
+        "add images column to the `users` table (1.1.4->1.1.5). don't use it.",
+    "images_to_image.sql":
+        "change images (list of id's of images) to image (charvar 255) (1.1.4->1.1.5)"
 }
 
 def main() -> None:

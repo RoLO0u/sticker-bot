@@ -231,7 +231,7 @@ async def collecting_photo( \
     if message.sticker:
         file = message.sticker.file_id
     elif message.photo:
-        file = await create_input_file(bot, [photo.file_id for photo in message.photo])
+        file = await create_input_file(bot, message.photo[-1].file_id)
 
     user = User(user_id)
     pack_name, pack_name_plus, title, emoji = \

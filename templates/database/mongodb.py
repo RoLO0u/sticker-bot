@@ -31,7 +31,7 @@ def insert_dict() -> None:
 class Pack(baseDB.Pack):
         
     @classmethod
-    def get(cls, name: str) -> dict:
+    def _get(cls, name: str) -> dict:
         pack = packs.find_one({"packid": name})
         if pack is None:
             raise NotFoundException(object=cls.__name__)
@@ -60,7 +60,7 @@ class Pack(baseDB.Pack):
 class User(baseDB.User):
     
     @classmethod
-    def get(cls, user_id: str) -> dict:
+    def _get(cls, user_id: str) -> dict:
         user = users.find_one({"userid": user_id})
         if user is None:
             raise NotFoundException(object=cls.__name__)

@@ -36,7 +36,7 @@ class Pack(baseDB.Pack):
     
     @classmethod
     @default
-    def get(cls, name: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
+    def _get(cls, name: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
         assert _cur
         _cur.execute(read_sql("get/pack.sql"), (name,))
         result = _cur.fetchone()
@@ -75,7 +75,7 @@ class Pack(baseDB.Pack):
     @default
     def get_pass(password: str, _cur: Optional[cursor] = None) -> Optional[Dict]:
         assert _cur
-        by_id = Pack.get(password[:10])        
+        by_id = Pack._get(password[:10])        
         by_pass = Pack.get_by_pass(password[10:])
         if (by_id == by_pass):
             return by_pass
@@ -84,7 +84,7 @@ class User(baseDB.User):
         
     @classmethod
     @default
-    def get(cls, user_id: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
+    def _get(cls, user_id: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
         assert _cur
         _cur.execute(read_sql("get/user.sql"), (user_id,))
         result = _cur.fetchone()
@@ -105,11 +105,6 @@ class User(baseDB.User):
             change_to: str | None | list, 
             _cur: Optional[cursor] = None) -> None:
         assert _cur
-        # we can't change json directly in postgresql
-        # if len(parameter) > 15 and parameter[:15] == "additional_info":
-        #     parameter, subparameter = parameter[:15], parameter[16:]
-        #     self.user["additional_info"][subparameter] = change_to
-        #     change_to = json.dumps(self.user["additional_info"])
         _cur.execute(
             SQL(read_sql("change/user.sql")).format(Identifier(parameter)), 
             (change_to, self.id))
@@ -145,7 +140,7 @@ class User(baseDB.User):
     def get_chosen(self) -> Dict[str, Union[list, str]]:
         chosen_pack = self.user["name"]
         assert chosen_pack
-        return Pack.get(chosen_pack)
+        return Pack._get(chosen_pack)
     
     def get_packs(self) -> List[Dict[str, str]]:
         return [{packid : Pack(packid).get_title()} for packid in self.get_packs_id()]
@@ -167,7 +162,7 @@ class User(baseDB.User):
     @default
     def remove_user_from_pack(self, pack_id: str, _cur: Optional[cursor] = None) -> None:
         assert _cur
-        members = Pack.get(pack_id)["members"]
+        members = Pack._get(pack_id)["members"]
         if isinstance(members, list):
             members.remove(self.id)
 

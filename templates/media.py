@@ -21,8 +21,8 @@ def resize_image(imageIO: BinaryIO) -> InputFile:
     image = BufferedInputFile(file=raw, filename="last_image.png")
     return image
 
-async def create_input_file(bot: Bot, photo: list[str]) -> InputFile:
-    file_info = await bot.get_file(photo[len(photo)-1])
+async def create_input_file(bot: Bot, photo: str) -> InputFile:
+    file_info = await bot.get_file(photo)
     assert file_info.file_path
     raw_file = await bot.download_file(file_info.file_path)
     assert raw_file
