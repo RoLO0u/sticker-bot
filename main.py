@@ -1,5 +1,4 @@
 import sys
-import asyncio
 import logging
 
 import templates.bot
@@ -12,7 +11,7 @@ def main() -> None:
     Environment().load_env()
 
     if DEBUG == "True":
-        level = logging.INFO
+        level = logging.DEBUG
     elif DEBUG == "False":
         level = logging.WARNING
     else:
@@ -23,6 +22,7 @@ def main() -> None:
     else: logging.basicConfig(level=level)
 
     logging.warning("""EMOJI LIBRARY NEEDS TO BE UPDATED AS EMOJI DO""")
+    logging.debug("DEBUGGING IS ON")
 
     templates.bot.run()
 
