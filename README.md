@@ -2,6 +2,10 @@
 
 ![GitHub](https://img.shields.io/github/license/RoLO0u/sticker-bot?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/RoLO0u/sticker-bot?style=for-the-badge) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/RoLO0u/sticker-bot?style=for-the-badge) ![Python Version](https://img.shields.io/badge/Python-3.13-informational?style=for-the-badge&logo=python) ![GitHub watchers](https://img.shields.io/github/watchers/RoLO0u/sticker-bot?style=for-the-badge)
 
+## Try it right now!
+
+[@paces_bot](https://t.me/paces_bot)
+
 # Installation
 
 Bot simply can be installed by running code on machine using required variables in .env file
@@ -19,30 +23,30 @@ Bot simply can be installed by running code on machine using required variables 
 
 2. Clone project
 
-```console
+```bash
 git clone https://github.com/RoLO0u/sticker-bot.git
 ```
 
 3. Install python requirements
 
-```console
+```bash
 pip install -r requirements.txt
 ```
 
 > :warning: **when having problems installing psycopg2**: try running
 >
 > on debian:
-> ```terminal
+> ```bash
 > sudo apt-get install libpq-dev
 > ```
 > on arch:
-> ```terminal
+> ```bash
 > sudo pacman -Sy postgresql-libs
 > ```
 > [source](https://stackoverflow.com/questions/65821330/how-to-solve-error-failed-building-wheel-for-psycopg2)
 > 
 > on Amazon Linux:
-> ```terminal
+> ```bash
 > sudo yum -y install gcc python-setuptools python-devel postgresql-devel
 > ```
 > [source](https://stackoverflow.com/questions/42658406/error-installing-psycopg2-on-amazon-linux)
@@ -56,24 +60,12 @@ Environment variables can be seen in *Required variables* part or in *.env.examp
 
 To run programm use simple command depending on your configuration:
 
-```console
+```bash
 python main.py
 ```
 
-```console
-python3 main.py
-```
-
-```console
-python3.11 main.py
-```
-
-```console
-py main.py
-```
-
 If you want to save logs in ```main.log```, you can use ```--log-file``` arg
-```console
+```bash
 python main.py --log-file
 ```
 
@@ -111,7 +103,7 @@ CREATE DATABASE aiogram; -- or another database name
 ## Long polling
 
 * Just setting DEBUG to `True` allows the bot to use long polling
-> Additionally, this mode shows `INFO` level of logs
+> Additionally, this mode shows `DEBUG` level of logs
 
 ## Webhook
 
@@ -122,6 +114,7 @@ CREATE DATABASE aiogram; -- or another database name
 > If you're using self-signed certificate you should add certificate file to `set_webhook` method in `launch.py` file
 * WEBHOOK_SSL_CERT ─ path to your public sertificate
 * WEBHOOK_SSL_PRIV ─ path to your private/secret sertificate
+> Make sure your user can read the file, otherwise the PermissionError will be raised
 
 > If you're encountering issues, read [aiogram documentation](https://docs.aiogram.dev/en/v3.17.0/dispatcher/webhook.html#examples) or [official telegram documentation](https://core.telegram.org/bots/webhooks)
 
@@ -130,26 +123,6 @@ CREATE DATABASE aiogram; -- or another database name
 Run db_cli.py script to execute sql from "sql_queries" folder.
 
 When using choose script to execute by entering its number or quit by entering "q"
-
-# API
-
-This bot uses aiogram, therefore [official telegram api](https://core.telegram.org/bots/api)
-
-# Using emoji library
-
-> Finding emoji in message <br>
-> [library emoji](https://pypi.org/project/emoji/)
-> ```python
-> # -*- coding: utf-8 -*-
->
-> from emoji import EMOJI_DATA
->
-> print("😘" in EMOJI_DATA) # -> True
-> print("1" in EMOJI_DATA) # -> False
-> print("😘👍" in EMOJI_DATA) # -> False
-> ```
-
-Emojies are constantly being added to the telegram, so you need to update version of the emoji library
 
 # Resources
 
