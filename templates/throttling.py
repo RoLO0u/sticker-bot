@@ -76,7 +76,7 @@ class ErrorsMiddleware(BaseMiddleware):
         if event.update.callback_query is not None:
             logging.error(f"Exception with callback_query update.\nevent is:\n{event}")
             logging.error(f"The exception is {event.exception}")
-            return
+            raise event.exception
         
         # When message is spam was handled some time ago
         # telegram will throw an error for trying to delete

@@ -13,7 +13,7 @@ from templates.handlers.add_sticker import add_sticker
 
 router = Router()
 
-@router.message(F.photo)
+@router.message(F.photo | F.sticker)
 async def getting_image( \
         message: types.Message, \
         user_id: str, \
@@ -21,24 +21,25 @@ async def getting_image( \
         User: Type[baseDB.User], \
         state: FSMContext, \
         ) -> None:
-    assert message.photo
-    # Gets the highest resolution photo
-    await message.answer(texts["managing0"][user_lang],
-        reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
-    photo = message.photo[-1]
     user = User(user_id)
-
-    image: str = user["image"]
-    if image is None:
-        image = ""
-    image = photo.file_id
-
-    user.change("image", image)
-
+    file_id: str = user["image"]
+    if file_id is None:
+        file_id = ""
+    if message.photo:
+        # Gets the highest resolution photo
+        file_id = message.photo[-1].file_id
+        await message.answer(texts["managing0"][user_lang],
+            reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
+        await message.answer_photo(file_id,
+            caption=texts["choose_emoji"][user_lang],
+            reply_markup=COMMON_EMOJI.markup)
+    elif message.sticker:
+        file_id = message.sticker.file_id
+        await message.answer(texts["choose_emoji"][user_lang],
+            reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
+        await message.answer_sticker(file_id, reply_markup=COMMON_EMOJI.markup)
+    user["image"] = file_id
     await state.set_state(ManagingFSM.emoji_inline)
-    await message.answer_photo(photo.file_id,
-        caption=texts["choose_emoji"][user_lang],
-        reply_markup=COMMON_EMOJI.markup)
 
 @router.callback_query(ManagingFSM.emoji_inline, F.data.startswith("emo"))
 async def choosing_emoji_query( \
@@ -59,7 +60,7 @@ async def choosing_emoji_query( \
     await callback_query.message.edit_caption(caption=texts["choose_pack"][user_lang],
         reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user_lang][1]))
 
-@router.message(ManagingFSM.emoji_inline)
+@router.message(ManagingFSM.emoji_inline, F.text)
 async def choosing_emoji( \
         message: types.Message, \
         user_id: str, \
@@ -82,7 +83,7 @@ async def choosing_emoji( \
         await message.answer(texts["emoji_only_e"][user_lang])
         return
     user = User(user_id)
-    user.change_emoji("".join(emoji))
+    user["emoji"] = "".join(emoji)
 
     await state.set_state(ManagingFSM.add_inline)
     await message.answer(texts["choose_pack"][user_lang],

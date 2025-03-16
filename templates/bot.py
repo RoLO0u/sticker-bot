@@ -64,7 +64,7 @@ def run() -> None:
     dp.message.middleware(throttling.AntiFloodMiddleware())
     dp.callback_query.middleware(throttling.AntiFloodMiddleware())
     
-    for handler in add_sticker, change_sticker, commands, creating, \
+    for handler in commands, add_sticker, change_sticker,  creating, \
             delete, group, inline, managing, images, start, errors:
         
         dp.include_router(handler.router)

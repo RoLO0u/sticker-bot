@@ -8,7 +8,7 @@ from templates.FSM_groups import StartFSM, ManagingFSM
 from templates.markups import managing_button_2, start_button, pack_link_button, single_button
 from templates.funcs import is_emojis, get_create_add_info, pack_exists
 from templates.media import create_input_file
-from templates.const import WATERMARK
+from templates.const import WATERMARK, COMMON_EMOJI
 from templates.types import Answers, texts, texts_buttons
 
 router = Router()
@@ -37,6 +37,7 @@ async def collecting_emoji_add( \
             if not is_emojis(message.text):
                 await message.answer(texts["emoji_only_e"][user_lang])
                 return
+            user["emoji"] = message.text
             await add_sticker(user, bot, message, state)
 
 @router.message(ManagingFSM.collecting_photo_add, F.text)
@@ -69,11 +70,36 @@ async def collecting_photo_add( \
         ) -> None:
     
     await state.set_state(ManagingFSM.collecting_emoji_add)
-    assert message.photo
-    User(user_id).change("image", message.photo[-1].file_id)
-    await message.answer(texts["managing_add_2"][user_lang], \
-        reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
+    if message.photo:
+        file_id = message.photo[-1].file_id
+        await message.answer(texts["managing0"][user_lang],
+            reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
+        await message.answer_photo(file_id,
+            caption=texts["managing_add_2"][user_lang],
+            reply_markup=COMMON_EMOJI.markup)
+    elif message.sticker:
+        file_id = message.sticker.file_id
+        await message.answer(texts["managing_add_2"][user_lang],
+            reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
+        await message.answer_sticker(file_id, reply_markup=COMMON_EMOJI.markup)
+    User(user_id)["image"] = file_id
 
+@router.callback_query(ManagingFSM.collecting_emoji_add, F.data.startswith("emo"))
+async def choosing_emoji_query( \
+        callback_query: types.CallbackQuery, \
+        user_id: str, \
+        bot: Bot, \
+        User: type[baseDB.User], \
+        state: FSMContext, \
+        ) -> None:
+
+    assert callback_query.data and isinstance(callback_query.message, types.Message)
+
+    emoji = callback_query.data[3:]
+    user = User(user_id)
+    user["emoji"] = emoji
+
+    await add_sticker(user, bot, callback_query.message, state)
 
 async def add_sticker( \
         user: baseDB.User, \
@@ -85,7 +111,7 @@ async def add_sticker( \
     file = await create_input_file(bot, user["image"])
 
     pack_name, pack_name_plus, _, emoji = \
-    await get_create_add_info(user)
+        await get_create_add_info(user)
 
     if not await pack_exists(bot.get_sticker_set, pack_name_plus):
         await state.set_state(StartFSM.start)

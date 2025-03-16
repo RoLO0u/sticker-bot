@@ -58,6 +58,7 @@ class User(Object):
     
     def __setitem__(self, index: str, value: Any) -> None:
         self.user[index] = value
+        self.change(index, value)
     
     @abstractmethod
     def create(self, name: str, title: str) -> None:
