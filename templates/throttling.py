@@ -11,18 +11,25 @@ from aiogram.fsm.storage.base import StorageKey, BaseStorage
 
 from templates.markups import captcha_inline
 from templates.database import baseDB
-from templates.database.fsm.mongo import MongoStorage
-from templates.database.fsm.postgres import PostgreStorage
 from templates.Exceptions import EmptyUsernameException
 from templates.images import create_captcha
 from templates import const
 
 class AntiFloodMiddleware(BaseMiddleware):
             
-    async def __call__(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: Message | CallbackQuery, data: Dict[str, Any]) -> Coroutine[Any, Any, Any] | None:
+    async def __call__(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: TelegramObject, data: Dict[str, Any]) -> Coroutine[Any, Any, Any] | None:
         
+        if isinstance(event, CallbackQuery):
+            message = event.message
+            assert message
+            chat_id = message.chat.id
+        elif isinstance(event, Message):
+            chat_id = event.chat.id
+            message = event
+        else: return
+
         assert event.from_user
-        
+
         bot: Bot = data["bot"]
         User: baseDB.User = data["User"]
         user_id = str(event.from_user.id)
@@ -30,14 +37,6 @@ class AntiFloodMiddleware(BaseMiddleware):
 
         my_storage = data.get("storage")
         assert isinstance(my_storage, BaseStorage)
-
-        if isinstance(event, CallbackQuery):
-            message = event.message
-            assert message
-            chat_id = message.chat.id
-        else:
-            chat_id = event.chat.id
-            message = event
 
         key = StorageKey(bot_id=bot.id, chat_id=chat_id, user_id=event.from_user.id)
         user_storage: Dict[str, List[float | bool | int]] = await my_storage.get_data(key)
@@ -52,7 +51,9 @@ class AntiFloodMiddleware(BaseMiddleware):
         if not user_storage or not user_storage.get("data"):
             user_storage["data"] = [time, False, 0]
         elif user_storage["data"][1]:
-            return
+            if isinstance(event, CallbackQuery) and event.data and event.data[:4] == "spam":
+                pass
+            else: return
         elif isinstance(event, Message) and event.photo:
             pass
         elif user_storage["data"][0] + .5 > time: # new message sent less than in 0.5 sec
@@ -68,7 +69,6 @@ class AntiFloodMiddleware(BaseMiddleware):
         await my_storage.set_data(key, user_storage)
 
         return await handler(event, data)
-    
 class ErrorsMiddleware(BaseMiddleware):
         
     async def call(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: ErrorEvent, data: Dict[str, Any]) -> Coroutine[Any, Any, Any] | None:
