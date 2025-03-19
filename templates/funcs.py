@@ -23,7 +23,7 @@ async def delete_non_exist(get_sticker_set, User: Type[baseDB.User], user_id: st
 
     user = User(user_id)
     to_pop = []
-    for pname in user.get_packs_id():
+    for pname in user["packs"]:
         if not await pack_exists(get_sticker_set, pname+str(WATERMARK)):
             to_pop.append(pname)
     for pname in to_pop:

@@ -19,12 +19,13 @@ class Pack(Object):
     def __init__(self, name: str) -> None:
         self.name = name
         self.pack = self._get(name)
-        
-    def change_status(self, change_to: str) -> None:
-        self.change("status", change_to)
-        
-    def change_stickers(self, change_to: str) -> None:
-        self.change("stickers", change_to)
+
+    def __getitem__(self, item: str) -> Any:
+        return self.pack[item]
+    
+    def __setitem__(self, index: str, value: Any) -> None:
+        self.pack[index] = value
+        self.change(index, value)
         
     def includes(self, user_id: str) -> bool:
         if user_id in self.pack["members"]:
@@ -35,12 +36,6 @@ class Pack(Object):
     def add_user(self, user_id: str) -> None:
         ...
         
-    def get_title(self) -> str:
-        title = self.pack["title"]
-        if not isinstance(title, str):
-            raise TypeError
-        return title
-    
     @staticmethod
     @abstractmethod
     def get_pass(password) -> Union[None, dict]:
@@ -69,21 +64,6 @@ class User(Object):
             title (str): title (caption) for the pack, which will be seen by user
         """
         ...
-    
-    def change_lang(self, change_to: str) -> None:
-        self.change("language", change_to)
-    
-    def change_emoji(self, change_to: Optional[str]) -> None:
-        self.change("emoji", change_to)
-
-    def change_name(self, change_to: Optional[str]) -> None:
-        self.change("name", change_to)
-
-    def change_title(self, change_to: Optional[str]) -> None:
-        self.change("title", change_to)
-        
-    def change_username(self, change_to: Optional[str]) -> None:
-        self.change("username", change_to)
         
     @staticmethod
     @abstractmethod
@@ -112,12 +92,6 @@ class User(Object):
     @abstractmethod
     def get_packs(self) -> List[Dict[str, str]]:
         ...
-
-    def get_packs_id(self) -> List[str]:
-        return self.user["packs"]
-    
-    def get_user_lang(self) -> str:
-        return self.user["language"]
 
     @abstractmethod
     def delete_pack(self, pack_name: Optional[str] = None) -> None:

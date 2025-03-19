@@ -56,7 +56,7 @@ class Pack(baseDB.Pack):
         self.pack['members'].append(user_id)
 
         user = User(user_id)
-        user_packs = user.get_packs_id()
+        user_packs = user["packs"]
         user_packs.append(self.name)
 
         user.change("packs", user_packs)
@@ -119,7 +119,7 @@ class User(baseDB.User):
         user_info = _cur.fetchone()
         assert user_info
         if user_info[2] != username:
-            User(user_id).change_username(username)
+            User(user_id)["username"] = username
         return user_info[3]
             
     @staticmethod
@@ -143,7 +143,7 @@ class User(baseDB.User):
         return Pack._get(chosen_pack)
     
     def get_packs(self) -> List[Dict[str, str]]:
-        return [{packid : Pack(packid).get_title()} for packid in self.get_packs_id()]
+        return [{packid : Pack(packid)["title"]} for packid in self["packs"]]
     
     @default
     def delete_pack(self, pack_name: Optional[str] = None, _cur: Optional[cursor] = None) -> None:
@@ -166,7 +166,7 @@ class User(baseDB.User):
         if isinstance(members, list):
             members.remove(self.id)
 
-        user_packs = self.get_packs_id()
+        user_packs = self["packs"]
         user_packs.remove(pack_id)
         
         Pack(pack_id).change("members", members)

@@ -85,8 +85,8 @@ async def creating_name( \
 
             user = User(user_id)
             User(user_id).create(name, text)
-            user.change_title(text)
-            user.change_name(name)
+            user["title"] = text
+            user["name"] = name
 
             # If user chose from scratch
             if not user["stickers"]:
@@ -118,12 +118,12 @@ async def creating_name( \
 
                     await state.set_state(StartFSM.start)
                     user = User(user_id)
-                    user.change_name(None)
-                    user.change_emoji(None)
-                    user.change_title(None)
-                    user.change("stickers", [])
-                    user.change("emojis", [])
-                    Pack(pack_name).change_status("maked") # TODO migrate 'maked' to 'made' (cringe)
+                    user["name"] = None
+                    user["emoji"] = None
+                    user["title"] = None
+                    user["stickers"] = []
+                    user["emojis"] = []
+                    Pack(pack_name)["status"] = "made"
 
                     await message.answer(texts["created1"][user_lang], \
                         reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
@@ -166,7 +166,7 @@ async def collecting_emoji( \
             await state.set_state(StartFSM.start)
             user = User(user_id)
             user.delete_pack()
-            user.change_name(None)
+            user["name"] = None
 
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
@@ -175,7 +175,7 @@ async def collecting_emoji( \
 
             if is_emojis(message.text): # type: ignore
 
-                User(user_id).change_emoji(message.text)
+                User(user_id)["emoji"] = message.text
                 await state.set_state(CreatingFSM.collecting_photo)
 
                 await message.answer(texts["creating3"][user_lang], \
@@ -204,8 +204,8 @@ async def collecting_photo_t( \
             await state.set_state(StartFSM.start)
             user = User(user_id)
             user.delete_pack()
-            user.change_emoji(None)
-            user.change_name(None)
+            user["emoji"] = None
+            user["name"] = None
 
             await message.answer(texts["cancel"][user_lang], parse_mode="HTML", \
                 reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))
@@ -244,10 +244,10 @@ async def collecting_photo( \
             title=title, stickers=[types.InputSticker(sticker=file, format="static", emoji_list=is_emojis(emoji))], sticker_format="static"):
 
             await state.set_state(StartFSM.start)
-            user.change_name(None)
-            user.change_emoji(None)
-            user.change_title(None)
-            Pack(pack_name).change_status("maked") # TODO migrate 'maked' to 'made' (cringe)
+            user["name"] = None
+            user["emoji"] = None
+            user["title"] = None
+            Pack(pack_name)["status"] = "made"
 
             await message.answer(texts["created1"][user_lang], \
                 reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))

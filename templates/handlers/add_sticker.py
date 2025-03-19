@@ -54,7 +54,7 @@ async def collecting_photo_add_t( \
     match message.text:
         case answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
-            User(user_id).change_emoji(None)
+            User(user_id)["emoji"] = None
             await message.answer(texts["managing2"][user_lang], \
                 reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
         case _:
@@ -116,8 +116,8 @@ async def add_sticker( \
     if not await pack_exists(bot.get_sticker_set, pack_name_plus):
         await state.set_state(StartFSM.start)
         user.delete_pack()
-        user.change_name(None)
-        user.change_emoji(None)
+        user["name"] = None
+        user["emoji"] = None
         await message.answer(texts["managing_add_e"][user.lang], \
             reply_markup=start_button(texts_buttons["start"][user.lang], texts_buttons["change_lang"]))
         return
@@ -129,8 +129,8 @@ async def add_sticker( \
         if await bot.add_sticker_to_set(int(user.id), pack_name_plus, sticker=types.InputSticker(sticker=file, format="static", emoji_list=is_emojis(emoji))):
             
             await state.set_state(ManagingFSM.menu)
-            user.change_emoji(None)
-            
+            user["emoji"] = None
+
             await message.answer(texts["added1"][user.lang], \
                 reply_markup=pack_link_button(texts["created_inline"][user.lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
             await message.answer(texts["created2"][user.lang], \

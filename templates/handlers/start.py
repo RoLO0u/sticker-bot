@@ -54,7 +54,7 @@ async def start_menu( \
 
             # user have packs
             user = User(user_id)
-            if user.get_packs_id():
+            if user["packs"]:
                 await message.answer(texts["managing"][user_lang], \
                     reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user_lang][1]))
             
@@ -71,7 +71,7 @@ async def start_menu( \
                 case _:
                     raise NotImplementedError("No implementation when user clicked on other change language than 'en' or 'ua'")
 
-            User(user_id).change_lang(change_to)
+            User(user_id)["language"] = change_to
 
             await message.answer(texts["lan_changed"][change_to], \
                 reply_markup=start_button( texts_buttons["start"][change_to], texts_buttons["change_lang"] ))

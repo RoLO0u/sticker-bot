@@ -54,7 +54,7 @@ async def choosing_emoji_query( \
 
     emoji = callback_query.data[3:]
     user = User(user_id)
-    user.change_emoji(emoji)
+    user["emoji"] = emoji
 
     await state.set_state(ManagingFSM.add_inline)
     await callback_query.message.edit_caption(caption=texts["choose_pack"][user_lang],
@@ -107,7 +107,6 @@ async def choosing_pack_query( \
     if not all([pack, pack.includes(user.id)]):
         return
 
-    user.change_name(callback_query.data)
     user["name"] = callback_query.data
 
     assert isinstance(callback_query.message, types.Message)

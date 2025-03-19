@@ -14,7 +14,7 @@ from templates.types import Answers, texts, texts_buttons
 router = Router()
 
 def callback_query_filter(callback_query: types.CallbackQuery, User: Type[baseDB.User]) -> bool:
-    return callback_query.data in User(str(callback_query.from_user.id)).get_packs_id()
+    return callback_query.data in User(str(callback_query.from_user.id))["packs"]
 
 @router.message(ManagingFSM.choosing_pack, F.text)
 async def choosing_pack_t( \
@@ -62,7 +62,7 @@ async def menu( \
         
             # user have packs
             user = User(user_id)
-            if user.get_packs_id():
+            if user["packs"]:
                 await message.answer(texts["managing"][user_lang], \
                     reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user_lang][1]))
             
@@ -134,7 +134,7 @@ async def choosing_pack(\
     user_lang = User.register(user_id, callback_query.from_user.username)
 
     await state.set_state(ManagingFSM.menu)
-    User(user_id).change_name(callback_query.data)
+    User(user_id)["name"] = callback_query.data
 
     assert isinstance(callback_query.message, types.Message)
     await callback_query.message.answer(texts["managing2"][user_lang], \
