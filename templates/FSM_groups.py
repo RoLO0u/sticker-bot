@@ -26,6 +26,7 @@ class CreatingFSM(StatesGroup):
     creating_name = State()
     collecting_emoji = State()
     collecting_photo = State()
+    waiting_cloning = State()
 
 class JoiningFSM(StatesGroup):
     kick = State()

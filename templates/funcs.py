@@ -2,15 +2,17 @@ import random
 import string
 
 from typing import Tuple, Optional, Type, Dict, Any
-from emoji import is_emoji
+from emoji import purely_emoji
 from templates.database import baseDB
 from templates.const import WATERMARK
 
 from aiogram.types import StickerSet
 from aiogram.exceptions import TelegramBadRequest
 
-def is_emojis(chars: str) -> list[str]:
-    return [char for char in chars if is_emoji(char)]
+def parse_emoji(chars: str) -> list[str]:
+    if purely_emoji(chars):
+        return [chars]
+    return []
 
 async def pack_exists(get_sticker_set, packid: str) -> bool:
     try:

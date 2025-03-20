@@ -8,7 +8,7 @@ from templates.const import COMMON_EMOJI
 from templates.markups import single_button, packs_inline, start_button
 from templates.types import Answers, texts, texts_buttons
 from templates.FSM_groups import ManagingFSM, StartFSM
-from templates.funcs import is_emojis
+from templates.funcs import parse_emoji
 from templates.handlers.add_sticker import add_sticker
 
 router = Router()
@@ -78,7 +78,7 @@ async def choosing_emoji( \
             reply_markup=start_button( texts_buttons["start"][user_lang], texts_buttons["change_lang"] ))        
         return
 
-    emoji = is_emojis(message.text)
+    emoji = parse_emoji(message.text)
     if not emoji:
         await message.answer(texts["emoji_only_e"][user_lang])
         return
