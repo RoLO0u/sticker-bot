@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM, ChangeStickerFSM
 from templates.markups import start_button, managing_button_2, packs_inline, single_button
-from templates.funcs import delete_non_exist, have_stickers
+from templates.funcs import delete_non_existent, has_stickers
 from templates.const import WATERMARK
 from templates.types import Answers, texts, texts_buttons
 
@@ -58,7 +58,7 @@ async def menu( \
                 reply_markup=single_button(texts["back"][user_lang]))
 
             # Delete pack for db if it was deleted
-            await delete_non_exist(bot.get_sticker_set, User, user_id)
+            await delete_non_existent(bot.get_sticker_set, User, user_id)
         
             # user have packs
             user = User(user_id)
@@ -87,7 +87,7 @@ async def menu( \
         case answers.show_btn:
             pack_name = User(user_id)["name"]
             assert pack_name
-            if await have_stickers(pack_name, bot.get_sticker_set):
+            if await has_stickers(pack_name, bot.get_sticker_set):
                 sticker = await bot.get_sticker_set(pack_name+str(WATERMARK))
                 await message.answer_sticker(sticker=sticker.stickers[0].file_id)
             else:

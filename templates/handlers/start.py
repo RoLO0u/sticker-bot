@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM, CreatingFSM, JoiningFSM
 from templates.markups import start_button, packs_inline, single_button, create_options
-from templates.funcs import delete_non_exist
+from templates.funcs import delete_non_existent
 from templates.types import Answers, texts, texts_buttons
 
 router = Router()
@@ -50,7 +50,7 @@ async def start_menu( \
                 reply_markup=single_button(texts["back"][user_lang]))
 
             # Delete pack for db if it was deleted
-            await delete_non_exist(bot.get_sticker_set, User, user_id)
+            await delete_non_existent(bot.get_sticker_set, User, user_id)
 
             # user have packs
             user = User(user_id)
