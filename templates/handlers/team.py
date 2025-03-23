@@ -10,7 +10,7 @@ from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
-@router.message(JoiningFSM.join_pass, F.text)
+@router.message(JoiningFSM.join_pass, F.text, F.chat.type=="private")
 async def join_by_password( \
         message: types.Message, \
         state: FSMContext, \
