@@ -32,7 +32,7 @@ class Answers:
         self.add_btn = texts_buttons["managing_2"][self.user_lang][0]
         self.del_stick_btn = texts_buttons["managing_2"][self.user_lang][1]
         self.edit_emoji_btn = texts_buttons["managing_2"][self.user_lang][2]
-        self.replace_btn = texts_buttons["managing_2"][self.user_lang][3]
+        self.generate_password = texts_buttons["managing_2"][self.user_lang][3]
         self.invite_btn = texts_buttons["managing_2"][self.user_lang][4]
         self.kick_btn = texts_buttons["managing_2"][self.user_lang][5]
         self.del_pack_btn = texts_buttons["managing_2"][self.user_lang][6]

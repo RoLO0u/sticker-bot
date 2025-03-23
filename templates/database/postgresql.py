@@ -40,16 +40,18 @@ class Pack(baseDB.Pack):
         assert _cur
         _cur.execute(read_sql("get/pack.sql"), (name,))
         result = _cur.fetchone()
-        assert result
+        if result is None:
+            raise NotFoundException(object=name)
         return convert_pack_sql(result)
     
     @classmethod
     @default
-    def get_by_pass(cls, password: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
+    def _get_by_pass(cls, password: str, _cur: Optional[cursor] = None) -> Dict[str, Any]:
         assert _cur
         _cur.execute(read_sql("get/pack_by_password.sql"), (password,))
         result = _cur.fetchone()
-        assert result
+        if result is None:
+            raise NotFoundException(object=password)
         return convert_pack_sql(result)
     
     def add_user(self, user_id: str) -> None:
@@ -76,7 +78,7 @@ class Pack(baseDB.Pack):
     def get_pass(password: str, _cur: Optional[cursor] = None) -> Optional[Dict]:
         assert _cur
         by_id = Pack._get(password[:10])        
-        by_pass = Pack.get_by_pass(password[10:])
+        by_pass = Pack._get_by_pass(password[10:])
         if (by_id == by_pass):
             return by_pass
         

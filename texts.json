@@ -60,7 +60,7 @@
 "known_e_1": {"en": "Telegram says you can't create pack, try after ", "ua": "Телеграм не хоче, щоб ти створив пак, спробуй через "},
 "how_to_invite": {"en": "To invite member tell him your unique token `{}`\nThen he must type it me after \"👥Join\" button was pressed", 
     "ua": "Щоб запросити учасника, напишіть йому унікальний токен `{}`\nПотім він має написати мені після того, як кнопка \"👥Приєднатись\" була натиснута"},
-"joining_e1": {"en": "Your token invalid😠", "ua": "Ваш токен не валідний😠"},
+"joining_e1": {"en": "Your token is invalid😠", "ua": "Ваш токен не валідний😠"},
 "joining_e2": {"en": "This user doesn't manage this pack / This user does not exist", "ua": "Цей користувач не керує цим пакунком / Цей користувач не існує"},
 "joining_e3": {"en": "Hey, it seems like you are already member of this pack!😡", "ua": "Схоже, що ти вже є учасником цього пакунку наліпок!😡"},
 "joining_e4": {"en": "You can't kick yourself!😡", "ua": "Ти не можеш вилучити самого себе!😡"},
@@ -72,5 +72,7 @@
 "kicked": {"en": "✅ Kicked\nAnything else?", "ua": "✅ Викинуто\nЩось ще?"},
 "kick_e": {"en": "You can't kick anyone!😡\nAdmin and yourself are immune to kicking", "ua": "Ви не можете нікого кікнути!😡\nАдміністратор і ви самі захищені від вилучення"},
 "not_in_pack_e": {"en": "It seems like you've been kicked from {}!\nType /start to continue using the bot", "ua": "Схоже, що вас викинули з {}!\nВведіть /start, щоб надалі користуватися ботом"},
-"pack_not_chosen": {"en": "It seems like you haven't chosen any pack yet🤔", "ua": "Схоже, що ви ще не вибрали жодного пакунку🤔"}
+"pack_not_chosen": {"en": "It seems like you haven't chosen any pack yet🤔", "ua": "Схоже, що ви ще не вибрали жодного пакунку🤔"},
+"new_password_generated": {"en": "✅ New password has been generated\nTo join use this new one instead\\!\n`{}`", "ua": "✅ Згенеровано новий пароль\nЩоб приєднатися, використовуйте цей новий\\!\n`{}`"},
+"pack_doesnt_exist_e": {"en": "This pack doesn't exist🤕", "ua": "Цей пакунок не існує🤕"}
 }

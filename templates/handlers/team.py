@@ -7,6 +7,7 @@ from templates.database import baseDB
 from templates.FSM_groups import StartFSM, JoiningFSM, ManagingFSM
 from templates.markups import start_button, managing_button_2
 from templates.types import Answers, texts, texts_buttons
+from templates.Exceptions import NotFoundException
 
 router = Router()
 
@@ -33,7 +34,11 @@ async def join_by_password( \
             if len(message.text) != 20:
                 await message.answer(texts["joining_e1"][user.lang])
                 return
-            pack = Pack.get_pass(message.text)
+            try:
+                pack = Pack.get_pass(message.text)
+            except NotFoundException:
+                await message.answer(texts["pack_doesnt_exist_e"][user.lang])
+                return
             if pack is None:
                 await message.answer(texts["joining_e1"][user.lang])                
                 return
@@ -62,7 +67,7 @@ async def kick_t( \
     assert user_to_kick
     pack = user.get_chosen()
     if not pack:
-        await callback_query.message.answer(texts["joining_e2"][user.lang])
+        await callback_query.message.answer(texts["pack_not_chosen"][user.lang])
         return
     assert not isinstance(pack.name, list)
     

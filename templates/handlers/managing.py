@@ -3,11 +3,12 @@ from typing import Type
 from aiogram import types, Router, Bot, F
 
 from aiogram.fsm.context import FSMContext
+from aiogram.enums import ParseMode
 
 from templates.database import baseDB
 from templates.FSM_groups import StartFSM, ManagingFSM, JoiningFSM, ChangeStickerFSM
 from templates.markups import start_button, managing_button_2, packs_inline, single_button, kick_member_button
-from templates.funcs import delete_non_existent, has_stickers
+from templates.funcs import delete_non_existent, has_stickers, random_string
 from templates.const import WATERMARK
 from templates.types import Answers, texts, texts_buttons
 
@@ -124,12 +125,12 @@ async def menu( \
             await state.set_state(ManagingFSM.set_title)
             await message.answer(texts["managing_title_1"][user.lang], \
                 reply_markup=single_button(texts["cancel_button"][user.lang]))
-
-        # TODO this is temporary case
-        case _:
-            msg = {"en": "Sorry, we don't have this function now. Use @Stickers to solve problem you have", \
-                "ua": "Вибачте, ми не маємo цієї функції наразі. Скористуйтесь @Stickers, щоб вирішити вашу проблему"}
-            await message.answer(msg[user.lang])
+        case answers.generate_password:
+            pack = user.get_chosen()
+            assert pack
+            pack["password"] = random_string()
+            await message.answer(texts["new_password_generated"][user.lang].format(f"{pack['packid']}{pack['password']}"),
+                parse_mode=ParseMode.MARKDOWN_V2)
 
 @router.callback_query(F.data, \
     ManagingFSM.choosing_pack, \
