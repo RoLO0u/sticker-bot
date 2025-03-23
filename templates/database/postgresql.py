@@ -160,7 +160,7 @@ class User(baseDB.User):
         _cur.execute(read_sql("delete/pack.sql"), (pack.name,))
 
     @default
-    def remove_user_from_pack(self, pack_id: str, _cur: Optional[cursor] = None) -> None:
+    def remove_from_pack(self, pack_id: str, _cur: Optional[cursor] = None) -> None:
         assert _cur
         members = Pack._get(pack_id)["members"]
         if isinstance(members, list):

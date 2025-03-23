@@ -106,7 +106,10 @@ async def menu( \
                     continue
                 members.append(member)
 
-            await state.set_state(JoiningFSM.kick)
+            if not members:
+                await message.answer(texts["kick_e"][user.lang])
+                return
+
             await message.answer(texts["kick"][user.lang], \
                 reply_markup=kick_member_button(members))
             
@@ -128,8 +131,7 @@ async def menu( \
 
 @router.callback_query(F.data, \
     ManagingFSM.choosing_pack, \
-    callback_query_filter, \
-    F.chat.type=="private")
+    callback_query_filter)
 async def choosing_pack(\
         callback_query: types.CallbackQuery, \
         state: FSMContext, \

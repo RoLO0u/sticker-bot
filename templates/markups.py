@@ -59,7 +59,7 @@ def kick_member_button(users: List[User]) -> InlineKeyboardMarkup:
     keyboard = list()
     for user in users:
         address_by = f"@{user['username']}" if user['username'] else user['first_name']
-        keyboard.append([InlineKeyboardButton(text=f"{user['username']}", callback_data=f"kick{user.id}")])
+        keyboard.append([InlineKeyboardButton(text=address_by, callback_data=f"kick{user.id}")])
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 def captcha_inline() -> InlineKeyboardMarkup:

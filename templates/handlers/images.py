@@ -38,7 +38,7 @@ async def getting_image( \
     user["image"] = file_id
     await state.set_state(ManagingFSM.emoji_inline)
 
-@router.callback_query(ManagingFSM.emoji_inline, F.data.startswith("emo"), F.chat.type=="private")
+@router.callback_query(ManagingFSM.emoji_inline, F.data.startswith("emo"))
 async def choosing_emoji_query( \
         callback_query: types.CallbackQuery, \
         user: baseDB.User, \
@@ -80,7 +80,7 @@ async def choosing_emoji( \
     await message.answer(texts["choose_pack"][user.lang],
         reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user.lang][1]))
 
-@router.callback_query(ManagingFSM.add_inline, F.data, F.chat.type=="private")
+@router.callback_query(ManagingFSM.add_inline, F.data)
 async def choosing_pack_query( \
         callback_query: types.CallbackQuery, \
         user: baseDB.User, \

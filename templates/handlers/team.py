@@ -47,46 +47,29 @@ async def join_by_password( \
             await message.answer(texts["joined"][user.lang], parse_mode="HTML", \
                 reply_markup=start_button( texts_buttons["start"][user.lang], texts_buttons["change_lang"] ))
 
-@router.message(JoiningFSM.kick, F.text, F.chat.type=="private")
+@router.callback_query(F.data.startswith("kick"))
 async def kick_t( \
-        message: types.Message, \
+        callback_query: types.CallbackQuery, \
         state: FSMContext, \
         user: baseDB.User, \
         Pack: Type[baseDB.Pack], \
         User: Type[baseDB.User] \
         ) -> None:
     
-    answers = Answers(user.lang).get_cancel_btn()
-    assert message.text
-
-    match message.text:
-
-        case answers.cancel_btn:
-            await state.set_state(ManagingFSM.menu)
-            await message.answer(texts["managing2"][user.lang], \
-                reply_markup=managing_button_2(texts_buttons["managing_2"][user.lang]))
-            
-        case _:
-            user_to_kick = User.get_by_username(message.text)
-            assert user_to_kick
-            pack_id = user.get_chosen()["packid"]
-            assert not isinstance(pack_id, list)
-            pack = Pack(pack_id)
-            
-            # user doesn't exists in this pack
-            if not pack.includes(id_to_kick := user_to_kick["userid"], ):
-                await message.answer(texts["joining_e2"][user.lang])
-                return
-            # user wants to kick himself
-            elif id_to_kick == user.id:
-                await message.answer(texts["joining_e4"][user.lang])
-                return
-            # user wants to kick admin
-            elif pack.pack["adm"] == id_to_kick:
-                await message.answer(texts["joining_e5"][user.lang])
-                return
-            
-            await state.set_state(ManagingFSM.menu)
-            User(id_to_kick).remove_user_from_pack(pack.name)
-            await message.answer(texts["kicked"][user.lang], \
-                reply_markup=managing_button_2(texts_buttons["managing_2"][user.lang]))
+    assert callback_query.data and callback_query.message
+    
+    user_to_kick = callback_query.data[4:]
+    assert user_to_kick
+    pack_id = user.get_chosen()["packid"]
+    assert not isinstance(pack_id, list)
+    pack = Pack(pack_id)
+    
+    # user doesn't exist in this pack
+    if not pack.includes(user_to_kick):
+        await callback_query.message.answer(texts["joining_e2"][user.lang])
+        return
+    
+    await state.set_state(ManagingFSM.menu)
+    User(user_to_kick).remove_from_pack(pack.name)
+    await callback_query.message.answer(texts["kicked"][user.lang], \
+        reply_markup=managing_button_2(texts_buttons["managing_2"][user.lang]))

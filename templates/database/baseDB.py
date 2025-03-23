@@ -98,7 +98,7 @@ class User(Object):
         ...
         
     @abstractmethod
-    def remove_user_from_pack(self, pack_id: str) -> None:
+    def remove_from_pack(self, pack_id: str) -> None:
         ...
 
 class MiscDB(ABC):

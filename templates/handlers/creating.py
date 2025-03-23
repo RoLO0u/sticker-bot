@@ -214,7 +214,6 @@ async def collecting_photo( \
         state: FSMContext, \
         bot: Bot, \
         user: baseDB.User, \
-        user_lang: str, \
         Pack: Type[baseDB.Pack] \
         ) -> None:
 
@@ -240,18 +239,18 @@ async def collecting_photo( \
             user["title"] = None
             Pack(pack_name)["status"] = "made"
 
-            await message.answer(texts["created1"][user_lang], \
-                reply_markup=pack_link_button(texts["created_inline"][user_lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
-            await message.answer(texts["created2"][user_lang], \
-                reply_markup=start_button(texts_buttons["start"][user_lang], texts_buttons["change_lang"]))
+            await message.answer(texts["created1"][user.lang], \
+                reply_markup=pack_link_button(texts["created_inline"][user.lang], "https://t.me/addstickers/" + pack_name + str(WATERMARK)))
+            await message.answer(texts["created2"][user.lang], \
+                reply_markup=start_button(texts_buttons["start"][user.lang], texts_buttons["change_lang"]))
 
         else:
-            await message.answer(texts["unknown_exception_1"][user_lang]+'2')
+            await message.answer(texts["unknown_exception_1"][user.lang]+'2')
 
     # TODO explore what exception happens when telegram doesn't want to user create pack
 
     except Exception as e:
-        await message.answer(texts["known_e_1"][user_lang]+str(e).split()[-1])
+        await message.answer(texts["known_e_1"][user.lang]+str(e).split()[-1])
 
         # temporary
         await message.answer(f"""Please send this message to @feddunn\n{type(e).__name__}""")
@@ -281,21 +280,20 @@ async def copying_pack( \
         state: FSMContext, \
         bot: Bot, \
         user: baseDB.User, \
-        user_lang: str, \
         ) -> None:
     
     assert message.sticker
 
     if not message.sticker.set_name:
-        await message.answer(texts["sticker_only_e"][user_lang], \
-            reply_markup=single_button(texts["cancel_button"][user_lang]))
+        await message.answer(texts["sticker_only_e"][user.lang], \
+            reply_markup=single_button(texts["cancel_button"][user.lang]))
         return
     
     sticker_set = await bot.get_sticker_set(message.sticker.set_name)
 
     if sticker_set.sticker_type != "regular":
-        await message.answer(texts["sticker_only_e"][user_lang], \
-            reply_markup=single_button(texts["cancel_button"][user_lang]))
+        await message.answer(texts["sticker_only_e"][user.lang], \
+            reply_markup=single_button(texts["cancel_button"][user.lang]))
         return
     
     await state.set_state(CreatingFSM.creating_name)
@@ -303,5 +301,5 @@ async def copying_pack( \
     user.change("stickers", [sticker.file_id for sticker in sticker_set.stickers])
     user.change("emojis", [sticker.emoji for sticker in sticker_set.stickers])
 
-    await message.answer(texts["creating1"][user_lang], parse_mode="HTML", \
-        reply_markup=single_button(texts["cancel_button"][user_lang]))
+    await message.answer(texts["creating1"][user.lang], parse_mode="HTML", \
+        reply_markup=single_button(texts["cancel_button"][user.lang]))

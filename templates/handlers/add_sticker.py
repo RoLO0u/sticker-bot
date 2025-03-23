@@ -61,25 +61,24 @@ async def collecting_photo_add( \
         message: types.Message, \
         state: FSMContext, \
         user: baseDB.User, \
-        user_lang: str \
         ) -> None:
     
     await state.set_state(ManagingFSM.collecting_emoji_add)
     if message.photo:
         file_id = message.photo[-1].file_id
-        await message.answer(texts["managing0"][user_lang],
-            reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
+        await message.answer(texts["managing0"][user.lang],
+            reply_markup=single_button(texts_buttons["cancel"][user.lang][0]))
         await message.answer_photo(file_id,
-            caption=texts["managing_add_2"][user_lang],
+            caption=texts["managing_add_2"][user.lang],
             reply_markup=COMMON_EMOJI.markup)
     elif message.sticker:
         file_id = message.sticker.file_id
-        await message.answer(texts["managing_add_2"][user_lang],
-            reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
+        await message.answer(texts["managing_add_2"][user.lang],
+            reply_markup=single_button(texts_buttons["cancel"][user.lang][0]))
         await message.answer_sticker(file_id, reply_markup=COMMON_EMOJI.markup)
     user["image"] = file_id
 
-@router.callback_query(ManagingFSM.collecting_emoji_add, F.data.startswith("emo"), F.chat.type=="private")
+@router.callback_query(ManagingFSM.collecting_emoji_add, F.data.startswith("emo"))
 async def choosing_emoji_query( \
         callback_query: types.CallbackQuery, \
         user: baseDB.User, \

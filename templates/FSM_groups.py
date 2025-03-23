@@ -29,5 +29,4 @@ class CreatingFSM(StatesGroup):
     waiting_cloning = State()
 
 class JoiningFSM(StatesGroup):
-    kick = State()
     join_pass = State()

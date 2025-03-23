@@ -116,7 +116,7 @@ class User(baseDB.User):
             users.update_one({"userid": pack_member}, {"$set": {"packs": member_packs}})
         packs.delete_one({"packid": pack.name})
         
-    def remove_user_from_pack(self, pack_id: str) -> None:
+    def remove_from_pack(self, pack_id: str) -> None:
         members = Pack._get(pack_id)["members"]
         if isinstance(members, list):
             members.remove(self.id)
