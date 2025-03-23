@@ -60,9 +60,11 @@ async def kick_t( \
     
     user_to_kick = callback_query.data[4:]
     assert user_to_kick
-    pack_id = user.get_chosen()["packid"]
-    assert not isinstance(pack_id, list)
-    pack = Pack(pack_id)
+    pack = user.get_chosen()
+    if not pack:
+        await callback_query.message.answer(texts["joining_e2"][user.lang])
+        return
+    assert not isinstance(pack.name, list)
     
     # user doesn't exist in this pack
     if not pack.includes(user_to_kick):

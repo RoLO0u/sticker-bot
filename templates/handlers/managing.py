@@ -92,13 +92,15 @@ async def menu( \
                 await message.answer(texts["managing_show_e"][user.lang])
         
         case answers.invite_btn:
-            token = user.get_chosen()
-            assert not isinstance(token["packid"], list) and not isinstance(token["password"], list)
-            token = token["packid"]+token["password"]
+            pack = user.get_chosen()
+            assert pack
+            assert not isinstance(pack["packid"], list) and not isinstance(pack["password"], list)
+            token = pack["packid"]+pack["password"]
             await message.answer(texts["how_to_invite"][user.lang].format(token), parse_mode="markdown")
 
         case answers.kick_btn:
             pack = user.get_chosen()
+            assert pack
             members = []
             for member_id in pack["members"]:
                 member = User(member_id)

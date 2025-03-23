@@ -43,8 +43,9 @@ class AntiFloodMiddleware(BaseMiddleware):
         username = event.from_user.username
         first_name = event.from_user.first_name
 
-        data["user"] = User(user_id)
         data["user_lang"] = User.register(user_id, username, first_name)
+        user = User(user_id)
+        data["user"] = user
 
         if not user_storage or not user_storage.get("data"):
             user_storage["data"] = [time, False, 0]
@@ -65,6 +66,13 @@ class AntiFloodMiddleware(BaseMiddleware):
             user_storage["data"][0] = time
         
         await my_storage.set_data(key, user_storage)
+
+        if chosen := user.get_chosen():
+            if isinstance(message, Message) and message.text == "/start":
+                return await handler(event, data)
+            elif not user.id in chosen["members"]:
+                await message.answer(data["texts"]["not_in_pack_e"][user.lang].format(chosen["title"]))
+                return
 
         return await handler(event, data)
 class ErrorsMiddleware(BaseMiddleware):

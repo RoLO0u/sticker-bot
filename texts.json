@@ -70,5 +70,7 @@
 "kick": {"en": "Choose member by name to kick!", 
     "ua": "Виберіть учасника за ім'ям, щоб вилучити!"},
 "kicked": {"en": "✅ Kicked\nAnything else?", "ua": "✅ Викинуто\nЩось ще?"},
-"kick_e": {"en": "You can't kick anyone!😡\nAdmin and yourself are immune to kicking", "ua": "Ви не можете нікого кікнути!😡\nАдміністратор і ви самі захищені від вилучення"}
+"kick_e": {"en": "You can't kick anyone!😡\nAdmin and yourself are immune to kicking", "ua": "Ви не можете нікого кікнути!😡\nАдміністратор і ви самі захищені від вилучення"},
+"not_in_pack_e": {"en": "It seems like you've been kicked from {}!\nType /start to continue using the bot", "ua": "Схоже, що вас викинули з {}!\nВведіть /start, щоб надалі користуватися ботом"},
+"pack_not_chosen": {"en": "It seems like you haven't chosen any pack yet🤔", "ua": "Схоже, що ви ще не вибрали жодного пакунку🤔"}
 }

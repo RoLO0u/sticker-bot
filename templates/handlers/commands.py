@@ -21,8 +21,9 @@ async def start( \
     
     await state.set_state(StartFSM.start)
 
-    user.change("stickers", [])
-    user.change("emojis", [])
+    user["stickers"] = []
+    user["emojis"] = []
+    user["name"] = None
 
     await message.answer(texts["start"][user.lang], parse_mode="HTML", \
         reply_markup=markups.start_button( texts_buttons["start"][user.lang], texts_buttons["change_lang"] ))

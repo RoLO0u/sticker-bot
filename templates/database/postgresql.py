@@ -137,10 +137,10 @@ class User(baseDB.User):
         _cur.execute(read_sql("get/user.sql"), (user_id,))
         return bool(_cur.fetchone())
     
-    def get_chosen(self) -> Pack:
-        chosen_pack = self.user["name"]
-        assert chosen_pack
-        return Pack(chosen_pack)
+    def get_chosen(self) -> Optional[Pack]:
+        chosen_pack: Optional[str] = self.user["name"]
+        if chosen_pack:
+            return Pack(chosen_pack)
     
     def get_packs(self) -> List[Dict[str, str]]:
         return [{packid : Pack(packid)["title"]} for packid in self["packs"]]

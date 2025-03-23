@@ -81,7 +81,7 @@ class User(Object):
         ...
 
     @abstractmethod
-    def get_chosen(self) -> Pack:
+    def get_chosen(self) -> Optional[Pack]:
         """Gets chosen pack
 
         Returns:
