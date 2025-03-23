@@ -16,7 +16,7 @@ router = Router()
 def callback_query_filter(callback_query: types.CallbackQuery, User: Type[baseDB.User]) -> bool:
     return callback_query.data in User(str(callback_query.from_user.id))["packs"]
 
-@router.message(ManagingFSM.choosing_pack, F.text)
+@router.message(ManagingFSM.choosing_pack, F.text, F.chat.type=="private")
 async def choosing_pack_t( \
         message: types.Message, \
         state: FSMContext, \
@@ -35,7 +35,7 @@ async def choosing_pack_t( \
         case _:
             await message.answer(texts["managing_exception_1"][user_lang])
 
-@router.message(ManagingFSM.menu, F.text)
+@router.message(ManagingFSM.menu, F.text, F.chat.type=="private")
 async def menu( \
         message: types.Message, \
         state: FSMContext, \
@@ -122,7 +122,8 @@ async def menu( \
 
 @router.callback_query(F.data, \
     ManagingFSM.choosing_pack, \
-    callback_query_filter)
+    callback_query_filter, \
+    F.chat.type=="private")
 async def choosing_pack(\
         callback_query: types.CallbackQuery, \
         state: FSMContext, \
@@ -140,7 +141,7 @@ async def choosing_pack(\
     await callback_query.message.answer(texts["managing2"][user_lang], \
         reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
     
-@router.message(ManagingFSM.set_title, F.text)
+@router.message(ManagingFSM.set_title, F.text, F.chat.type=="private")
 async def set_title( \
         message: types.Message, \
         state: FSMContext, \

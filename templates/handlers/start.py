@@ -12,7 +12,7 @@ from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
-@router.message(StartFSM.start, F.text)
+@router.message(StartFSM.start, F.text, F.chat.type=="private")
 async def start_menu( \
         message: types.Message, \
         state: FSMContext, \

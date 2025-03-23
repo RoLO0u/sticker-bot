@@ -12,7 +12,7 @@ from templates.funcs import parse_emoji
 
 router = Router()
 
-@router.message(ChangeStickerFSM.change_sticker_emoji, F.sticker)
+@router.message(ChangeStickerFSM.change_sticker_emoji, F.sticker, F.chat.type=="private")
 async def choosing_sticker( \
         message: types.Message, \
         state: FSMContext, \
@@ -34,7 +34,7 @@ async def choosing_sticker( \
     await state.set_state(ChangeStickerFSM.get_emoji_to_change)
     await message.answer(texts["managing_emoji_2"][user_lang].format(message.sticker.emoji))
     
-@router.message(ChangeStickerFSM.change_sticker_emoji, F.text)
+@router.message(ChangeStickerFSM.change_sticker_emoji, F.text, F.chat.type=="private")
 async def choosing_sticker_t( \
         message: types.Message, \
         state: FSMContext, \
@@ -51,7 +51,7 @@ async def choosing_sticker_t( \
             await message.answer(texts["sticker_only_e"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
             
-@router.message(ChangeStickerFSM.get_emoji_to_change, F.text)
+@router.message(ChangeStickerFSM.get_emoji_to_change, F.text, F.chat.type=="private")
 async def get_emoji( \
         message: types.Message, \
         state: FSMContext, \

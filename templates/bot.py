@@ -7,7 +7,7 @@ from aiogram.enums import ParseMode
 from templates import Exceptions, throttling
 from templates.handlers import \
     add_sticker, change_sticker, commands, creating, \
-    delete, group, inline, managing, start, errors, images
+    delete, inline, managing, start, errors, images, team
 from templates.types import texts, texts_buttons
 from templates.launch import on_launch
 
@@ -60,12 +60,11 @@ def run() -> None:
     # because text message provides Message event type
     # but Sticker provides Update event type
     # https://docs.aiogram.dev/en/latest/dispatcher/middlewares.html
-    dp.message.filter(F.chat.type=="private")
     dp.message.middleware(throttling.AntiFloodMiddleware())
     dp.callback_query.middleware(throttling.AntiFloodMiddleware())
     
     for handler in commands, add_sticker, change_sticker,  creating, \
-            delete, group, inline, managing, images, start, errors:
+            delete, team, inline, managing, images, start, errors:
         
         dp.include_router(handler.router)
     

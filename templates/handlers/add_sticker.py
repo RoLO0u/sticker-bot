@@ -13,7 +13,7 @@ from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
-@router.message(ManagingFSM.collecting_emoji_add, F.text)
+@router.message(ManagingFSM.collecting_emoji_add, F.text, F.chat.type=="private")
 async def collecting_emoji_add( \
         message: types.Message,\
         state: FSMContext, \
@@ -40,7 +40,7 @@ async def collecting_emoji_add( \
             user["emoji"] = message.text
             await add_sticker(user, bot, message, state)
 
-@router.message(ManagingFSM.collecting_photo_add, F.text)
+@router.message(ManagingFSM.collecting_photo_add, F.text, F.chat.type=="private")
 async def collecting_photo_add_t( \
         message: types.Message, \
         state: FSMContext, \
@@ -60,7 +60,7 @@ async def collecting_photo_add_t( \
         case _:
             await message.answer(texts["image_only_e"][user_lang])
 
-@router.message(ManagingFSM.collecting_photo_add, F.photo | F.sticker)
+@router.message(ManagingFSM.collecting_photo_add, F.photo | F.sticker, F.chat.type=="private")
 async def collecting_photo_add( \
         message: types.Message, \
         state: FSMContext, \
@@ -84,7 +84,7 @@ async def collecting_photo_add( \
         await message.answer_sticker(file_id, reply_markup=COMMON_EMOJI.markup)
     User(user_id)["image"] = file_id
 
-@router.callback_query(ManagingFSM.collecting_emoji_add, F.data.startswith("emo"))
+@router.callback_query(ManagingFSM.collecting_emoji_add, F.data.startswith("emo"), F.chat.type=="private")
 async def choosing_emoji_query( \
         callback_query: types.CallbackQuery, \
         user_id: str, \

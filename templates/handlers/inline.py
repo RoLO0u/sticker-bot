@@ -8,7 +8,7 @@ from templates import const
 
 router = Router()
 
-@router.callback_query(F.data.startswith("spam"))
+@router.callback_query(F.data.startswith("spam"), F.chat.type=="private")
 async def callback_query_handler(callback_query: types.CallbackQuery, storage: base.BaseStorage) -> None:
 
     assert callback_query.data and isinstance(callback_query.message, types.Message)

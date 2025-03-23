@@ -12,7 +12,7 @@ from templates.types import Answers, texts, texts_buttons
 
 router = Router()
 
-@router.message(ManagingFSM.collecting_sticker, F.sticker)
+@router.message(ManagingFSM.collecting_sticker, F.sticker, F.chat.type=="private")
 async def delete_sticker_from_pack( \
         message: types.Message, \
         state: FSMContext, \
@@ -49,7 +49,7 @@ async def delete_sticker_from_pack( \
     await message.answer(texts["deleted"][user_lang], \
         reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))    
 
-@router.message(ManagingFSM.delete_sticker, F.text)
+@router.message(ManagingFSM.delete_sticker, F.text, F.chat.type=="private")
 async def confirm_delete_sticker( \
         message: types.Message, \
         state: FSMContext, \
@@ -82,7 +82,7 @@ async def confirm_delete_sticker( \
         case _:
             await message.answer(texts["unknown_exception_2"][user_lang])   
 
-@router.message(ManagingFSM.collecting_sticker, F.text)
+@router.message(ManagingFSM.collecting_sticker, F.text, F.chat.type=="private")
 async def delete_sticker_from_pack_t( \
         message: types.Message, \
         state: FSMContext, \
@@ -99,7 +99,7 @@ async def delete_sticker_from_pack_t( \
         case _:
             await message.answer(texts["sticker_only_e"][user_lang])
 
-@router.message(ManagingFSM.are_you_sure, F.text)
+@router.message(ManagingFSM.are_you_sure, F.text, F.chat.type=="private")
 async def confirming_pack_deleting( \
         message: types.Message, \
         state: FSMContext, \

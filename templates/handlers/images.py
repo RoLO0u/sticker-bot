@@ -13,7 +13,7 @@ from templates.handlers.add_sticker import add_sticker
 
 router = Router()
 
-@router.message(F.photo | F.sticker)
+@router.message(F.photo | F.sticker, F.chat.type=="private")
 async def getting_image( \
         message: types.Message, \
         user_id: str, \
@@ -41,7 +41,7 @@ async def getting_image( \
     user["image"] = file_id
     await state.set_state(ManagingFSM.emoji_inline)
 
-@router.callback_query(ManagingFSM.emoji_inline, F.data.startswith("emo"))
+@router.callback_query(ManagingFSM.emoji_inline, F.data.startswith("emo"), F.chat.type=="private")
 async def choosing_emoji_query( \
         callback_query: types.CallbackQuery, \
         user_id: str, \
@@ -60,7 +60,7 @@ async def choosing_emoji_query( \
     await callback_query.message.edit_caption(caption=texts["choose_pack"][user_lang],
         reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user_lang][1]))
 
-@router.message(ManagingFSM.emoji_inline, F.text)
+@router.message(ManagingFSM.emoji_inline, F.text, F.chat.type=="private")
 async def choosing_emoji( \
         message: types.Message, \
         user_id: str, \
@@ -89,7 +89,7 @@ async def choosing_emoji( \
     await message.answer(texts["choose_pack"][user_lang],
         reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user_lang][1]))
 
-@router.callback_query(ManagingFSM.add_inline, F.data)
+@router.callback_query(ManagingFSM.add_inline, F.data, F.chat.type=="private")
 async def choosing_pack_query( \
         callback_query: types.CallbackQuery, \
         user_id: str, \
@@ -113,7 +113,7 @@ async def choosing_pack_query( \
     
     await add_sticker(user, bot, callback_query.message, state)
 
-@router.message(ManagingFSM.add_inline)
+@router.message(ManagingFSM.add_inline, F.chat.type=="private")
 async def choosing_pack( \
         message: types.Message, \
         user_lang: str, \

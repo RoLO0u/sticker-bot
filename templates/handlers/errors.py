@@ -1,6 +1,4 @@
-from typing import Any
-
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types.error_event import ErrorEvent
 from templates import Exceptions, throttling
 from templates.types import texts
@@ -8,7 +6,7 @@ from templates.types import texts
 router = Router()
 router.errors.middleware(throttling.ErrorsMiddleware())
 
-@router.errors(Exceptions.EmptyUsernameException.isinstance)
+@router.errors(Exceptions.EmptyUsernameException.isinstance, F.chat.type=="private")
 async def empty_username(exception: ErrorEvent, user_lang: str) -> None:
     assert exception.update.message
     await exception.update.message.answer(texts["uname_error"][user_lang])

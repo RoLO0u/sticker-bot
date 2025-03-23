@@ -25,7 +25,7 @@ async def creating_pack_inline( \
     await callback_query.message.answer(texts["start_opts"][user_lang], \
         reply_markup=create_options(texts_buttons["start_opts"][user_lang]))
 
-@router.message(CreatingFSM.choosing_option, F.text)
+@router.message(CreatingFSM.choosing_option, F.text, F.chat.type=="private")
 async def choosing_option( \
         message: types.Message, \
         state: FSMContext, \
@@ -51,7 +51,7 @@ async def choosing_option( \
             await message.answer(texts["copying_pack"][user_lang], parse_mode="HTML",
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
-@router.message(CreatingFSM.creating_name, F.text)
+@router.message(CreatingFSM.creating_name, F.text, F.chat.type=="private")
 async def creating_name( \
         message: types.Message, \
         state: FSMContext, \
@@ -150,7 +150,7 @@ async def creating_name( \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
 
-@router.message(CreatingFSM.collecting_emoji, F.text)
+@router.message(CreatingFSM.collecting_emoji, F.text, F.chat.type=="private")
 async def collecting_emoji( \
         message: types.Message, \
         state: FSMContext, \
@@ -188,7 +188,7 @@ async def collecting_emoji( \
                     reply_markup=single_button(texts["cancel_button"][user_lang]))
 
 
-@router.message(CreatingFSM.collecting_photo, F.text)
+@router.message(CreatingFSM.collecting_photo, F.text, F.chat.type=="private")
 async def collecting_photo_t( \
         message: types.Message, \
         state: FSMContext, \
@@ -217,7 +217,7 @@ async def collecting_photo_t( \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
 
 
-@router.message(CreatingFSM.collecting_photo, F.photo | F.sticker)
+@router.message(CreatingFSM.collecting_photo, F.photo | F.sticker, F.chat.type=="private")
 async def collecting_photo( \
         message: types.Message, \
         state: FSMContext, \
@@ -269,7 +269,7 @@ async def collecting_photo( \
 
         raise e
     
-@router.message(CreatingFSM.copying_pack, F.text)
+@router.message(CreatingFSM.copying_pack, F.text, F.chat.type=="private")
 async def copying_pack_t( \
         message: types.Message, \
         state: FSMContext, \
@@ -286,7 +286,7 @@ async def copying_pack_t( \
             await message.answer(texts["sticker_only_e"][user_lang], \
                 reply_markup=single_button(texts["cancel_button"][user_lang]))
             
-@router.message(CreatingFSM.copying_pack, F.sticker)
+@router.message(CreatingFSM.copying_pack, F.sticker, F.chat.type=="private")
 async def copying_pack( \
         message: types.Message, \
         state: FSMContext, \

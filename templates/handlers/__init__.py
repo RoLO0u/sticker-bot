@@ -6,8 +6,8 @@ from templates.handlers import (
     creating, 
     managing, 
     start, 
-    group,
     change_sticker,
     errors,
     images,
+    team,
     )
