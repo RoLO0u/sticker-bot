@@ -18,24 +18,22 @@ async def collecting_emoji_add( \
         message: types.Message,\
         state: FSMContext, \
         bot: Bot, \
-        user_id: str, \
-        user_lang: str, \
-        User: Type[baseDB.User] \
+        user: baseDB.User \
         ) -> None:
 
-    user = User(user_id)
+    user = user
         
-    answers = Answers(user_lang).get_cancel_btn()
+    answers = Answers(user.lang).get_cancel_btn()
     assert message.text
 
     match message.text:
         case answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
-            await message.answer(texts["managing2"][user_lang], \
-                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
+            await message.answer(texts["managing2"][user.lang], \
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user.lang]))
         case _:
             if not parse_emoji(message.text):
-                await message.answer(texts["emoji_only_e"][user_lang])
+                await message.answer(texts["emoji_only_e"][user.lang])
                 return
             user["emoji"] = message.text
             await add_sticker(user, bot, message, state)
@@ -44,29 +42,26 @@ async def collecting_emoji_add( \
 async def collecting_photo_add_t( \
         message: types.Message, \
         state: FSMContext, \
-        user_id: str, \
-        user_lang: str, \
-        User: Type[baseDB.User] \
+        user: baseDB.User \
         ) -> None:
     
-    answers = Answers(user_lang).get_cancel_btn()
+    answers = Answers(user.lang).get_cancel_btn()
 
     match message.text:
         case answers.cancel_btn:
             await state.set_state(ManagingFSM.menu)
-            User(user_id)["emoji"] = None
-            await message.answer(texts["managing2"][user_lang], \
-                reply_markup=managing_button_2(texts_buttons["managing_2"][user_lang]))
+            user["emoji"] = None
+            await message.answer(texts["managing2"][user.lang], \
+                reply_markup=managing_button_2(texts_buttons["managing_2"][user.lang]))
         case _:
-            await message.answer(texts["image_only_e"][user_lang])
+            await message.answer(texts["image_only_e"][user.lang])
 
 @router.message(ManagingFSM.collecting_photo_add, F.photo | F.sticker, F.chat.type=="private")
 async def collecting_photo_add( \
         message: types.Message, \
         state: FSMContext, \
-        user_lang: str, \
-        user_id: str, \
-        User: Type[baseDB.User] \
+        user: baseDB.User, \
+        user_lang: str \
         ) -> None:
     
     await state.set_state(ManagingFSM.collecting_emoji_add)
@@ -82,21 +77,20 @@ async def collecting_photo_add( \
         await message.answer(texts["managing_add_2"][user_lang],
             reply_markup=single_button(texts_buttons["cancel"][user_lang][0]))
         await message.answer_sticker(file_id, reply_markup=COMMON_EMOJI.markup)
-    User(user_id)["image"] = file_id
+    user["image"] = file_id
 
 @router.callback_query(ManagingFSM.collecting_emoji_add, F.data.startswith("emo"), F.chat.type=="private")
 async def choosing_emoji_query( \
         callback_query: types.CallbackQuery, \
-        user_id: str, \
+        user: baseDB.User, \
         bot: Bot, \
-        User: type[baseDB.User], \
         state: FSMContext, \
         ) -> None:
 
     assert callback_query.data and isinstance(callback_query.message, types.Message)
 
     emoji = callback_query.data[3:]
-    user = User(user_id)
+    user = user
     user["emoji"] = emoji
 
     await add_sticker(user, bot, callback_query.message, state)

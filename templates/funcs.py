@@ -1,7 +1,7 @@
 import random
 import string
 
-from typing import Tuple, Optional, Type, Dict, Any
+from typing import Tuple, Optional, Dict, Any
 from emoji import purely_emoji
 from templates.database import baseDB
 from templates.const import WATERMARK
@@ -21,9 +21,7 @@ async def pack_exists(get_sticker_set, packid: str) -> bool:
         return False
     return True
 
-async def delete_non_existent(get_sticker_set, User: Type[baseDB.User], user_id: str) -> None:
-
-    user = User(user_id)
+async def delete_non_existent(get_sticker_set, user: baseDB.User) -> None:
     to_pop = []
     for pname in user["packs"]:
         if not await pack_exists(get_sticker_set, pname+str(WATERMARK)):

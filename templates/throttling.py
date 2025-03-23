@@ -1,7 +1,7 @@
 import logging
 
 from time import time as timeSeconds
-from typing import Any, Awaitable, Callable, Dict, Coroutine, List
+from typing import Any, Awaitable, Callable, Dict, Coroutine, List, Type
 
 from aiogram import Bot
 from aiogram.types import Message, TelegramObject, BufferedInputFile, CallbackQuery
@@ -30,7 +30,7 @@ class AntiFloodMiddleware(BaseMiddleware):
         assert event.from_user
 
         bot: Bot = data["bot"]
-        User: baseDB.User = data["User"]
+        User: Type[baseDB.User] = data["User"]
         user_id = str(event.from_user.id)
         time = timeSeconds()
 
@@ -43,7 +43,7 @@ class AntiFloodMiddleware(BaseMiddleware):
         username = event.from_user.username
         first_name = event.from_user.first_name
 
-        data["user_id"] = user_id
+        data["user"] = User(user_id)
         data["user_lang"] = User.register(user_id, username, first_name)
 
         if not user_storage or not user_storage.get("data"):

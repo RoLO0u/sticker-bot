@@ -15,9 +15,7 @@ router = Router()
 async def group_start( \
         message: types.Message, \
         state: FSMContext, \
-        user_id: str, \
-        user_lang: str, \
-        User: Type[baseDB.User] \
+        user: baseDB.User \
         ) -> None:
     
     await message.answer("Hello")

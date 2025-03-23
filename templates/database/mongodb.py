@@ -97,10 +97,10 @@ class User(baseDB.User):
     def is_exist(user_id: str) -> bool:
         return bool(users.count_documents(filter={"userid": user_id}))
 
-    def get_chosen(self) -> Dict[str, Union[list, str]]:
+    def get_chosen(self) -> Pack:
         chosen_pack = self.user["name"]
         assert chosen_pack
-        return Pack._get(chosen_pack)
+        return Pack(chosen_pack)
     
     def get_packs(self) -> List[Dict[str, str]]:
         return [{packid : Pack(packid)["title"]} for packid in self["packs"]]
