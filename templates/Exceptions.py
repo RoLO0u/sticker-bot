@@ -28,13 +28,6 @@ class NotFoundException(UserException):
         self.message = f"\"{object=}\" is not found"
         super().__init__(self.message)
         
-class EmptyUsernameException(UserException):
-    def __init__(self,
-            message: str = "User doesn't have username"
-        ) -> None:
-        self.message = message
-        super().__init__(self.message)
-
 class WatermarkIsNotDefined(Exception):
     def __init__(self,
             message: str = "Watermark is not set"

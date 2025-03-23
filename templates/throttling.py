@@ -11,7 +11,6 @@ from aiogram.fsm.storage.base import StorageKey, BaseStorage
 
 from templates.markups import captcha_inline
 from templates.database import baseDB
-from templates.Exceptions import EmptyUsernameException
 from templates.images import create_captcha
 from templates import const
 
@@ -42,11 +41,10 @@ class AntiFloodMiddleware(BaseMiddleware):
         user_storage: Dict[str, List[float | bool | int]] = await my_storage.get_data(key)
 
         username = event.from_user.username
-        if username is None:
-            raise EmptyUsernameException
-        
+        first_name = event.from_user.first_name
+
         data["user_id"] = user_id
-        data["user_lang"] = User.register(user_id, username)
+        data["user_lang"] = User.register(user_id, username, first_name)
 
         if not user_storage or not user_storage.get("data"):
             user_storage["data"] = [time, False, 0]
@@ -105,11 +103,6 @@ class ErrorsMiddleware(BaseMiddleware):
         key = StorageKey(bot_id=bot.id, chat_id=chat_id, user_id=int(user_id))
         user_storage: Dict[str, List[float | bool]] = await my_storage.get_data(key)
 
-        username = event.update.message.from_user.username
-        if username is None:
-            if not EmptyUsernameException.isinstance(event):
-                raise EmptyUsernameException
-        
         data["user_id"] = user_id
         data["user_lang"] = User._get(user_id)['language'] if User.is_exist(user_id) else 'en'
 

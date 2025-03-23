@@ -5,11 +5,6 @@ from templates.types import texts
 
 router = Router()
 router.errors.middleware(throttling.ErrorsMiddleware())
-
-@router.errors(Exceptions.EmptyUsernameException.isinstance, F.chat.type=="private")
-async def empty_username(exception: ErrorEvent, user_lang: str) -> None:
-    assert exception.update.message
-    await exception.update.message.answer(texts["uname_error"][user_lang])
     
 @router.errors()
 async def any_exception(exception: ErrorEvent, user_lang: str) -> None:

@@ -17,7 +17,6 @@
 "created2": {"en": "Something else?🧐", "ua": "Щось ще?🧐"},
 "added": {"en": "✅ Added", "ua": "✅ Додано"},
 "lan_changed": {"en": "✅ Language succesfully changed", "ua": "✅ Мову успішно змінено"},
-"start_exception_1": {"en": "❌ Please do your username to use this bot", "ua": "❌ Будь ласка, зробіть псевдонім, щоб користуватись ботом"},
 "unknown_exception_1": {"en": "Oops... Unknown exception happened😕.\nForward this message to tech support @feddunn.\nException №",
     "ua": "Упс... Невідома помилка😕.\nПовідомте про цю помилку технічній підтримці @feddunn.\nПомилка №"},
 "unknown_exception_2": {"en": "Oops... I don't know this command😕\nUse /start to start over", "ua": "Упс... Я не знаю цю команду😕\nСкористайтесь /start, щоб почати знову"},
@@ -68,8 +67,7 @@
 "joining_e5": {"en": "You can't kick administrator!😡", "ua": "Ти не можеш вилучити адміністратора!😡"},
 "joining1": {"en": "OK. Now send me token you have", "ua": "Добре. Зараз надішли свій токен"},
 "joined": {"en": "✅ Joined", "ua": "✅ Приєднано"},
-"kick": {"en": "Type username to kick (without @ )", 
-    "ua": "Напиши нікнейм, щоб викинути (без @ )"},
-"kicked": {"en": "✅ Kicke\nAnything else?", "ua": "✅ Викинуто\nЩось ще?"},
-"uname_error": {"en": "Please, set your username to use this bot", "ua": "Будь ласка, встановіть свій псевдонім, щоб користуватись цим ботом"}
+"kick": {"en": "Choose member by name to kick!", 
+    "ua": "Виберіть учасника за ім'ям, щоб вилучити!"},
+"kicked": {"en": "✅ Kicked\nAnything else?", "ua": "✅ Викинуто\nЩось ще?"}
 }

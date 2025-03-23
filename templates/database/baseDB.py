@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Dict, Any, List, Type
+from typing import Optional, Union, Dict, Any, List
 
 from templates.database import baseDB
 
@@ -67,7 +67,7 @@ class User(Object):
         
     @staticmethod
     @abstractmethod
-    def register(user_id: str, username: str) -> str:
+    def register(user_id: str, username: Optional[str], first_name: str) -> str:
         ...
     
     @staticmethod

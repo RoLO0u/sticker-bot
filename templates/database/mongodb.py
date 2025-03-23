@@ -77,10 +77,11 @@ class User(baseDB.User):
         users.update_one({"userid": self.id}, {"$set": {parameter: change_to}})
         
     @staticmethod
-    def register(user_id: str, username: str) -> str:
+    def register(user_id: str, username: Optional[str], first_name: str) -> str:
         if not User.is_exist(user_id):
             users.insert_one({"userid": user_id, "packs": [], "username": username, "language": "en", \
-                "emoji": None, "name": None, "title": None, "stickers": [], "emojis": [], "sticker": None})
+                "emoji": None, "name": None, "title": None, "stickers": [], "emojis": [], "sticker": None, \
+                "image": None, "first_name": first_name})
         user_info = users.find_one({"userid": user_id})
         assert user_info
         if user_info["username"] != username:

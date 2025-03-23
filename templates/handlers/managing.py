@@ -117,7 +117,7 @@ async def menu( \
         # TODO this is temporary case
         case _:
             msg = {"en": "Sorry, we don't have this function now. Use @Stickers to solve problem you have", \
-                "ua": "Вибачте, ми не маєм цієї функції наразі. Скористуйтесь @Stickers, щоб вирішити вашу проблему"}
+                "ua": "Вибачте, ми не маємo цієї функції наразі. Скористуйтесь @Stickers, щоб вирішити вашу проблему"}
             await message.answer(msg[user_lang])
 
 @router.callback_query(F.data, \
@@ -132,7 +132,7 @@ async def choosing_pack(\
 
     user_id = str(callback_query.from_user.id)
     assert callback_query.from_user.username
-    user_lang = User.register(user_id, callback_query.from_user.username)
+    user_lang = User.register(user_id, callback_query.from_user.username, first_name=callback_query.from_user.first_name)
 
     await state.set_state(ManagingFSM.menu)
     User(user_id)["name"] = callback_query.data

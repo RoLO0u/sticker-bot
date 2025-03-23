@@ -111,10 +111,10 @@ class User(baseDB.User):
         
     @staticmethod
     @default
-    def register(user_id: str, username: str, _cur: Optional[cursor] = None) -> str:
+    def register(user_id: str, username: Optional[str], first_name: str, _cur: Optional[cursor] = None) -> str:
         assert _cur
         if not User.is_exist(user_id):
-            _cur.execute(read_sql("create/user.sql"), (user_id, username))
+            _cur.execute(read_sql("create/user.sql"), (user_id, username, first_name))
         _cur.execute(read_sql("get/user.sql"), (user_id,))
         user_info = _cur.fetchone()
         assert user_info

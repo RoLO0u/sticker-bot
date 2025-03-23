@@ -35,7 +35,9 @@ files = {
     "images_to_image.sql":
         "change images (list of id's of images) to image (charvar 255) (1.1.4->1.1.5)",
     "maked_to_made.sql":
-        "change `maked` packs to `made` in their status"
+        "change `maked` packs to `made` in their status",
+    "add_first_name.sql":
+        "add first_name column to the `users` table (1.1.5->1.1.6)",
 }
 
 def main() -> None:
