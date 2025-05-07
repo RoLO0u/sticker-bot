@@ -34,7 +34,7 @@ class PostgreStorage(BaseStorage):
         self._password = password
         self._kwargs = kwargs  # custom client options like SSL configuration, etc.
 
-        self._conn = self.connect(self._host, self._port, self._db_name, self._username, self._password)
+        self._conn = self.connect(self._host, self._port, self._db_name, self._username, self._password, **self._kwargs)
         self._cur = self._conn.cursor()
         self.create_tables()
         self._index = index
@@ -60,13 +60,14 @@ class PostgreStorage(BaseStorage):
         return str(value)
         
     @staticmethod
-    def connect(host: str, port: str, database: str, user: str, password: str) -> connection:
+    def connect(host: str, port: str, database: str, user: str, password: str, **kwargs) -> connection:
         with psycopg2.connect(
                 host=host,
                 port=port,
                 database=database,
                 user=user,
-                password=password
+                password=password,
+                **kwargs
                 ) as conn:
             return conn
         
