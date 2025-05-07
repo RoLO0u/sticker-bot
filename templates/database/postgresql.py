@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional, Union
 from psycopg2._psycopg import cursor
 from psycopg2.sql import SQL, Identifier
 import os
-import json
 
 from templates.database import baseDB
 from templates.Exceptions import NotFoundException
@@ -14,6 +13,10 @@ kwargs = {"database": os.getenv("PGDATABASE"), \
         "port": os.getenv("PGPORT"), \
         "user": os.getenv("PGUSER"), \
         "password": os.getenv("PGPASSWORD")}
+
+if os.getenv("SSLMODE") == "require":
+    kwargs["sslmode"] = os.getenv("SSLMODE")
+    kwargs["sslrootcert"] = os.getenv("SSLROOTCERT")
 
 assert all(kwargs.values()) # ensures all values are not none
 conn = PostgreStorage.connect(**kwargs) # type: ignore
