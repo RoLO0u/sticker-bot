@@ -33,6 +33,8 @@ files = {
         "change `maked` packs to `made` in their status",
     "add_first_name.sql":
         "add first_name column to the `users` table (1.1.5->1.1.6)",
+    "create_aiogram_db.sql":
+        "create AIOGRAM database",
 }
 
 def main() -> None:
