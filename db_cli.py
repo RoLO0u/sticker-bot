@@ -1,15 +1,10 @@
 import logging
-from templates.run import Environment
 import os
+from templates.run import Environment
+from templates.database import postgresql
 from templates.database.fsm.postgres import PostgreStorage
 
 Environment().load_env()
-
-kwargs = {"database": os.getenv("PGDATABASE"), \
-    "host": os.getenv("PGHOST"), \
-    "port": os.getenv("PGPORT"), \
-    "user": os.getenv("PGUSER"), \
-    "password": os.getenv("PGPASSWORD")}
 
 def read_sql(file: str) -> str:
     with open(f"sql_queries/{file}", "r", encoding="utf-8") as raw_file:
@@ -57,7 +52,7 @@ def main() -> None:
             case default:
                 logging.info(f"No '{default}' option")
     logging.info(f"You chose '{file}'. Connecting to PostgreSQL database...")
-    assert all(kwargs.values())
+    assert all(postgresql.kwargs.values())
     conn = PostgreStorage.connect(**kwargs) # type: ignore
     if input("Done connecting. Are you sure you want to execute this script? (Y/n): ") != "Y":
         return
