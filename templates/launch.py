@@ -1,5 +1,4 @@
 from aiohttp import web
-import ssl
 import asyncio
 
 from aiogram import Bot, Dispatcher
@@ -28,9 +27,9 @@ async def run_polling(dp: Dispatcher, bot: Bot):
 
 def on_launch(bot: Bot, dp: Dispatcher) -> None:
 
-    if const.DEBUG == "True":
+    if const.WEBHOOK == "False":
         asyncio.run(run_polling(dp, bot))
-    elif const.DEBUG == "False":
+    elif const.WEBHOOK == "True":
         dp.startup.register(set_webhook)
 
         app = web.Application()
@@ -43,8 +42,4 @@ def on_launch(bot: Bot, dp: Dispatcher) -> None:
 
         setup_application(app, dp, bot=bot)
 
-        assert const.WEBHOOK_SSL_CERT
-        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-        context.load_cert_chain(const.WEBHOOK_SSL_CERT, const.WEBHOOK_SSL_PRIV)
-
-        web.run_app(app, host=const.WEB_SERVER_HOST, port=const.WEB_SERVER_PORT, ssl_context=context)
+        web.run_app(app, host=const.WEB_SERVER_HOST, port=const.WEB_SERVER_PORT)

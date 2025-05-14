@@ -100,21 +100,27 @@ CREATE DATABASE aiogram; -- or another database name
 * BOT_TOKEN ─ token bot will use to interact with telegram API
 > Use [@BotFather](https://t.me/BotFather) to get bot token
 
+## Debugging
+
+* DEBUG - either `True` or `False`. If `False` only shows `WARNING` level logs.
+
 ## Long polling
 
-* Just setting DEBUG to `True` allows the bot to use long polling
-> Additionally, this mode shows `DEBUG` level of logs
+* WEBHOOK - `False` if you want to use long polling
 
 ## Webhook
 
-* Setting DEBUG to `False` tells the bot to use webhooks
-> Additionally, this mode shows `WARNING` level of logs
-* WEBHOOK_SECRET ─ a string of random characters
+* WEBHOOK - `True`
+* WEBHOOK_SECRET ─ a string of random characters. [Read more here](https://core.telegram.org/bots/api#setwebhook).
 * BASE_WEBHOOK_URL ─ an URL to which telegram will send updates to
 > If you're using self-signed certificate you should add certificate file to `set_webhook` method in `launch.py` file
-* WEBHOOK_SSL_CERT ─ path to your public sertificate
-* WEBHOOK_SSL_PRIV ─ path to your private/secret sertificate
+* WEBHOOK_SSL_CERT ─ path to your public certificate
+* WEBHOOK_SSL_PRIV ─ path to your private/secret certificate
 > Make sure your user can read the file, otherwise the PermissionError will be raised
+### Optional
+* WEBHOOK_PATH - path to the bot e.g. "telegram-sticker-bot"
+* SERVER_HOST - local IPv4 e.g. 127.0.0.1
+* SERVER_PORT - local port used e.g. 8080
 
 > If you're encountering issues, read [aiogram documentation](https://docs.aiogram.dev/en/v3.17.0/dispatcher/webhook.html#examples) or [official telegram documentation](https://core.telegram.org/bots/webhooks)
 

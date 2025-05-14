@@ -11,10 +11,18 @@ Environment().load_env()
 
 # webhook
 
-WEB_SERVER_HOST = "127.0.0.1"
-WEB_SERVER_PORT = 8000
+WEBHOOK = getenv("WEBHOOK")
 
-WEBHOOK_PATH = "/telegram-sticker-bot"
+def parse_port():
+    port = getenv("SERVER_PORT")
+    if port and port.isdecimal:
+        return int(port)
+    return 8080
+
+WEB_SERVER_HOST = getenv("SERVER_HOST") or "127.0.0.1"
+WEB_SERVER_PORT = parse_port()
+
+WEBHOOK_PATH = getenv("WEBHOOK_PATH") or "/"
 WEBHOOK_SECRET = getenv("WEBHOOK_SECRET")
 BASE_WEBHOOK_URL = getenv("BASE_WEBHOOK_URL")
 
