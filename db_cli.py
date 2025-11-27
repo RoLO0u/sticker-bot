@@ -56,6 +56,7 @@ def main() -> None:
     logging.info(f"You chose '{file}'. Connecting to PostgreSQL database...")
     assert all(postgresql.kwargs.values())
     conn = PostgreStorage.connect(**postgresql.kwargs) # type: ignore
+    conn.autocommit = True
     if input("Done connecting. Are you sure you want to execute this script? (Y/n): ") != "Y":
         return
     logging.info("Executing file")

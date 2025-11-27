@@ -50,6 +50,11 @@ pip install -r requirements.txt
 > sudo yum -y install gcc python-setuptools python-devel postgresql-devel
 > ```
 > [source](https://stackoverflow.com/questions/42658406/error-installing-psycopg2-on-amazon-linux)
+> 
+> on MacOS:
+> ```bash
+> brew install postgresql
+> ```
 
 
 4. Set environment variables
