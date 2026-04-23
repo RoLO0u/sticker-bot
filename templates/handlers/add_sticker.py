@@ -101,7 +101,11 @@ async def add_sticker( \
         state: FSMContext, \
         ) -> None:
 
-    file = await create_input_file(bot, user["image"])
+    try:
+        file = await create_input_file(bot, user["image"])
+    except ValueError as e:
+        await message.answer(e.args[0])
+        return
 
     pack_name, pack_name_plus, _, emoji = \
         await get_create_add_info(user)

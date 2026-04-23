@@ -3,9 +3,11 @@ from PIL import Image
 from io import BytesIO
 
 from aiogram import Bot
-from aiogram.types import BufferedInputFile, InputFile, PhotoSize
+from aiogram.types import BufferedInputFile, InputFile
 
-def resize_image(imageIO: BinaryIO) -> InputFile:
+from templates.types import ImageFormat
+
+def resize_image(imageIO: BinaryIO, filetype: ImageFormat) -> InputFile:
     image = Image.open(imageIO)
     base = 512
     min_size = min(image.size)
@@ -14,11 +16,11 @@ def resize_image(imageIO: BinaryIO) -> InputFile:
     resize_to = (base, int(min_size * percent)) if max_size == image.size[0] else (int(min_size * percent), base)
     image = image.resize(resize_to, Image.Resampling.LANCZOS)
     bio = BytesIO()
-    bio.name = 'last_image.png'
-    image.save(bio, 'PNG')
+    bio.name = f'last_image.{filetype}'
+    image.save(bio, filetype.upper())
     bio.seek(0)
     raw = bio.read1()
-    image = BufferedInputFile(file=raw, filename="last_image.png")
+    image = BufferedInputFile(file=raw, filename=f"last_image.{filetype}")
     return image
 
 async def create_input_file(bot: Bot, photo: str) -> InputFile:
@@ -26,4 +28,11 @@ async def create_input_file(bot: Bot, photo: str) -> InputFile:
     assert file_info.file_path
     raw_file = await bot.download_file(file_info.file_path)
     assert raw_file
-    return resize_image(raw_file)
+    extension = file_info.file_path.rsplit(".", 1)[-1].lower()
+    if extension == "png" or extension == "jpg" or extension == "jpeg":
+        filetype: ImageFormat = "png"
+    elif extension == "webp":
+        filetype = "webp"
+    else:
+        raise ValueError(f"Unsupported file type: {extension}")
+    return resize_image(raw_file, filetype)
