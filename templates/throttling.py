@@ -12,6 +12,7 @@ from aiogram.fsm.storage.base import StorageKey, BaseStorage
 from templates.markups import captcha_inline
 from templates.database import baseDB
 from templates.images import create_captcha
+from templates.Exceptions import NotFoundException
 from templates import const
 
 class AntiFloodMiddleware(BaseMiddleware):
@@ -67,7 +68,12 @@ class AntiFloodMiddleware(BaseMiddleware):
         
         await my_storage.set_data(key, user_storage)
 
-        if chosen := user.get_chosen():
+        try:
+            chosen = user.get_chosen()
+        except NotFoundException:
+            chosen = None
+
+        if chosen:
             if isinstance(message, Message) and message.text == "/start":
                 return await handler(event, data)
             elif not user.id in chosen["members"]:
