@@ -29,7 +29,6 @@ propcache==0.2.1
 psycopg2==2.9.10
 pydantic==2.10.4
 pydantic_core==2.27.2
-pymongo==4.9.2
 pyproject_hooks==1.2.0
 python-dotenv==1.0.1
 requests==2.32.3

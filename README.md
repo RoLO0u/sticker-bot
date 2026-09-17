@@ -18,7 +18,7 @@ Bot simply can be installed by running code on machine using required variables 
 
 * [Python >3.10.x](https://www.python.org/)
 * [pip](https://pip.pypa.io/en/stable/installation/)
-* [postgresql](https://www.postgresql.org/download/) or [mongodb](https://www.mongodb.com/)
+* [postgresql](https://www.postgresql.org/download/)
 * [git](https://git-scm.com/downloads)
 
 2. Clone project
@@ -78,18 +78,7 @@ Or use virtual environment variables AND docker
 
 # Required variables
 
-## Database configuration
-
-* DB - db name, which will be used for bot to store users info.
-> In current version either "mongodb" or "postgresql"
-
-### If you're using mongodb
-
-* MONGO_URI ─ uri to your mongo database
-
-> :warning: **mongodb isn't being tested**: try on your own risk
-
-### If you're using postgresql
+## PostgreSQL
 
 * PGDATABASE - database information will be stored in. e.g. aiogram, to create use 
 ```sql

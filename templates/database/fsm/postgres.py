@@ -1,9 +1,10 @@
 """
+> :warning: **mongodb isn't being tested**: try on your own risk
+
 This module has mongo storage for finite-state machine
     based on `motor <https://github.com/mongodb/motor>`_ driver
 """
 from typing import Dict, Optional, Any
-from aiogram import Bot
 from aiogram.fsm.storage.base import (
     BaseStorage,
     StateType,

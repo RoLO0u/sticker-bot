@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     "sticker" character varying(255),
     "image" character varying(255),
     "first_name" character varying(255),
+    "email" character varying(255),
 	PRIMARY KEY ("userid")
 );
 

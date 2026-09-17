@@ -1,6 +1,6 @@
 import os
 
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
@@ -8,25 +8,8 @@ from templates import Exceptions, throttling
 from templates.handlers import routers
 from templates.types import texts, texts_buttons
 from templates.launch import on_launch
-
-def get_db():
-    
-    db_type = os.getenv("DB")
-    
-    if db_type == "mongodb":
-        from templates.database.fsm.mongo import MongoStorage
-        from templates.database import mongodb
-        URI = os.getenv("MONGO_URI")
-        return mongodb, MongoStorage(uri=URI)
-        
-    elif db_type == "postgresql":
-        from templates.database.fsm.postgres import PostgreStorage
-        from templates.database import postgresql
-        postgresql.MiscDB.create_tables()
-        return postgresql, PostgreStorage(**postgresql.kwargs) # type: ignore
-        
-    else:
-        raise Exceptions.InvalidEnvException("DB variable is not valid (either mongodb or postgresql)")
+from templates.database.fsm.postgres import PostgreStorage
+from templates.database import postgresql
 
 def run() -> None:
 
@@ -40,12 +23,13 @@ def run() -> None:
 
     # configuring storage
 
-    mainDB, storage = get_db()
+    postgresql.MiscDB.create_tables()
+    storage = PostgreStorage(**postgresql.kwargs) # type: ignore
     dp = Dispatcher(storage=storage, name="main")
     
-    dp["User"] = mainDB.User
-    dp["Pack"] = mainDB.Pack
-    dp["MiscDB"] = mainDB.MiscDB
+    dp["User"] = postgresql.User
+    dp["Pack"] = postgresql.Pack
+    dp["MiscDB"] = postgresql.MiscDB
     dp["dp"] = dp
     dp["storage"] = storage
     dp["texts"] = texts
