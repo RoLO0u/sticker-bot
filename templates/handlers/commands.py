@@ -1,5 +1,3 @@
-from typing import Type
-
 from aiogram import types, Router, Bot, F
 from aiogram.filters import Command
 from aiogram.utils.markdown import hide_link

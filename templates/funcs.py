@@ -71,4 +71,12 @@ def convert_user_sql(data: Tuple[Any, ...]) -> Dict[str, Any]:
             "sticker": data[9],
             "image": data[10],
             "first_name": data[11],
+            "email": data[12],
+            }
+
+def convert_user_sql_website(data: Tuple[Any, ...]) -> Dict[str, Any]:
+    return {
+            "email": data[0],
+            "banned": data[1],
+            "telegram": data[2]
             }

@@ -35,6 +35,8 @@ files = {
         "add first_name column to the `users` table (1.1.5->1.1.6)",
     "create_aiogram_db.sql":
         "create AIOGRAM database",
+    "add_email.sql":
+        "add email column to the `users` table",
 }
 
 def main() -> None:

@@ -5,21 +5,33 @@ import os
 
 from templates.database import baseDB
 from templates.Exceptions import NotFoundException
-from templates.funcs import random_string, convert_pack_sql, convert_user_sql
+from templates.funcs import random_string, convert_pack_sql, convert_user_sql, convert_user_sql_website
 from templates.database.fsm.postgres import PostgreStorage, read_sql
 
 kwargs = {"database": os.getenv("PGDATABASE"), \
         "host": os.getenv("PGHOST"), \
         "port": os.getenv("PGPORT"), \
         "user": os.getenv("PGUSER"), \
-        "password": os.getenv("PGPASSWORD")}
+        "password": os.getenv("PGPASSWORD")
+}
+
+website_kwargs = {"database": os.getenv("PGWEBSITEDATABASE"), \
+        "host": os.getenv("PGHOST"), \
+        "port": os.getenv("PGPORT"), \
+        "user": os.getenv("PGUSER"), \
+        "password": os.getenv("PGPASSWORD")
+}
 
 if os.getenv("SSLMODE") == "require":
     kwargs["sslmode"] = os.getenv("SSLMODE")
     kwargs["sslrootcert"] = os.getenv("SSLROOTCERT")
+    website_kwargs["sslmode"] = os.getenv("SSLMODE")
+    website_kwargs["sslrootcert"] = os.getenv("SSLROOTCERT")
 
 assert all(kwargs.values()) # ensures all values are not none
+assert all(website_kwargs.values()) # ensures all values are not none
 conn = PostgreStorage.connect(**kwargs) # type: ignore
+website_conn = PostgreStorage.connect(**website_kwargs) # type: ignore
 
 def default(func):
     """Default decorator, which gives cursor and more security for the database
@@ -32,6 +44,20 @@ def default(func):
         with conn.cursor() as cur:
             to_return = func(*args, _cur=cur, **kwargs)
             conn.commit()
+            return to_return
+    return wrapper
+
+def website_default(func):
+    """Default decorator, which gives cursor and more security for the database
+    defines and sends user_id
+    
+    As pylance can't understand, that this decorator passes _cur,
+    decorated function should set default value
+    """
+    def wrapper(*args, **kwargs):
+        with website_conn.cursor() as cur:
+            to_return = func(*args, _cur=cur, **kwargs)
+            website_conn.commit()
             return to_return
     return wrapper
 
@@ -191,3 +217,17 @@ class MiscDB(baseDB.MiscDB):
         assert _cur
         _cur.execute(read_sql("get/all_packs.sql"))
         return [convert_pack_sql(pack) for pack in _cur.fetchall()]
+
+    @staticmethod
+    @website_default
+    def get_website_user(email: str, _cur: Optional[cursor] = None) -> Optional[dict]:
+        assert _cur
+        _cur.execute(read_sql("get/website_email.sql"), (email,))
+        if user := _cur.fetchone():
+            return convert_user_sql_website(user)
+
+    @staticmethod
+    @website_default
+    def set_website_telegram(userid: str, email: str, _cur: Optional[cursor] = None) -> None:
+        assert _cur
+        _cur.execute(read_sql("change/website_telegram.sql"), (userid, email))

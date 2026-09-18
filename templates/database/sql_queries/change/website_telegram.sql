@@ -1,0 +1,1 @@
+UPDATE public.user SET telegram=%s WHERE email=%s;

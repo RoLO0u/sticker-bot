@@ -103,11 +103,21 @@ class User(Object):
 
 class MiscDB(ABC):
 
+    @classmethod
+    def get_packs_name(cls) -> List[str]:
+        return [pack["packid"] for pack in cls.get_all_packs()]
+
+    @staticmethod
+    @abstractmethod
+    def get_website_user(email: str) -> Optional[Dict[str, Any]]:
+        ...
+
+    @staticmethod
+    @abstractmethod
+    def set_website_telegram(userid: str, email: str) -> None:
+        ...
+
     @staticmethod
     @abstractmethod
     def get_all_packs() -> List[dict]:
         ...
-
-    @classmethod
-    def get_packs_name(cls) -> List[str]:
-        return [pack["packid"] for pack in cls.get_all_packs()]

@@ -1,6 +1,6 @@
 {
-"start": {"en": "<b>Hi!</b>\nI'm here to help you create sticker packs easier\nSend me <i>any</i> photo to to start or add image to the pack🖼",
-    "ua": "<b>Привіт!</b>\nЯ тут, щоб допомогти тобі створювати пакунки наліпок легше\nНадішли <i>будь-яке</i> фото, щоб почати або додати фото до пакунку🖼"},
+"start": {"en": "<b>Hi!</b>\nI'm here to help you create sticker packs easier\nSend me <i>any</i> photo to to start or add image to the pack🖼\n<u>New!</u>🥳 Now you can connect your packs to my website <a href='https://fedun.site/'>Fedun.Site</a>! Sign Up using Google and manage your sticker sets there.",
+    "ua": "<b>Привіт!</b>\nЯ тут, щоб допомогти тобі створювати пакунки наліпок легше\nНадішли <i>будь-яке</i> фото, щоб почати або додати фото до пакунку🖼\n<u>Новинка!</u>🥳 Тепер ти можеш підключити свої пакунки до мого веб-сайту <a href='https://fedun.site/'>Fedun.Site</a>! Зареєструйся через Google та керуй своїми наборами наліпок там."},
 "help_1": {"en": "Do you have some issues?\nContact with @feddunn!", "ua": "Маєте проблеми?\nЗв'яжіться з @feddunn!"},
 "start_opts": {"en": "Choose between creating a pack from scratch or copying from another one👇", "ua": "Виберіть між створенням пакунку з нуля, або копіювання вже існуючого👇"},
 "creating1": {"en": "How your pack will named (up to 64 characters)?🤔", "ua": "Як ви назвете свій пакунок (до 64 символів)?🤔"},
@@ -74,5 +74,10 @@
 "not_in_pack_e": {"en": "It seems like you've been kicked from {}!\nType /start to continue using the bot", "ua": "Схоже, що вас викинули з {}!\nВведіть /start, щоб надалі користуватися ботом"},
 "pack_not_chosen": {"en": "It seems like you haven't chosen any pack yet🤔", "ua": "Схоже, що ви ще не вибрали жодного пакунку🤔"},
 "new_password_generated": {"en": "✅ New password has been generated\nTo join use this new one instead\\!\n`{}`", "ua": "✅ Згенеровано новий пароль\nЩоб приєднатися, використовуйте цей новий\\!\n`{}`"},
-"pack_doesnt_exist_e": {"en": "This pack doesn't exist🤕", "ua": "Цей пакунок не існує🤕"}
+"pack_doesnt_exist_e": {"en": "This pack doesn't exist🤕", "ua": "Цей пакунок не існує🤕"},
+"connect": {"en": "<b>Success!</b>\nNow you can manage your packs from the website\n<a href='https://fedun.site/sticker-sets'>Manage your packs</a>", "ua": "<b>Успіх!</b>\nТепер ви можете керувати своїми пакунками з веб-сайту\n<a href='https://fedun.site/sticker-sets'>Керуйте своїми пакунками</a>"},
+"connect_e": {"en": "Oops... Something went wrong😕\nCheck carefully if you entered the data properly.", "ua": "Упс... Щось пішло не так😕\nУважно перевірте чи ви правильно ввели дані."},
+"connect_e_banned": {"en": "Oops... It seems like your account is banned😕\nContact with tech support @feddunn", "ua": "Упс... Схоже, що ваш акаунт заблоковано😕\nЗв'яжіться з технічною підтримкою @feddunn"},
+"connect_e_connected": {"en": "Oops... It seems like your account is already connected😕\nYou can unlink the telegram account on the website directly", "ua": "Упс... Схоже, що ваш акаунт вже підключено😕\nВи можете від'єднати акаунт Telegram безпосередньо на веб-сайті"},
+"connected_to": {"en": "Your account is linked to <b>{}</b>\nYou can unlink or manage your packs from the website\n<a href='https://fedun.site/sticker-sets'>Manage your packs</a>", "ua": "Ваш акаунт прив'язано до <b>{}</b>\nВи можете відʼєднатись або керувати своїми пакунками з веб-сайту\n<a href='https://fedun.site/sticker-sets'>Керуйте своїми пакунками</a>"}
 }
