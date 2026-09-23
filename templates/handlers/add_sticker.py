@@ -73,9 +73,9 @@ async def collecting_photo_add( \
             reply_markup=COMMON_EMOJI.markup)
     elif message.sticker:
         file_id = message.sticker.file_id
+        await message.answer_sticker(file_id, reply_markup=single_button(texts_buttons["cancel"][user.lang][0]))
         await message.answer(texts["managing_add_2"][user.lang],
-            reply_markup=single_button(texts_buttons["cancel"][user.lang][0]))
-        await message.answer_sticker(file_id, reply_markup=COMMON_EMOJI.markup)
+            reply_markup=COMMON_EMOJI.markup)
     user["image"] = file_id
 
 @router.callback_query(ManagingFSM.collecting_emoji_add, F.data.startswith("emo"))

@@ -1,6 +1,6 @@
 {
-"start": {"en": "<b>Hi!</b>\nI'm here to help you create sticker packs easier\nSend me <i>any</i> photo to to start or add image to the pack🖼\n<u>New!</u>🥳 Now you can connect your packs to my website <a href='https://fedun.site/'>Fedun.Site</a>! Sign Up using Google and manage your sticker sets there.",
-    "ua": "<b>Привіт!</b>\nЯ тут, щоб допомогти тобі створювати пакунки наліпок легше\nНадішли <i>будь-яке</i> фото, щоб почати або додати фото до пакунку🖼\n<u>Новинка!</u>🥳 Тепер ти можеш підключити свої пакунки до мого веб-сайту <a href='https://fedun.site/'>Fedun.Site</a>! Зареєструйся через Google та керуй своїми наборами наліпок там."},
+"start": {"en": "<b>Hi!</b>\nI'm here to help you create sticker packs easier\nSend me <i>any</i> photo to to start or add image to the pack🖼\n<u>New!</u>🥳 Now you can connect your packs to my website <a href='https://fedun.site/sticker-sets'>Fedun.Site</a>! Sign Up using Google and manage your sticker sets there.",
+    "ua": "<b>Привіт!</b>\nЯ тут, щоб допомогти тобі створювати пакунки наліпок легше\nНадішли <i>будь-яке</i> фото, щоб почати або додати фото до пакунку🖼\n<u>Новинка!</u>🥳 Тепер ти можеш підключити свої пакунки до мого веб-сайту <a href='https://fedun.site/sticker-sets'>Fedun.Site</a>! Зареєструйся через Google та керуй своїми наборами наліпок там."},
 "help_1": {"en": "Do you have some issues?\nContact with @feddunn!", "ua": "Маєте проблеми?\nЗв'яжіться з @feddunn!"},
 "start_opts": {"en": "Choose between creating a pack from scratch or copying from another one👇", "ua": "Виберіть між створенням пакунку з нуля, або копіювання вже існуючого👇"},
 "creating1": {"en": "How your pack will named (up to 64 characters)?🤔", "ua": "Як ви назвете свій пакунок (до 64 символів)?🤔"},
@@ -29,7 +29,8 @@
 "managing_call_e": {"en": "You're not managing now🤕(or telegram hates inline keyboard)",
     "ua": "Ти наразі не керуєш🤕(або телеграм ненавидить вбудовану клавіатуру)"},
 "managing_exception_1": {"en": "Please choose your pack from upper keyboard👆", "ua": "Будь ласка, виберіть пакунок з клавіатури вище👆"},
-"managing2": {"en": "OK. What you want to do with this pack?🧐", "ua": "Добре. Що ти хочеш зробити з цим пакунком?🧐"},
+"managing2": {"en": "OK. What you want to do with this pack?🧐\n<b>New!</b>🎊 Want to change the order of stickers in the sticker pack? Visit my website and do just that at <a href='https://fedun.site/sticker-sets'>Fedun.Site</a>!",
+    "ua": "Добре. Що ти хочеш зробити з цим пакунком?🧐\n<b>Новинка!</b>🎊 Хочеш змінити порядок наліпок у пакунку? Відвідай мій веб-сайт і зроби це на <a href='https://fedun.site/sticker-sets'>Fedun.Site</a>!"},
 "managing_add_1": {"en": "OK. Now send me an image or sticker🖼", "ua": "Добре. Зараз надішли фото або наліпку🖼"},
 "managing_add_2": {"en": "Perfect! Now send me or choose an emoji(s) you want to associate with the sticker✏️", "ua": "Прекрасно! Зараз надішліть або виберіть емодзі, яке ви хочете прив'язати до наліпки✏️"},
 "managing_add_e": {"en": "This pack was deleted🤕", "ua": "Цей пакунок було видалено🤕"},

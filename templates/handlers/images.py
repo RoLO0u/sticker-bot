@@ -32,9 +32,9 @@ async def getting_image( \
             reply_markup=COMMON_EMOJI.markup)
     elif message.sticker:
         file_id = message.sticker.file_id
+        await message.answer_sticker(file_id, reply_markup=single_button(texts_buttons["cancel"][user.lang][0]))
         await message.answer(texts["choose_emoji"][user.lang],
-            reply_markup=single_button(texts_buttons["cancel"][user.lang][0]))
-        await message.answer_sticker(file_id, reply_markup=COMMON_EMOJI.markup)
+            reply_markup=COMMON_EMOJI.markup)
     user["image"] = file_id
     await state.set_state(ManagingFSM.emoji_inline)
 
@@ -51,7 +51,11 @@ async def choosing_emoji_query( \
     user["emoji"] = emoji
 
     await state.set_state(ManagingFSM.add_inline)
-    await callback_query.message.edit_caption(caption=texts["choose_pack"][user.lang],
+    if callback_query.message.photo:
+        await callback_query.message.edit_caption(caption=texts["choose_pack"][user.lang],
+            reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user.lang][1]))
+        return
+    await callback_query.message.edit_text(texts["choose_pack"][user.lang],
         reply_markup=packs_inline(list(user.get_packs()), texts_buttons["start"][user.lang][1]))
 
 @router.message(ManagingFSM.emoji_inline, F.text, F.chat.type=="private")
