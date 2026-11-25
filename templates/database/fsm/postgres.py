@@ -36,13 +36,13 @@ class PostgreStorage(BaseStorage):
         self._kwargs = kwargs  # custom client options like SSL configuration, etc.
 
         self._conn = self.connect(self._host, self._port, self._db_name, self._username, self._password, **self._kwargs)
-        self._cur = self._conn.cursor()
         self.create_tables()
         self._index = index
 
         
     def create_tables(self):
-        self._cur.execute(read_sql("create/tables_fsm.sql"))
+        with self._conn.cursor() as cur:
+            cur.execute(read_sql("create/tables_fsm.sql"))
         self._conn.commit()
         
     @staticmethod
@@ -75,30 +75,32 @@ class PostgreStorage(BaseStorage):
     async def set_state(self, key: StorageKey, state: StateType = None) -> None:
         state = self.resolve_state(state)
         user_id = str(key.user_id)
-        self._cur.execute(read_sql("change/state.sql"), (user_id,state,user_id,user_id,state))
+        with self._conn.cursor() as cur:
+            cur.execute(read_sql("change/state.sql"), (user_id,state,user_id,user_id,state))
         self._conn.commit()
         
     async def get_state(self, key: StorageKey) -> Optional[str]:
-        self._cur.execute(read_sql("get/state.sql"), (str(key.user_id),))
-        result = self._cur.fetchone()
+        with self._conn.cursor() as cur:
+            cur.execute(read_sql("get/state.sql"), (str(key.user_id),))
+            result = cur.fetchone()
         self._conn.commit()
         return result[0] if result else None
     
     async def set_data(self, key: StorageKey, data: Dict[str, Any]) -> None:
         dataJSON = json.dumps(data, ensure_ascii=False)
-        self._cur.execute(read_sql("change/data.sql"), (str(key.user_id),dataJSON,str(key.user_id),str(key.user_id),dataJSON))
+        with self._conn.cursor() as cur:
+            cur.execute(read_sql("change/data.sql"), (str(key.user_id),dataJSON,str(key.user_id),str(key.user_id),dataJSON))
         self._conn.commit()
         
     async def get_data(self, key: StorageKey) -> Dict[str, Any]:
-        self._cur.execute(read_sql("get/data.sql"), (str(key.user_id),))
-        result = self._cur.fetchone()
+        with self._conn.cursor() as cur:
+            cur.execute(read_sql("get/data.sql"), (str(key.user_id),))
+            result = cur.fetchone()
         self._conn.commit()
         if result is None:
             return {}
         return result[0]
 
     async def close(self):
-        if self._cur:
-            self._cur.close()
         if self._conn:
             self._conn.close()
