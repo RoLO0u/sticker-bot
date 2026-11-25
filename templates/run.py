@@ -18,7 +18,8 @@ class Environment(Singleton):
         if not load_dotenv(override=True) and not self.warned:
             self.warned = True
             logging.warning("No '.env' file was detected")
-            self.no_env()
+            if sys.stdin.isatty():
+                self.no_env()
     def no_env(self) -> None:
         answer = input("Do you want to procceed (y/n)? ")
         match answer:

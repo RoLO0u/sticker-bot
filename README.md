@@ -76,6 +76,68 @@ python main.py --log-file
 
 Or use virtual environment variables AND docker
 
+# Deploying to Heroku
+
+The bot supports Telegram webhooks and long polling. For webhooks on Heroku,
+run the `web` process; Heroku supplies the listening port through `PORT`, and
+terminates HTTPS before forwarding requests to the dyno.
+
+1. Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
+   and log in:
+
+   ```bash
+   heroku login
+   heroku create your-app-name
+   heroku addons:create heroku-postgresql:essential-0 --app your-app-name
+   ```
+
+2. Copy the database name, host, port, username, and password from the add-on's
+   credentials. This project expects the individual `PG*` variables; it does
+   not read Heroku's `DATABASE_URL`.
+
+3. Set the app's config vars (replace the placeholders with your values; don't
+   commit credentials):
+
+   ```bash
+   heroku config:set \
+     BOT_TOKEN=your-telegram-bot-token \
+     DEBUG=False \
+     WEBHOOK=True \
+     BASE_WEBHOOK_URL=https://your-app-name.herokuapp.com \
+     WEBHOOK_PATH=/telegram \
+     WEBHOOK_SECRET=your-random-webhook-secret \
+     SERVER_HOST=0.0.0.0 \
+     PGDATABASE=your-database-name \
+     PGHOST=your-postgres-host \
+     PGPORT=5432 \
+     PGUSER=your-postgres-user \
+     PGPASSWORD=your-postgres-password \
+     PGWEBSITEDATABASE=your-database-name \
+     SSLMODE=require \
+     --app your-app-name
+   ```
+
+   `PGWEBSITEDATABASE` is required. Set it to the same database name if the
+   website data should share the bot database, or to the name of a separate
+   database if you keep that data separately.
+
+   Use your app's actual HTTPS URL for `BASE_WEBHOOK_URL`, without a trailing
+   slash. Generate a unique `WEBHOOK_SECRET`; do not commit it. The app binds
+   to Heroku's `PORT` automatically. Do not set `WEBHOOK_SSL_CERT` on Heroku:
+   TLS is terminated by the Heroku router.
+
+4. Deploy and start the web dyno:
+
+   ```bash
+   git push heroku HEAD:main
+   heroku ps:scale web=1 worker=0 --app your-app-name
+   heroku logs --tail --app your-app-name
+   ```
+
+For long polling instead, set `WEBHOOK=False` and scale `worker=1` with
+`web=0`. Heroku config vars are used directly, so a `.env` file should not be
+deployed.
+
 # Required variables
 
 ## PostgreSQL
@@ -107,10 +169,6 @@ CREATE DATABASE aiogram; -- or another database name
 * WEBHOOK - `True`
 * WEBHOOK_SECRET ─ a string of random characters. [Read more here](https://core.telegram.org/bots/api#setwebhook).
 * BASE_WEBHOOK_URL ─ an URL to which telegram will send updates to
-> If you're using self-signed certificate you should add certificate file to `set_webhook` method in `launch.py` file
-* WEBHOOK_SSL_CERT ─ path to your public certificate
-* WEBHOOK_SSL_PRIV ─ path to your private/secret certificate
-> Make sure your user can read the file, otherwise the PermissionError will be raised
 ### Optional
 * WEBHOOK_PATH - path to the bot e.g. "telegram-sticker-bot"
 * SERVER_HOST - local IPv4 e.g. 127.0.0.1

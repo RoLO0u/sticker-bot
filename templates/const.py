@@ -13,11 +13,16 @@ Environment().load_env()
 
 WEBHOOK = getenv("WEBHOOK")
 
-def parse_port():
-    port = getenv("SERVER_PORT")
-    if port and port.isdecimal:
-        return int(port)
-    return 8080
+def parse_port() -> int:
+    port = getenv("PORT") or getenv("SERVER_PORT")
+    if port is None:
+        return 8080
+    if not port.isdecimal():
+        raise ValueError("PORT or SERVER_PORT must be a decimal port number")
+    parsed_port = int(port)
+    if not 1 <= parsed_port <= 65535:
+        raise ValueError("PORT or SERVER_PORT must be between 1 and 65535")
+    return parsed_port
 
 WEB_SERVER_HOST = getenv("SERVER_HOST") or "127.0.0.1"
 WEB_SERVER_PORT = parse_port()

@@ -10,7 +10,10 @@ async def set_webhook(bot: Bot) -> None:
     bot_info = await bot.me()
     assert bot_info.username
     const.WATERMARK._update(bot_info.username)
-    assert const.WEBHOOK_SSL_CERT
+    if not const.BASE_WEBHOOK_URL:
+        raise ValueError("BASE_WEBHOOK_URL must be set when WEBHOOK=True")
+    if not const.WEBHOOK_SECRET:
+        raise ValueError("WEBHOOK_SECRET must be set when WEBHOOK=True")
     await bot.set_webhook(
         f"{const.BASE_WEBHOOK_URL}{const.WEBHOOK_PATH}",
         secret_token=const.WEBHOOK_SECRET,
