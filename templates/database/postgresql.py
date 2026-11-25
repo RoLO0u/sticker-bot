@@ -22,10 +22,12 @@ website_kwargs = {"database": os.getenv("PGWEBSITEDATABASE"), \
         "password": os.getenv("PGPASSWORD")
 }
 
-if os.getenv("SSLMODE") == "require":
+if os.getenv("SSLMODE"):
     kwargs["sslmode"] = os.getenv("SSLMODE")
-    kwargs["sslrootcert"] = os.getenv("SSLROOTCERT")
     website_kwargs["sslmode"] = os.getenv("SSLMODE")
+
+if os.getenv("SSLROOTCERT"):
+    kwargs["sslrootcert"] = os.getenv("SSLROOTCERT")
     website_kwargs["sslrootcert"] = os.getenv("SSLROOTCERT")
 
 assert all(kwargs.values()) # ensures all values are not none
