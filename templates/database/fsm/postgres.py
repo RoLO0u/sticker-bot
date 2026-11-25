@@ -14,6 +14,7 @@ from aiogram.fsm.storage.base import (
 import json
 import psycopg2
 from psycopg2._psycopg import connection
+from psycopg2 import InterfaceError, OperationalError
 
 STATE = 'aiogram_state'
 DATA = 'aiogram_data'
@@ -41,9 +42,38 @@ class PostgreStorage(BaseStorage):
 
         
     def create_tables(self):
-        with self._conn.cursor() as cur:
-            cur.execute(read_sql("create/tables_fsm.sql"))
-        self._conn.commit()
+        self._ensure_connection()
+        try:
+            with self._conn.cursor() as cur:
+                cur.execute(read_sql("create/tables_fsm.sql"))
+            self._conn.commit()
+        except (InterfaceError, OperationalError):
+            self._reconnect()
+            with self._conn.cursor() as cur:
+                cur.execute(read_sql("create/tables_fsm.sql"))
+            self._conn.commit()
+
+    def _ensure_connection(self) -> None:
+        if self._conn is None or self._conn.closed:
+            self._reconnect()
+
+    def _reconnect(self) -> None:
+        self._conn = self.connect(
+            self._host,
+            self._port,
+            self._db_name,
+            self._username,
+            self._password,
+            **self._kwargs,
+        )
+
+    def _execute_with_retry(self, operation):
+        self._ensure_connection()
+        try:
+            return operation()
+        except (InterfaceError, OperationalError):
+            self._reconnect()
+            return operation()
         
     @staticmethod
     def resolve_state(value):
@@ -62,44 +92,52 @@ class PostgreStorage(BaseStorage):
         
     @staticmethod
     def connect(host: str, port: str, database: str, user: str, password: str, **kwargs) -> connection:
-        with psycopg2.connect(
-                host=host,
-                port=port,
-                database=database,
-                user=user,
-                password=password,
-                **kwargs
-                ) as conn:
-            return conn
+        return psycopg2.connect(
+            host=host,
+            port=port,
+            database=database,
+            user=user,
+            password=password,
+            **kwargs
+        )
         
     async def set_state(self, key: StorageKey, state: StateType = None) -> None:
-        state = self.resolve_state(state)
-        user_id = str(key.user_id)
-        with self._conn.cursor() as cur:
-            cur.execute(read_sql("change/state.sql"), (user_id,state,user_id,user_id,state))
-        self._conn.commit()
+        resolved_state = self.resolve_state(state)
+
+        def operation():
+            user_id = str(key.user_id)
+            with self._conn.cursor() as cur:
+                cur.execute(read_sql("change/state.sql"), (user_id, resolved_state, user_id, user_id, resolved_state))
+            self._conn.commit()
+        self._execute_with_retry(operation)
         
     async def get_state(self, key: StorageKey) -> Optional[str]:
-        with self._conn.cursor() as cur:
-            cur.execute(read_sql("get/state.sql"), (str(key.user_id),))
-            result = cur.fetchone()
-        self._conn.commit()
-        return result[0] if result else None
+        def operation():
+            with self._conn.cursor() as cur:
+                cur.execute(read_sql("get/state.sql"), (str(key.user_id),))
+                result = cur.fetchone()
+            self._conn.commit()
+            return result[0] if result else None
+        return self._execute_with_retry(operation)
     
     async def set_data(self, key: StorageKey, data: Dict[str, Any]) -> None:
-        dataJSON = json.dumps(data, ensure_ascii=False)
-        with self._conn.cursor() as cur:
-            cur.execute(read_sql("change/data.sql"), (str(key.user_id),dataJSON,str(key.user_id),str(key.user_id),dataJSON))
-        self._conn.commit()
+        def operation():
+            dataJSON = json.dumps(data, ensure_ascii=False)
+            with self._conn.cursor() as cur:
+                cur.execute(read_sql("change/data.sql"), (str(key.user_id),dataJSON,str(key.user_id),str(key.user_id),dataJSON))
+            self._conn.commit()
+        self._execute_with_retry(operation)
         
     async def get_data(self, key: StorageKey) -> Dict[str, Any]:
-        with self._conn.cursor() as cur:
-            cur.execute(read_sql("get/data.sql"), (str(key.user_id),))
-            result = cur.fetchone()
-        self._conn.commit()
-        if result is None:
-            return {}
-        return result[0]
+        def operation():
+            with self._conn.cursor() as cur:
+                cur.execute(read_sql("get/data.sql"), (str(key.user_id),))
+                result = cur.fetchone()
+            self._conn.commit()
+            if result is None:
+                return {}
+            return result[0]
+        return self._execute_with_retry(operation)
 
     async def close(self):
         if self._conn:

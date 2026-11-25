@@ -1,6 +1,7 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 from psycopg2._psycopg import cursor
 from psycopg2.sql import SQL, Identifier
+from psycopg2 import InterfaceError, OperationalError
 import os
 
 from templates.database import baseDB
@@ -35,6 +36,20 @@ assert all(website_kwargs.values()) # ensures all values are not none
 conn = PostgreStorage.connect(**kwargs) # type: ignore
 website_conn = PostgreStorage.connect(**website_kwargs) # type: ignore
 
+def reconnect(connection_kwargs: Dict[str, Any]):
+    return PostgreStorage.connect(
+        database=cast(str, connection_kwargs["database"]),
+        host=cast(str, connection_kwargs["host"]),
+        port=cast(str, connection_kwargs["port"]),
+        user=cast(str, connection_kwargs["user"]),
+        password=cast(str, connection_kwargs["password"]),
+        **{
+            name: value
+            for name, value in connection_kwargs.items()
+            if name not in {"database", "host", "port", "user", "password"}
+        },
+    )
+
 def default(func):
     """Default decorator, which gives cursor and more security for the database
     defines and sends user_id
@@ -42,11 +57,19 @@ def default(func):
     As pylance can't understand, that this decorator passes _cur,
     decorated function should set default value
     """
-    def wrapper(*args, **kwargs):
-        with conn.cursor() as cur:
-            to_return = func(*args, _cur=cur, **kwargs)
-            conn.commit()
-            return to_return
+    def wrapper(*args, **call_kwargs):
+        def operation():
+            with conn.cursor() as cur:
+                to_return = func(*args, _cur=cur, **call_kwargs)
+                conn.commit()
+                return to_return
+        try:
+            if conn.closed:
+                globals()["conn"] = reconnect(kwargs)
+            return operation()
+        except (InterfaceError, OperationalError):
+            globals()["conn"] = reconnect(kwargs)
+            return operation()
     return wrapper
 
 def website_default(func):
@@ -56,11 +79,19 @@ def website_default(func):
     As pylance can't understand, that this decorator passes _cur,
     decorated function should set default value
     """
-    def wrapper(*args, **kwargs):
-        with website_conn.cursor() as cur:
-            to_return = func(*args, _cur=cur, **kwargs)
-            website_conn.commit()
-            return to_return
+    def wrapper(*args, **call_kwargs):
+        def operation():
+            with website_conn.cursor() as cur:
+                to_return = func(*args, _cur=cur, **call_kwargs)
+                website_conn.commit()
+                return to_return
+        try:
+            if website_conn.closed:
+                globals()["website_conn"] = reconnect(website_kwargs)
+            return operation()
+        except (InterfaceError, OperationalError):
+            globals()["website_conn"] = reconnect(website_kwargs)
+            return operation()
     return wrapper
 
 class Pack(baseDB.Pack):
